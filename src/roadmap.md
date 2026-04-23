@@ -12,36 +12,38 @@ Hylang is developed in phases, moving from a bootstrap compiler through self-hos
 
 ## Phase overview
 
-| Phase | Name | Status |
-|-------|------|--------|
-| 0 | Bootstrap Foundation | Complete |
-| 1 | Language Hardening | In progress |
-| 2 | Core Language Expansion | Not started |
-| 3 | Runtime and Memory Model | Not started |
-| 4 | Tooling and Developer Workflow | Not started |
-| 5 | Self-Hosting Preparation | Not started |
-| 6 | Self-Hosted Compiler | Not started |
-| 7 | Full Standard Library | Not started |
-| 8 | Backend Evolution | Not started |
-| 9 | Hylang for Aura OS Userland | Not started |
-| 10 | Hylang for System Software | Not started |
-| 11 | Full OS and Ecosystem Vision | Long-term |
+| Phase | Name                           | Status      |
+|-------|--------------------------------|-------------|
+| 0     | Bootstrap Foundation           | Complete    |
+| 1     | Language Hardening             | Complete    |
+| 2     | Core Language Expansion        | In progress |
+| 3     | Runtime and Memory Model       | Not started |
+| 4     | Tooling and Developer Workflow | Not started |
+| 5     | Self-Hosting Preparation       | Not started |
+| 6     | Self-Hosted Compiler           | Not started |
+| 7     | Full Standard Library          | Not started |
+| 8     | Backend Evolution              | Not started |
+| 9     | Hylang for Aura OS Userland    | Not started |
+| 10    | Hylang for System Software     | Not started |
+| 11    | Full OS and Ecosystem Vision   | Long-term   |
 
 ## Phase 0 — Bootstrap Foundation (complete)
 
 The compiler pipeline, `hyrun`, `hyc`, core OO syntax, basic control flow, and minimal standard library builtins are all in place. Small multi-file console tools can be written and run today.
 
-## Phase 1 — Language Hardening (current)
+## Phase 1 — Language Hardening (complete)
 
-Focus on making the existing language subset reliable enough for larger tools:
+Delivered a reliable language subset, comprehensive tests, and a medium-sized sample tool:
 
-- Stronger parser error recovery
-- Overload resolution and constructor selection hardening
-- Broader regression coverage
-- More string, array, and file APIs
-- Additional sample programs written in Hylang
+- Full arithmetic, comparison, logical, and unary operators
+- Constructor and method overloading with ambiguity detection
+- Basic enums with equality, static fields, and printing
+- String character indexing
+- Parser error recovery
+- `token_dump` sample — 431 lines across 4 files
+- Regression suite covering both interpreter and compiled output
 
-## Phase 2 — Core Language Expansion
+## Phase 2 — Core Language Expansion (current)
 
 Add the object-model features needed before self-hosting: inheritance, virtual/override, interfaces, enums, structs, generics, and improved namespace resolution.
 

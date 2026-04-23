@@ -2,11 +2,12 @@
 
 ## Primitive types
 
-| Type | Description |
-|------|-------------|
-| `int` | 64-bit signed integer |
-| `bool` | Boolean (`true` / `false`) |
-| `string` | Managed UTF-8 string |
+| Type     | Description                                        |
+|----------|----------------------------------------------------|
+| `int`    | 64-bit signed integer                              |
+| `bool`   | Boolean (`true` / `false`)                         |
+| `string` | Managed UTF-8 string                               |
+| `null`   | The null literal; assignable to any reference type |
 
 ## Arrays
 
