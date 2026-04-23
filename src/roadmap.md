@@ -1,6 +1,6 @@
 # Roadmap
 
-Hylang is developed in phases, moving from a bootstrap compiler through self-hosting to a full OS-level language for Aura OS.
+Hylang is developed in phases, moving from a bootstrap compiler through self-hosting to a full OS-level language for Australis OS.
 
 ## Vision
 
@@ -8,7 +8,7 @@ Hylang is developed in phases, moving from a bootstrap compiler through self-hos
 - Capable of both managed application development and low-level OS work
 - Self-hosted — the compiler will eventually be written in Hylang itself
 - Backed by a real standard library, tooling ecosystem, and package/build workflow
-- The primary language for Aura OS userland and, over time, larger parts of the OS stack
+- The primary language for Australis OS userland and, over time, larger parts of the OS stack
 
 ## Phase overview
 
@@ -23,7 +23,7 @@ Hylang is developed in phases, moving from a bootstrap compiler through self-hos
 | 6     | Self-Hosted Compiler           | Not started |
 | 7     | Full Standard Library          | Not started |
 | 8     | Backend Evolution              | Not started |
-| 9     | Hylang for Aura OS Userland    | Not started |
+| 9     | Hylang for Australis OS Userland    | Not started |
 | 10    | Hylang for System Software     | Not started |
 | 11    | Full OS and Ecosystem Vision   | Long-term   |
 
@@ -45,7 +45,15 @@ Delivered a reliable language subset, comprehensive tests, and a medium-sized sa
 
 ## Phase 2 — Core Language Expansion (current)
 
-Add the object-model features needed before self-hosting: inheritance, virtual/override, interfaces, enums, structs, generics, and improved namespace resolution.
+Phase 2 is underway. Milestone 1 is complete:
+
+- Single inheritance with `class Derived : Base`
+- Inherited field and method lookup
+- `protected` access from subclasses
+- Derived-to-base assignability across locals, fields, parameters, returns, equality checks, and overload resolution
+- Implicit parameterless base-constructor chaining in both `hyrun` and compiled output
+
+Phase 2 is not fully complete yet. Next up are `base(...)` semantics, `base.Member`, `virtual` / `override`, interfaces, generics, and stronger namespace/import resolution.
 
 ## Phase 3 — Runtime and Memory Model
 
@@ -67,9 +75,9 @@ Grow from bootstrap builtins to a real platform library covering `System`, `Syst
 
 Add native x64 code generation and object-file emission alongside the C backend.
 
-## Phases 9–11 — Aura OS Integration
+## Phases 9–11 — Australis OS Integration
 
-Make Hylang the primary language for Aura OS userland, then extend it into system-adjacent code, and ultimately reach a point where the language, compiler, and ecosystem are mature enough for serious third-party development.
+Make Hylang the primary language for Australis OS userland, then extend it into system-adjacent code, and ultimately reach a point where the language, compiler, and ecosystem are mature enough for serious third-party development.
 
 ---
 

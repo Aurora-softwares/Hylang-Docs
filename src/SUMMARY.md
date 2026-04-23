@@ -17,6 +17,7 @@
 - [Operators](language/operators.md)
 - [Control Flow](language/control-flow.md)
 - [Enums](language/enums.md)
+- [Inheritance](language/inheritance.md)
 - [Overloading](language/overloading.md)
 - [Access Modifiers](language/access-modifiers.md)
 

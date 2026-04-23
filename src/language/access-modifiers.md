@@ -1,13 +1,13 @@
 # Access Modifiers
 
-Hylang uses four access modifiers. Their bootstrap semantics are intentionally conservative until inheritance is fully implemented.
+Hylang uses four access modifiers. The current bootstrap supports normal class-local access rules plus subclass access for `protected`.
 
 | Modifier | Visibility |
 |----------|------------|
 | `public` | Visible everywhere |
 | `private` | Restricted to the declaring class |
 | `internal` | Visible within the current compilation |
-| `protected` | Same-class only (until inheritance is added) |
+| `protected` | Visible in the declaring class and its subclasses |
 
 ## Example
 
@@ -29,6 +29,28 @@ class Account {
 
     private void Audit() {
         // internal helper
+    }
+}
+```
+
+## Inheritance note
+
+`private` members are not visible from derived classes. `protected` members are.
+
+```hylang
+namespace Banking {
+    public class Account {
+        protected int balance;
+
+        public Account() {
+            balance = 10;
+        }
+    }
+
+    public class SavingsAccount : Account {
+        public int CurrentBalance() {
+            return balance;
+        }
     }
 }
 ```

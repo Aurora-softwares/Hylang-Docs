@@ -1,6 +1,6 @@
 # Program Structure
 
-A Hylang program is organized into namespaces and classes. Every executable entry point is a `static void Main` method.
+A Hylang program is organized into namespaces and classes. Every executable entry point is a `public static void Main` method, with or without the `string[] args` parameter.
 
 ## Using directives
 
@@ -15,10 +15,11 @@ Using directives must appear before the namespace declaration.
 ## Namespaces
 
 ```hylang
-namespace MyApp;
+namespace MyApp {
+}
 ```
 
-Namespaces group related classes together. A file may declare one namespace at the top.
+Namespaces group related classes together. The current parser uses block-style namespace declarations.
 
 ## Classes
 
@@ -42,14 +43,35 @@ Classes may contain:
 - Constructors
 - Methods (instance and static)
 
+Hylang also supports basic single inheritance:
+
+```hylang
+class CalculatorBase {
+    protected int value;
+}
+
+class AdvancedCalculator : CalculatorBase {
+    public AdvancedCalculator(int initial) {
+        value = initial;
+    }
+}
+```
+
+Current inheritance support is intentionally narrow:
+
+- One base class only
+- No `base(...)` constructor chaining syntax yet
+- No `base.Member`
+- No `virtual` / `override`
+
 ## Entry point
 
 ```hylang
-namespace MyApp;
-
-class Program {
-    public static void Main(string[] args) {
-        System.Console.WriteLine("Hello, Hylang!");
+namespace MyApp {
+    class Program {
+        public static void Main(string[] args) {
+            System.Console.WriteLine("Hello, Hylang!");
+        }
     }
 }
 ```

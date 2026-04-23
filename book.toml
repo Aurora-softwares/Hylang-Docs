@@ -1,6 +1,6 @@
 [book]
 title = "Hylang"
-description = "A C#-inspired systems language for Aura OS and general x64 systems."
+description = "A C#-inspired systems language for Australis OS and general x64 systems."
 authors = ["Aurora Softwares"]
 language = "en"
 multilingual = false

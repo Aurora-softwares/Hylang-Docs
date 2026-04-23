@@ -46,4 +46,11 @@ string ch = someString[0];   // single-character string
 
 ## User-defined types
 
-Classes are the only user-defined type in the current bootstrap. Enums, structs, interfaces, and generics are planned for later phases.
+Classes and enums are the currently supported user-defined types. Structs, interfaces, and generics are planned for later phases.
+
+Class values are reference types, so `null` is valid and derived classes can be used anywhere a base class is expected:
+
+```hylang
+Animal value = new Dog();
+Animal maybe = null;
+```

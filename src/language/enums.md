@@ -5,13 +5,13 @@ Enums define a named set of constant values. They are declared at the namespace 
 ## Declaration
 
 ```hylang
-namespace Demo;
-
-public enum Direction {
-    North,
-    South,
-    East,
-    West
+namespace Demo {
+    public enum Direction {
+        North,
+        South,
+        East,
+        West
+    }
 }
 ```
 
@@ -61,15 +61,15 @@ With `using System;` at the top of the file, you can shorten `System.Console` to
 ```hylang
 using System;
 
-namespace Demo;
+namespace Demo {
+    public enum Mode { Scan, Dump }
 
-public enum Mode { Scan, Dump }
-
-public class Program {
-    public static void Main(string[] args) {
-        Mode m = Mode.Scan;
-        Console.Write(m);          // prints: Scan
-        Console.WriteLine(m == Mode.Scan);  // prints: True
+    public class Program {
+        public static void Main(string[] args) {
+            Mode m = Mode.Scan;
+            Console.Write(m);          // prints: Scan
+            Console.WriteLine(m == Mode.Scan);  // prints: true
+        }
     }
 }
 ```

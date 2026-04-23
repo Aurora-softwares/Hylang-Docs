@@ -57,4 +57,5 @@ public class Program {
 ## Limitations
 
 - Overloads must differ by parameter types, not just parameter names.
-- Overload resolution considers exact type matches; implicit conversions between unrelated types are not performed.
+- Exact matches are preferred over derived-to-base matches.
+- Implicit conversions between unrelated types are not performed.
