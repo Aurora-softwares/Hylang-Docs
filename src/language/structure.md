@@ -2,6 +2,16 @@
 
 A Hylang program is organized into namespaces and classes. Every executable entry point is a `static void Main` method.
 
+## Using directives
+
+```hylang
+using System;
+```
+
+`using` imports a namespace into scope, allowing you to reference its types without the full qualifier. For example, `using System;` lets you write `Console.WriteLine(...)` instead of `System.Console.WriteLine(...)`.
+
+Using directives must appear before the namespace declaration.
+
 ## Namespaces
 
 ```hylang

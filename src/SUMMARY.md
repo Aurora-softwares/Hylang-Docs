@@ -14,7 +14,10 @@
 
 - [Program Structure](language/structure.md)
 - [Types](language/types.md)
+- [Operators](language/operators.md)
 - [Control Flow](language/control-flow.md)
+- [Enums](language/enums.md)
+- [Overloading](language/overloading.md)
 - [Access Modifiers](language/access-modifiers.md)
 
 # Tools
