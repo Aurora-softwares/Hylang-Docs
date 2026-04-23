@@ -10,3 +10,5 @@ src = "src"
 git-repository-url = "https://github.com/Aurora-Softwares/Hylang-Compiler"
 edit-url-template = "https://github.com/Aurora-Softwares/Hylang-Docs/edit/main/{path}"
 no-section-label = false
+additional-css = ["theme/custom.css"]
+additional-js = ["theme/custom.js"]

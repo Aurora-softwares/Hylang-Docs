@@ -1,0 +1,86 @@
+/* ---- theme toggle widget ---- */
+
+#hy-theme-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 6px;
+    vertical-align: middle;
+    position: relative;
+}
+
+.hy-theme-icon {
+    font-size: 1rem;
+    line-height: 1;
+    opacity: 0.65;
+    user-select: none;
+    cursor: default;
+}
+
+/* Track */
+#hy-theme-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 52px;
+    height: 4px;
+    border-radius: 2px;
+    /* Use mdBook's icon colour so the track matches the rest of the nav */
+    background: var(--icons, #888);
+    outline: none;
+    cursor: pointer;
+    margin: 0;
+    opacity: 0.75;
+    transition: opacity 0.15s;
+}
+
+#hy-theme-slider:hover {
+    opacity: 1;
+}
+
+/* Thumb — Webkit */
+#hy-theme-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--fg, #333);
+    cursor: pointer;
+    /* Ring that separates thumb from track */
+    border: 2px solid var(--bg, #fff);
+    box-shadow: 0 0 0 1px var(--icons, #888);
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+#hy-theme-slider:hover::-webkit-slider-thumb,
+#hy-theme-slider:focus::-webkit-slider-thumb {
+    box-shadow: 0 0 0 2px var(--links, #4183c4);
+}
+
+/* Thumb — Firefox */
+#hy-theme-slider::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--fg, #333);
+    cursor: pointer;
+    border: 2px solid var(--bg, #fff);
+    box-shadow: 0 0 0 1px var(--icons, #888);
+    box-sizing: content-box;
+}
+
+#hy-theme-slider:hover::-moz-range-thumb,
+#hy-theme-slider:focus::-moz-range-thumb {
+    box-shadow: 0 0 0 2px var(--links, #4183c4);
+}
+
+/* "auto" label */
+#hy-theme-hint {
+    font-size: 0.65rem;
+    font-style: italic;
+    opacity: 0;
+    color: var(--fg, #333);
+    pointer-events: none;
+    transition: opacity 0.15s;
+    min-width: 26px;  /* prevents layout shift when it appears */
+}
