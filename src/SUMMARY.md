@@ -26,6 +26,7 @@
 
 # Tools
 
+- [hy](tools/hy.md)
 - [hyrun](tools/hyrun.md)
 - [hyc](tools/hyc.md)
 
@@ -33,6 +34,11 @@
 
 - [Runtime Model](runtime/runtime-model.md)
 - [Unsafe Design](runtime/unsafe-design.md)
+
+# Implementation Notes
+
+- [Phase 2 Bootstrap Spec](implementation/phase2-bootstrap-spec.md)
+- [Phase 4 Tooling Slice](implementation/phase4-tooling-slice.md)
 
 ---
 

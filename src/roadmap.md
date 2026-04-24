@@ -18,7 +18,7 @@ Hylang is developed in phases, moving from a bootstrap compiler through self-hos
 | 1     | Language Hardening               | Complete    |
 | 2     | Core Language Expansion          | Complete    |
 | 3     | Runtime and Memory Model         | In progress |
-| 4     | Tooling and Developer Workflow   | Not started |
+| 4     | Tooling and Developer Workflow   | In progress |
 | 5     | Self-Hosting Preparation         | Not started |
 | 6     | Self-Hosted Compiler             | Not started |
 | 7     | Full Standard Library            | Not started |
@@ -65,15 +65,27 @@ Phase 3 is currently focused on runtime foundations:
 - General managed `T[]`
 - `new T[count]`
 - Bootstrap `System.Collections.List<T>`
+- Safe bootstrap `System.Runtime.Buffer`
+- Bootstrap `System.Runtime.BinaryPrimitives` through 64-bit helpers
 - In-tree non-moving mark-sweep GC for compiled output
 - GC stress controls (`HYLANG_GC_STRESS`, `HYLANG_GC_THRESHOLD`)
 - Runtime/unsafe spec notes
 
 The current remaining work in this phase is around deeper low-level runtime primitives and the later executable unsafe/manual-memory surface.
 
-## Phase 4 — Tooling and Developer Workflow
+## Phase 4 — Tooling and Developer Workflow (current)
 
-A first-class `hy` CLI (`hy new`, `hy build`, `hy run`, `hy test`, `hy fmt`, `hy package`), a formatter, a linter, language server support, and a stable project/package manifest format.
+Phase 4 now has a real delivered slice:
+
+- first-class `hy` CLI
+- v2 `.hyproj` manifests and workspaces
+- `hy new`, `hy build`, `hy run`, `hy test`, `hy fmt`, `hy check`, `hy package`
+- build caching and `.hymap.json` debug metadata
+- bootstrap lint warnings via `hy check --json`
+- light VS Code assets
+- `hexlab` as the workflow showcase
+
+The main remaining Phase 4 work is broader static analysis, stronger compiled runtime failure mapping, and the executable unsafe/manual-memory systems surface that still overlaps with the Phase 3 follow-on work.
 
 ## Phase 5–6 — Self-Hosting
 
@@ -93,4 +105,7 @@ Make Hylang the primary language for Australis OS userland, then extend it into 
 
 ---
 
-The full roadmap with detailed checklists is maintained in the [compiler repository](https://github.com/Aurora-Softwares/Hylang-Compiler/blob/main/ROADMAP.md).
+See also:
+
+- [Phase 2 Bootstrap Spec](implementation/phase2-bootstrap-spec.md)
+- [Phase 4 Tooling Slice](implementation/phase4-tooling-slice.md)

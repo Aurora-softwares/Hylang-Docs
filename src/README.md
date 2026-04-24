@@ -7,10 +7,11 @@ It features a full compiler pipeline — lexer, parser, AST, binder, type checke
 ## Current status
 
 - Phase 2 is complete.
-- Phase 3 is active.
-- The current bootstrap can interpret and compile multi-file console applications and can also build static libraries through `hyc build --target lib`.
-- `hyrun` and `hyc build` share the same semantic pipeline, so the interpreted and compiled paths stay aligned at the language-semantics level.
-- The compiler now supports a compiler-flavored proof project (`mini_frontend_model`) and a runtime-heavy proof project (`managed_collections`).
+- Phase 3 runtime foundations are landed.
+- Phase 4 workflow and tooling work is active.
+- The current bootstrap can interpret and compile multi-file console applications, build static libraries, run workspaces through `hy`, and exercise a real build/test/fmt/check/package flow.
+- `hyrun`, `hyc build`, and `hy` share the same semantic pipeline, so interpreted and compiled behavior stays aligned at the language-semantics level.
+- The compiler now supports proof projects including `mini_frontend_model`, `managed_collections`, and the workflow showcase `hexlab`.
 
 ## What Hylang looks like
 
@@ -29,6 +30,7 @@ namespace Greeter {
 
 | Tool        | Purpose                                                           |
 |-------------|-------------------------------------------------------------------|
+| `hy`        | Primary workflow CLI for scaffolding, building, running, testing, formatting, checking, and packaging |
 | `hyrun`     | Run `.hy` scripts and `.hyproj` projects directly                 |
 | `hyc build` | Compile to a native executable or static library via a C backend  |
 
@@ -49,7 +51,10 @@ namespace Greeter {
 - String concatenation for `string`, `int`, and `bool` combinations
 - `System.Console.Write` / `WriteLine` (also accessible as `Console.*` with `using System;`)
 - `System.IO.File.Exists`, `ReadAllText`, `WriteAllText`
+- `System.IO.File.ReadAllBytes`, `WriteAllBytes`
 - Array and string `.Length`, array indexing, string character indexing
 - Minimal bootstrap `System.Collections.List<T>`
+- Safe bootstrap `System.Runtime.Buffer`
+- Bootstrap `System.Runtime.BinaryPrimitives` through 64-bit read/write helpers
 
-See the [Getting Started](getting-started/building.md) chapter to build and run the compiler, the [Runtime Model](runtime/runtime-model.md) page for Phase 3 behavior, and the [Roadmap](roadmap.md) page for the current phase breakdown.
+See the [Getting Started](getting-started/building.md) chapter to build and run the compiler, the [hy](tools/hy.md) page for the current workflow CLI, the [Runtime Model](runtime/runtime-model.md) page for Phase 3 behavior, and the [Roadmap](roadmap.md) page for the current phase breakdown.
