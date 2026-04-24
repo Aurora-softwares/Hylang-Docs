@@ -1,18 +1,22 @@
 # Unsafe Design
 
-Unsafe and manual-memory features are planned, but they are not executable in the current bootstrap.
+Unsafe and manual-memory features are executable in the current bootstrap at a deliberately narrow systems-programming boundary.
 
-## Planned Surface
+## Executable Surface
 
-The later unsafe phase is expected to introduce:
+The current bootstrap supports:
 
 - `unsafe { ... }`
 - pointer types `T*`
 - address-of `&expr`
 - dereference `*ptr`
 - pointer indexing `ptr[index]`
+- pointer arithmetic `ptr + n` and `ptr - n`
+- pointer difference returning `nint`
 - `stackalloc T[count]`
 - `System.Runtime.Memory` manual allocation APIs
+- `sizeof(T)`
+- explicit numeric and pointer casts
 
 ## Safety Boundary
 
@@ -20,47 +24,39 @@ Managed Hylang remains the default experience:
 
 - normal object allocation uses the managed runtime
 - strings and arrays remain managed
-- `System.Runtime.Buffer` is the current safe byte-storage abstraction
-- future unsafe features should only be needed for low-level runtime, OS, or interop scenarios
+- `System.Runtime.Buffer` is the safe byte-storage abstraction
+- unsafe features should only be needed for low-level runtime, OS, or interop scenarios
 
-Unsafe code is intended to stay:
+Unsafe code stays:
 
 - explicit
 - locally auditable
 - opt-in at the block or API boundary
 
-## Planned Rules
+## Rules
 
-When unsafe support lands, the intended rules are:
-
-- pointer creation and dereference require `unsafe`
+- pointer creation, dereference, indexing, arithmetic, and `DangerousData()` require `unsafe`
 - unsafe operations do not silently leak into surrounding safe code
 - `stackalloc` memory is scoped to the current stack lifetime
 - manual allocation APIs are explicit and never implied by normal object creation
 - low-level memory APIs live in `System.Runtime.Memory`
+- address-of is rejected for managed objects, strings, managed arrays, and managed object fields
+- non-zero integer-to-pointer casts are intentionally rejected in the bootstrap runtime
 
 ## Current Status
 
-These forms are design-only today:
+These forms execute in both `hyrun` and compiled output through checked runtime helpers. Invalid frees, double frees, use-after-free, and out-of-range pointer access report runtime failures.
 
-- the parser does not execute them
-- the binder does not type-check them
-- the interpreter does not run them
-- the compiled backend does not emit them
+## Bootstrap Boundaries
 
-The current bootstrap does expose `Buffer.DangerousData()`, but it intentionally fails at runtime until the executable unsafe surface exists.
+The current compiler/runtime still keeps these boundaries:
 
-## Not Yet Implemented
-
-The current compiler does not implement:
-
-- pointer parsing or binding
-- pointer arithmetic
-- stack allocation codegen
-- manual heap allocation/free APIs
-- raw unmanaged allocation tables shared across both modes
 - ABI/layout controls for low-level interop
+- managed-object pinning
+- `void*`
+- floating-point numerics
+- broader unmanaged-struct pointer materialization beyond the current primitive, enum, and `bool` element paths
 
 ## Goal
 
-Hylang remains managed-by-default. Unsafe features are intended for later low-level runtime, OS, and interop work, and they should stay explicit and locally auditable when they land.
+Hylang remains managed-by-default. Unsafe features exist for low-level runtime, OS, and interop work, and they stay explicit and locally auditable.

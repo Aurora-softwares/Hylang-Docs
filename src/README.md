@@ -8,10 +8,10 @@ It features a full compiler pipeline — lexer, parser, AST, binder, type checke
 
 - Phase 2 is complete.
 - Phase 3 runtime foundations are landed.
-- Phase 4 workflow and tooling work is active.
-- The current bootstrap can interpret and compile multi-file console applications, build static libraries, run workspaces through `hy`, and exercise a real build/test/fmt/check/package flow.
+- Phase 4 workflow and tooling work is complete at local-first bootstrap scope.
+- The current bootstrap can interpret and compile multi-file console applications, build static libraries, run workspaces through `hy`, use a local filesystem package registry, and exercise a real build/test/fmt/check/package/LSP flow.
 - `hyrun`, `hyc build`, and `hy` share the same semantic pipeline, so interpreted and compiled behavior stays aligned at the language-semantics level.
-- The compiler now supports proof projects including `mini_frontend_model`, `managed_collections`, and the workflow showcase `hexlab`.
+- The compiler now supports proof projects including `mini_frontend_model`, `managed_collections`, the systems showcase `hexlab`, and the SDK tooling proof `sdk_demo`.
 
 ## What Hylang looks like
 
@@ -55,6 +55,7 @@ namespace Greeter {
 - Array and string `.Length`, array indexing, string character indexing
 - Minimal bootstrap `System.Collections.List<T>`
 - Safe bootstrap `System.Runtime.Buffer`
+- Executable `unsafe`, pointers, `stackalloc`, `sizeof`, and `System.Runtime.Memory`
 - Bootstrap `System.Runtime.BinaryPrimitives` through 64-bit read/write helpers
 
 See the [Getting Started](getting-started/building.md) chapter to build and run the compiler, the [hy](tools/hy.md) page for the current workflow CLI, the [Runtime Model](runtime/runtime-model.md) page for Phase 3 behavior, and the [Roadmap](roadmap.md) page for the current phase breakdown.

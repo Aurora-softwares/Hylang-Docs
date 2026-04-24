@@ -10,11 +10,13 @@ The current runtime surface includes:
 - general managed `T[]`
 - bootstrap `System.Collections.List<T>`
 - bootstrap `System.Runtime.Buffer`
+- bootstrap `System.Runtime.Memory`
 - bootstrap `System.Runtime.BinaryPrimitives`
 - compiled-runtime garbage collection
+- executable bootstrap `unsafe`
 - runtime stress controls
 
-Executable unsafe/manual-memory behavior is still deferred.
+Executable unsafe/manual-memory behavior now exists in both `hyrun` and compiled mode, with a few bootstrap caveats noted below.
 
 ## Strings
 
@@ -70,7 +72,28 @@ Current semantics:
 - slices share underlying storage
 - `Free()` invalidates the owning storage and all related views
 - later access after `Free()` is a runtime failure
-- `DangerousData()` exists for the future unsafe boundary, but intentionally fails today because executable unsafe support has not landed yet
+- `DangerousData()` requires `unsafe` and returns a `byte*`
+- the current bootstrap path bridges through checked raw memory rather than a fully native unmanaged backing store
+
+## Unsafe and Manual Memory
+
+The bootstrap runtime now supports:
+
+- `unsafe { ... }`
+- pointer types `T*`
+- address-of `&expr`
+- dereference `*ptr`
+- pointer indexing and arithmetic
+- `stackalloc T[count]`
+- `sizeof(T)`
+- `System.Runtime.Memory.Alloc/Free/Copy/Set/Compare`
+
+Current bootstrap boundaries:
+
+- the low-level surface is checked in both execution modes
+- non-zero integer-to-pointer casts remain intentionally rejected
+- pointer loads/stores are currently strongest for primitive, enum, and `bool` element types
+- the interpreter and compiled runtime now match the same visible behavior, while deeper internal unification remains follow-on work
 
 ## Binary Primitives
 
@@ -92,6 +115,7 @@ Compiled output currently uses:
 - managed array objects
 - class-specific trace helpers
 - precise emitted root frames for live reference-like values
+- checked raw-manual-memory helpers for the bootstrap unsafe/manual-memory surface
 
 Current collector properties:
 
@@ -101,6 +125,8 @@ Current collector properties:
 - no finalizers
 - no compaction
 - no weak references
+
+Compiled runtime failures now report Hylang file/line/column context for the currently executing statement instead of only raw generated-runtime messages.
 
 ## Stress Controls
 

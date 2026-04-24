@@ -17,8 +17,8 @@ Hylang is developed in phases, moving from a bootstrap compiler through self-hos
 | 0     | Bootstrap Foundation             | Complete    |
 | 1     | Language Hardening               | Complete    |
 | 2     | Core Language Expansion          | Complete    |
-| 3     | Runtime and Memory Model         | In progress |
-| 4     | Tooling and Developer Workflow   | In progress |
+| 3     | Runtime and Memory Model         | Complete    |
+| 4     | Tooling and Developer Workflow   | Complete    |
 | 5     | Self-Hosting Preparation         | Not started |
 | 6     | Self-Hosted Compiler             | Not started |
 | 7     | Full Standard Library            | Not started |
@@ -57,23 +57,25 @@ Phase 2 finished the core object model and type-system expansion:
 - Stronger name resolution and generic arity handling
 - `mini_frontend_model` as the proof project
 
-## Phase 3 — Runtime and Memory Model (current)
+## Phase 3 — Runtime and Memory Model (complete at bootstrap scope)
 
-Phase 3 is currently focused on runtime foundations:
+Phase 3 delivered the bootstrap runtime foundation and executable low-level surface:
 
 - Managed UTF-8 strings
 - General managed `T[]`
 - `new T[count]`
 - Bootstrap `System.Collections.List<T>`
 - Safe bootstrap `System.Runtime.Buffer`
+- Bootstrap `System.Runtime.Memory`
 - Bootstrap `System.Runtime.BinaryPrimitives` through 64-bit helpers
 - In-tree non-moving mark-sweep GC for compiled output
+- Executable `unsafe`, pointers, `stackalloc`, and `sizeof`
 - GC stress controls (`HYLANG_GC_STRESS`, `HYLANG_GC_THRESHOLD`)
 - Runtime/unsafe spec notes
 
-The current remaining work in this phase is around deeper low-level runtime primitives and the later executable unsafe/manual-memory surface.
+The main remaining cleanup around this area is bootstrap polish rather than missing core surface: tighter interpreter/compiled low-level unification, broader unmanaged-struct pointer materialization, and a more native unmanaged backing story for `Buffer.DangerousData()`.
 
-## Phase 4 — Tooling and Developer Workflow (current)
+## Phase 4 — Tooling and Developer Workflow (complete at local-first bootstrap scope)
 
 Phase 4 now has a real delivered slice:
 
@@ -82,10 +84,13 @@ Phase 4 now has a real delivered slice:
 - `hy new`, `hy build`, `hy run`, `hy test`, `hy fmt`, `hy check`, `hy package`
 - build caching and `.hymap.json` debug metadata
 - bootstrap lint warnings via `hy check --json`
-- light VS Code assets
-- `hexlab` as the workflow showcase
+- local filesystem package registry publish/search/install
+- lightweight `hy lsp` diagnostics, document symbols, hover, and formatting
+- VS Code assets
+- `hexlab` as the systems/runtime showcase
+- `sdk_demo` as the package/tooling proof workspace
 
-The main remaining Phase 4 work is broader static analysis, stronger compiled runtime failure mapping, and the executable unsafe/manual-memory systems surface that still overlaps with the Phase 3 follow-on work.
+Deferred beyond Phase 4 are hosted registry services, authentication/signing, semver range solving, and full semantic IDE features such as completion, go-to-definition, references, rename, semantic tokens, and workspace indexing.
 
 ## Phase 5–6 — Self-Hosting
 

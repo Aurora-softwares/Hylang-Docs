@@ -1,6 +1,6 @@
 # Phase 4 Tooling Slice
 
-This page records the current Phase 4 workflow surface implemented by the bootstrap compiler. It is intentionally narrower than the original long-range Phase 4 plan: it captures what exists today, plus the deliberate exclusions that still remain open.
+This page records the Phase 4 workflow surface implemented by the bootstrap compiler. It is local-first rather than hosted-service-oriented, but it is complete at bootstrap scope.
 
 ## Summary
 
@@ -13,10 +13,12 @@ The shipped Phase 4 slice focuses on developer workflow:
 - incremental build caching
 - simple debug/source-map metadata
 - warning-bearing `hy check --json` diagnostics
-- light VS Code assets in-repo
-- a pure-Hylang showcase workspace: `hexlab`
+- local filesystem package registries
+- lightweight `hy lsp` support
+- VS Code assets in-repo
+- pure-Hylang showcase workspaces: `hexlab` and `sdk_demo`
 
-The raw-memory systems surface is not complete yet. A safe bootstrap `Buffer` is shipped, but executable `unsafe`, pointers, `stackalloc`, `sizeof`, and `System.Runtime.Memory` are still deferred follow-on work.
+The raw-memory systems surface from Phase 3 is executable at bootstrap scope: `unsafe`, pointers, `stackalloc`, `sizeof`, `System.Runtime.Memory`, and `Buffer.DangerousData()` run in both interpreter and compiled mode.
 
 ## CLI
 
@@ -32,6 +34,11 @@ Supported commands:
 - `hy check <target> [--json]`
 - `hy package pack <target> [-o output]`
 - `hy package add <target> <path>`
+- `hy package init-registry <path>`
+- `hy package publish <project.hyproj> --registry <path>`
+- `hy package search <query> --registry <path>`
+- `hy package install <target.hyproj> <package-id> [--version <version>] --registry <path>`
+- `hy lsp`
 
 Compatibility shims remain available:
 
@@ -66,7 +73,8 @@ Current manifest rules:
 - workspace manifests use `type = "workspace"` and `members = [...]`
 - test projects use `type = "test"`
 - v1 manifests still load for compatibility
-- dependencies without `path` are parsed, but fail with a clear registry-not-implemented diagnostic
+- local path dependencies are resolved directly
+- registry dependencies are resolved only from an explicitly supplied local filesystem registry
 - `hy fmt` canonicalizes v2 manifests only
 
 ## Build and Test Workflow
@@ -90,7 +98,11 @@ Current warning categories:
 - unused parameter
 - unreachable statement after terminating control flow
 - local shadowing another local or parameter
+- empty or unnecessary `unsafe` block
 - statically provable `Buffer` use-after-free
+- unused private field
+- unused private method
+- duplicate dependency entries
 - invalid manifest/package metadata
 
 ## Bootstrap Standard Library Additions Used By Phase 4
@@ -109,8 +121,13 @@ The workflow and showcase slice currently depends on these additional runtime pi
   - `Slice`
   - `Fill`
   - `ToArray`
-  - `DangerousData` currently fails intentionally because executable unsafe support is not shipped yet
+  - `DangerousData`
   - `Free`
+- `System.Runtime.Memory.Alloc`
+- `System.Runtime.Memory.Free`
+- `System.Runtime.Memory.Copy`
+- `System.Runtime.Memory.Set`
+- `System.Runtime.Memory.Compare`
 - `System.Testing.Assert.True`
 - `System.Testing.Assert.False`
 - `System.Testing.Assert.Equal`
@@ -151,6 +168,7 @@ Implemented showcase behavior:
 - byte-pattern search from hex strings
 - byte slicing and write-back
 - Buffer-backed core byte handling
+- explicit unsafe search fast path through `Buffer.DangerousData()`
 - package/build/test/fmt/check flow through the `hy` CLI
 
 Golden coverage currently exercises:
@@ -161,15 +179,31 @@ Golden coverage currently exercises:
 - `search`
 - `slice`
 
+## Showcase: SDK Demo
+
+`sdk_demo` is the Phase 4 tooling ecosystem proof workspace.
+
+Workspace members:
+
+- `SdkDemo.Core`
+- `SdkDemo.Cli`
+- `SdkDemo.Tests`
+- `SdkDemo.Consumer`
+
+It proves:
+
+- workspace build and test
+- format and check workflows
+- package publishing into a local registry
+- package search
+- package install into a consumer project
+- running the consumer through the installed registry dependency
+
 ## Deliberate Exclusions
 
-The following Phase 4 goals are still open:
+The following remain beyond Phase 4:
 
-- a broader lint/static-analysis pass beyond the current bootstrap warning set
-- semantic editor tooling beyond the current light VS Code assets
-- mapped compiled runtime failures that translate every generated-C failure back to Hylang source
-- executable `unsafe`
-- pointer types and pointer arithmetic
-- `stackalloc`
-- `sizeof`
-- `System.Runtime.Memory`
+- hosted registry service, authentication, signing, and remote downloads
+- semver range solving
+- full semantic IDE features such as completion, go-to-definition, references, rename, semantic tokens, and workspace indexing
+- debugger integration beyond source-mapped runtime failures

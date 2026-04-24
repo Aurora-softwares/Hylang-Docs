@@ -20,6 +20,11 @@ hy <command> [arguments...]
 - `hy check <target> [--json]`
 - `hy package pack <target> [-o output]`
 - `hy package add <target> <path>`
+- `hy package init-registry <path>`
+- `hy package publish <project.hyproj> --registry <path>`
+- `hy package search <query> --registry <path>`
+- `hy package install <target.hyproj> <package-id> [--version <version>] --registry <path>`
+- `hy lsp`
 
 ## Examples
 
@@ -39,12 +44,19 @@ build/hy check samples/hexlab/HexLab.Cli/HexLab.Cli.hyproj --json
 
 # Format a workspace
 build/hy fmt samples/hexlab --check
+
+# Publish and consume a local package
+build/hy package init-registry build/local-registry
+build/hy package publish samples/sdk_demo/SdkDemo.Core/SdkDemo.Core.hyproj --registry build/local-registry
+build/hy package search SdkDemo --registry build/local-registry
 ```
 
 ## Notes
 
-- `hy` is the documented/default CLI for the current Phase 4 tooling slice
+- `hy` is the documented/default CLI for the completed Phase 4 local tooling slice
 - `hyrun` and `hyc build` still exist as compatibility shims
 - `hy build --debug` emits a `.hymap.json` file next to the generated artifact
+- compiled runtime failures now report Hylang file/line/column context, and debug builds keep the matching `.hymap.json` artifact metadata
 - `hy check --json` emits diagnostics with severity, file, line, column, and message fields
-- current workspace/package support is local-first; registry-backed dependencies are still planned work
+- workspace/package support is local-first, including filesystem-backed registries
+- `hy lsp` provides lightweight diagnostics, document symbols, hover, and formatting over stdio
