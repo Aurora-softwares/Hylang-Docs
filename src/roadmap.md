@@ -12,20 +12,20 @@ Hylang is developed in phases, moving from a bootstrap compiler through self-hos
 
 ## Phase overview
 
-| Phase | Name                           | Status      |
-|-------|--------------------------------|-------------|
-| 0     | Bootstrap Foundation           | Complete    |
-| 1     | Language Hardening             | Complete    |
-| 2     | Core Language Expansion        | Complete    |
-| 3     | Runtime and Memory Model       | In progress |
-| 4     | Tooling and Developer Workflow | Not started |
-| 5     | Self-Hosting Preparation       | Not started |
-| 6     | Self-Hosted Compiler           | Not started |
-| 7     | Full Standard Library          | Not started |
-| 8     | Backend Evolution              | Not started |
-| 9     | Hylang for Australis OS Userland    | Not started |
-| 10    | Hylang for System Software     | Not started |
-| 11    | Full OS and Ecosystem Vision   | Long-term   |
+| Phase | Name                             | Status      |
+|-------|----------------------------------|-------------|
+| 0     | Bootstrap Foundation             | Complete    |
+| 1     | Language Hardening               | Complete    |
+| 2     | Core Language Expansion          | Complete    |
+| 3     | Runtime and Memory Model         | In progress |
+| 4     | Tooling and Developer Workflow   | Not started |
+| 5     | Self-Hosting Preparation         | Not started |
+| 6     | Self-Hosted Compiler             | Not started |
+| 7     | Full Standard Library            | Not started |
+| 8     | Backend Evolution                | Not started |
+| 9     | Hylang for Australis OS Userland | Not started |
+| 10    | Hylang for System Software       | Not started |
+| 11    | Full OS and Ecosystem Vision     | Long-term   |
 
 ## Phase 0 — Bootstrap Foundation (complete)
 
