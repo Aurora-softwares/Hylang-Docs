@@ -37,3 +37,14 @@ build/hyc build Math.hyproj --target lib -o build/libmath.a
 3. The host C compiler (`cc`) is invoked to produce the final binary.
 
 The C backend is the primary output path for the current bootstrap. A native x64 backend is planned for a later phase.
+
+## Runtime notes
+
+- Compiled output uses the current bootstrap managed runtime.
+- Managed strings and general `T[]` arrays are supported.
+- Runtime stress/debug controls:
+
+```bash
+HYLANG_GC_STRESS=1 ./build/myapp
+HYLANG_GC_THRESHOLD=128 ./build/myapp
+```

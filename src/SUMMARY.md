@@ -14,10 +14,13 @@
 
 - [Program Structure](language/structure.md)
 - [Types](language/types.md)
+- [Arrays and Collections](language/arrays-and-collections.md)
 - [Operators](language/operators.md)
 - [Control Flow](language/control-flow.md)
 - [Enums](language/enums.md)
-- [Inheritance](language/inheritance.md)
+- [Inheritance and Dispatch](language/inheritance.md)
+- [Interfaces and Structs](language/interfaces-and-structs.md)
+- [Generics](language/generics.md)
 - [Overloading](language/overloading.md)
 - [Access Modifiers](language/access-modifiers.md)
 
@@ -25,6 +28,11 @@
 
 - [hyrun](tools/hyrun.md)
 - [hyc](tools/hyc.md)
+
+# Runtime
+
+- [Runtime Model](runtime/runtime-model.md)
+- [Unsafe Design](runtime/unsafe-design.md)
 
 ---
 

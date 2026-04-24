@@ -6,17 +6,20 @@
 |----------|----------------------------------------------------|
 | `int`    | 64-bit signed integer                              |
 | `bool`   | Boolean (`true` / `false`)                         |
-| `string` | Managed UTF-8 string                               |
+| `string` | Managed immutable UTF-8 byte string                |
 | `null`   | The null literal; assignable to any reference type |
 
 ## Arrays
 
-`string[]` is the only array type in the current bootstrap. Arrays have a `.Length` property.
+Any non-`void` element type can form an array: `T[]`.
+
+Arrays are created with `new T[count]` and have a `.Length` property.
 
 ```hylang
-string[] args;
-int len = args.Length;
-string first = args[0];
+int[] values = new int[4];
+string[] names = new string[2];
+int len = values.Length;
+values[0] = 42;
 ```
 
 ## String operations
@@ -34,7 +37,7 @@ String length:
 int n = someString.Length;
 ```
 
-String indexing:
+String indexing is byte-based in the current bootstrap:
 
 ```hylang
 string ch = someString[0];   // single-character string
@@ -46,11 +49,30 @@ string ch = someString[0];   // single-character string
 
 ## User-defined types
 
-Classes and enums are the currently supported user-defined types. Structs, interfaces, and generics are planned for later phases.
+Hylang currently supports:
 
-Class values are reference types, so `null` is valid and derived classes can be used anywhere a base class is expected:
+- classes
+- structs
+- interfaces
+- enums
+- generic classes, interfaces, and methods
+
+Class and interface values are reference types, so `null` is valid and derived classes can be used anywhere a base class is expected:
 
 ```hylang
 Animal value = new Dog();
 Animal maybe = null;
+```
+
+Structs use bootstrap by-value semantics:
+
+```hylang
+Point p = new Point(2, 3);
+Point copy = p;
+```
+
+`var` is also supported for local variables when an initializer is present:
+
+```hylang
+var box = new Box<int>(42);
 ```

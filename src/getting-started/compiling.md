@@ -16,6 +16,13 @@ build/hyc build tests/projects/app/App.hyproj -o build/demo_app
 ./build/demo_app
 ```
 
+## Compile the runtime proof project
+
+```bash
+build/hyc build samples/managed_collections/ManagedCollections.hyproj -o build/managed_collections
+./build/managed_collections
+```
+
 ## Build a static library
 
 ```bash
@@ -25,4 +32,5 @@ build/hyc build tests/projects/mathlib/Math.hyproj --target lib -o build/libmath
 ## Notes
 
 - The C backend emits a single C translation unit that is compiled and linked by the host C compiler.
-- Allocations made during a run are released at process shutdown; a proper GC integration is planned for a later phase.
+- Compiled output now uses an in-tree non-moving mark-sweep GC with managed strings and arrays.
+- `HYLANG_GC_STRESS=1` forces collection at runtime safe points, and `HYLANG_GC_THRESHOLD=<bytes>` lowers or raises the compiled-runtime collection threshold.

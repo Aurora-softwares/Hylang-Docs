@@ -1,6 +1,6 @@
-# Inheritance
+# Inheritance and Dispatch
 
-Hylang currently supports basic single inheritance. This is the first Phase 2 object-model milestone and is designed to make medium-sized programs and compiler-style models easier to express.
+Hylang supports single inheritance, explicit base-constructor chaining, `base.Member`, and non-static virtual dispatch.
 
 ## Declaring a derived class
 
@@ -28,7 +28,7 @@ namespace Demo {
 }
 ```
 
-Only one base class is allowed.
+Only one base class is allowed, but a class may also implement interfaces.
 
 ## Inherited members
 
@@ -74,14 +74,58 @@ This also applies during overload resolution. Exact matches are preferred, and d
 
 ## Constructor behavior
 
-Constructors are not inherited. In the current milestone, object creation implicitly runs the parameterless constructor chain from base to derived.
+Constructors are not inherited. Hylang supports both implicit parameterless chaining and explicit `: base(...)` chaining.
 
-That means a derived class must have an accessible parameterless base constructor available, either declared explicitly or provided implicitly by the base class.
+```hylang
+public class Base {
+    protected int value;
+
+    public Base(int seed) {
+        value = seed;
+    }
+}
+
+public class Derived : Base {
+    public Derived(int seed) : base(seed) {
+    }
+}
+```
+
+## `base.Member`
+
+`base.Member` is valid inside instance methods and constructors and binds to the base implementation directly:
+
+```hylang
+public class Derived : Base {
+    public override int Read() {
+        return base.Read() + 1;
+    }
+}
+```
+
+## `virtual` and `override`
+
+Non-static instance methods may be marked `virtual`, and derived replacements must use `override`:
+
+```hylang
+public class Base {
+    public virtual int Read() {
+        return 10;
+    }
+}
+
+public class Derived : Base {
+    public override int Read() {
+        return base.Read() + 5;
+    }
+}
+```
+
+Calls through a base-typed reference use virtual dispatch.
 
 ## Current limitations
 
 - Single inheritance only
-- No explicit `base(...)` constructor chaining syntax yet
-- No `base.Member`
-- No `virtual` / `override`
-- No interfaces yet
+- No `abstract`, `sealed`, or member-hiding keyword yet
+- No multiple base classes
+- Interface members are method signatures only

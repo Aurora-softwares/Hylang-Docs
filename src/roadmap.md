@@ -16,8 +16,8 @@ Hylang is developed in phases, moving from a bootstrap compiler through self-hos
 |-------|--------------------------------|-------------|
 | 0     | Bootstrap Foundation           | Complete    |
 | 1     | Language Hardening             | Complete    |
-| 2     | Core Language Expansion        | In progress |
-| 3     | Runtime and Memory Model       | Not started |
+| 2     | Core Language Expansion        | Complete    |
+| 3     | Runtime and Memory Model       | In progress |
 | 4     | Tooling and Developer Workflow | Not started |
 | 5     | Self-Hosting Preparation       | Not started |
 | 6     | Self-Hosted Compiler           | Not started |
@@ -43,21 +43,33 @@ Delivered a reliable language subset, comprehensive tests, and a medium-sized sa
 - `token_dump` sample — 431 lines across 4 files
 - Regression suite covering both interpreter and compiled output
 
-## Phase 2 — Core Language Expansion (current)
+## Phase 2 — Core Language Expansion (complete)
 
-Phase 2 is underway. Milestone 1 is complete:
+Phase 2 finished the core object model and type-system expansion:
 
 - Single inheritance with `class Derived : Base`
-- Inherited field and method lookup
-- `protected` access from subclasses
-- Derived-to-base assignability across locals, fields, parameters, returns, equality checks, and overload resolution
-- Implicit parameterless base-constructor chaining in both `hyrun` and compiled output
+- `base(...)` constructor chaining and `base.Member`
+- `virtual` / `override`
+- Interfaces and interface inheritance
+- Structs with bootstrap by-value semantics
+- Generic classes, interfaces, and methods
+- `var` local inference
+- Stronger name resolution and generic arity handling
+- `mini_frontend_model` as the proof project
 
-Phase 2 is not fully complete yet. Next up are `base(...)` semantics, `base.Member`, `virtual` / `override`, interfaces, generics, and stronger namespace/import resolution.
+## Phase 3 — Runtime and Memory Model (current)
 
-## Phase 3 — Runtime and Memory Model
+Phase 3 is currently focused on runtime foundations:
 
-Replace the bootstrap allocation strategy with a real GC-backed runtime. Define `unsafe` blocks, pointer support, stack allocation, and manual allocation APIs.
+- Managed UTF-8 strings
+- General managed `T[]`
+- `new T[count]`
+- Bootstrap `System.Collections.List<T>`
+- In-tree non-moving mark-sweep GC for compiled output
+- GC stress controls (`HYLANG_GC_STRESS`, `HYLANG_GC_THRESHOLD`)
+- Runtime/unsafe spec notes
+
+The current remaining work in this phase is around deeper low-level runtime primitives and the later executable unsafe/manual-memory surface.
 
 ## Phase 4 — Tooling and Developer Workflow
 

@@ -25,3 +25,4 @@ build/hyrun greet.hy World
 
 - Arguments after the file path are accessible in `string[] args` inside `Main`.
 - `hyrun` and `hyc` share the same semantic pipeline, so behavior should be consistent between interpreted and compiled output.
+- `hyrun` can run both single-file scripts and multi-file `.hyproj` proof/sample projects.

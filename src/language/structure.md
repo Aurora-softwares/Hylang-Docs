@@ -1,6 +1,6 @@
 # Program Structure
 
-A Hylang program is organized into namespaces and classes. Every executable entry point is a `public static void Main` method, with or without the `string[] args` parameter.
+A Hylang program is organized into namespaces and types. Executable entry points are class-based `Main` methods.
 
 ## Using directives
 
@@ -19,9 +19,9 @@ namespace MyApp {
 }
 ```
 
-Namespaces group related classes together. The current parser uses block-style namespace declarations.
+Namespaces group related classes, structs, interfaces, and enums together. The current parser uses block-style namespace declarations.
 
-## Classes
+## Classes, structs, interfaces, and enums
 
 ```hylang
 class Calculator {
@@ -43,26 +43,64 @@ Classes may contain:
 - Constructors
 - Methods (instance and static)
 
-Hylang also supports basic single inheritance:
+Structs may also declare fields, constructors, and methods:
+
+```hylang
+public struct Point {
+    private int x;
+    private int y;
+
+    public Point(int px, int py) {
+        x = px;
+        y = py;
+    }
+}
+```
+
+Interfaces declare public instance method signatures:
+
+```hylang
+public interface IPrintable {
+    string Text();
+}
+```
+
+Enums are namespace-scope named constants:
+
+```hylang
+public enum Color {
+    Red,
+    Green,
+    Blue
+}
+```
+
+Hylang supports single inheritance plus interfaces:
 
 ```hylang
 class CalculatorBase {
     protected int value;
 }
 
-class AdvancedCalculator : CalculatorBase {
-    public AdvancedCalculator(int initial) {
+interface IReadable {
+    int Read();
+}
+
+class AdvancedCalculator : CalculatorBase, IReadable {
+    public AdvancedCalculator(int initial) : base() {
         value = initial;
+    }
+
+    public int Read() {
+        return value;
     }
 }
 ```
 
-Current inheritance support is intentionally narrow:
-
 - One base class only
-- No `base(...)` constructor chaining syntax yet
-- No `base.Member`
-- No `virtual` / `override`
+- Multiple interfaces are allowed
+- `base(...)`, `base.Member`, `virtual`, and `override` are supported
+- `abstract`, `sealed`, and member-hiding keywords are still deferred
 
 ## Entry point
 
@@ -75,6 +113,13 @@ namespace MyApp {
     }
 }
 ```
+
+The bootstrap currently accepts:
+
+- `public static void Main()`
+- `public static void Main(string[] args)`
+- `public static int Main()`
+- `public static int Main(string[] args)`
 
 ## Multi-file projects
 
