@@ -19,7 +19,7 @@ Hylang is developed in phases, moving from a bootstrap compiler through self-hos
 | 2     | Core Language Expansion          | Complete    |
 | 3     | Runtime and Memory Model         | Complete    |
 | 4     | Tooling and Developer Workflow   | Complete    |
-| 5     | Self-Hosting Preparation         | Not started |
+| 5     | Self-Hosting Preparation         | Complete    |
 | 6     | Self-Hosted Compiler             | Not started |
 | 7     | Full Standard Library            | Not started |
 | 8     | Backend Evolution                | Not started |
@@ -92,9 +92,22 @@ Phase 4 now has a real delivered slice:
 
 Deferred beyond Phase 4 are hosted registry services, authentication/signing, semver range solving, and full semantic IDE features such as completion, go-to-definition, references, rename, semantic tokens, and workspace indexing.
 
-## Phase 5–6 — Self-Hosting
+## Phase 5 — Self-Hosting Preparation (complete at prototype scope)
 
-Prepare the compiler for incremental reimplementation in Hylang, then reach self-compilation and validate output against the bootstrap.
+Phase 5 delivered the first reusable Hydrogen compiler libraries:
+
+- `Hydrogen.Compiler.Core` for text and diagnostics
+- `Hydrogen.Compiler.Syntax` for tokens, syntax kinds, lexer, parser, and syntax trees
+- `Hydrogen.Compiler.Cli` with `tokens <file>` and `parse <file>`
+- `Hydrogen.Compiler.Tests`
+- golden token and parse fixtures
+- bootstrap compiler architecture notes and a clear Phase 6 boundary
+
+This prototype is syntax-only. It does not bind, type-check, lower IR, emit code, or replace the C++ bootstrap compiler.
+
+## Phase 6 — Self-Hosted Compiler
+
+Phase 6 begins the real self-hosted compiler effort: binding, typed IR, backend integration, validation against the bootstrap compiler, and eventually self-compilation.
 
 ## Phase 7 — Full Standard Library
 
@@ -114,3 +127,4 @@ See also:
 
 - [Phase 2 Bootstrap Spec](implementation/phase2-bootstrap-spec.md)
 - [Phase 4 Tooling Slice](implementation/phase4-tooling-slice.md)
+- [Phase 5 Self-Hosting Preparation](implementation/phase5-self-hosting-prep.md)

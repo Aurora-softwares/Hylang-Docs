@@ -51,6 +51,7 @@ const sidebars = {
       items: [
         'implementation/phase2-bootstrap-spec',
         'implementation/phase4-tooling-slice',
+        'implementation/phase5-self-hosting-prep',
       ],
     },
     'roadmap',
