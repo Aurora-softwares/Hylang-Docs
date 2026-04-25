@@ -33,11 +33,11 @@ namespace Greeter {
 
 ## Key tools
 
-| Tool        | Purpose                                                           |
-|-------------|-------------------------------------------------------------------|
+| Tool        | Purpose                                                                                               |
+|-------------|-------------------------------------------------------------------------------------------------------|
 | `hy`        | Primary workflow CLI for scaffolding, building, running, testing, formatting, checking, and packaging |
-| `hyrun`     | Run `.hy` scripts and `.hyproj` projects directly                 |
-| `hyc build` | Compile to a native executable or static library via a C backend  |
+| `hyrun`     | Run `.hy` scripts and `.hyproj` projects directly                                                     |
+| `hyc build` | Compile to a native executable or static library via a C backend                                      |
 
 ## Current language subset
 
