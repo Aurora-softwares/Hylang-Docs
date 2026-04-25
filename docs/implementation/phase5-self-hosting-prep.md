@@ -1,6 +1,6 @@
 # Phase 5 Self-Hosting Preparation
 
-Phase 5 prepares Hydrogen to write its own compiler incrementally. It does not replace the C++ bootstrap compiler yet.
+Phase 5 prepared Hydrogen to write its own compiler incrementally. It did not replace the C++ bootstrap compiler.
 
 ## Delivered Prototype
 
@@ -26,7 +26,7 @@ The trusted C++ compiler still owns the real pipeline:
 - C backend emission
 - runtime support
 
-The Hydrogen frontend mirrors the lexer/parser side first because it is the safest path into self-hosting. Phase 6 starts when these libraries become the foundation for binding, typed IR, backend integration, and eventually self-compilation.
+The Hydrogen frontend mirrored the lexer/parser side first because it was the safest path into self-hosting. Phase 6 now uses these libraries as the foundation for binding, typed IR, native backend integration, and eventually self-compilation.
 
 ## Proof Commands
 

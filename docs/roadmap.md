@@ -107,7 +107,9 @@ This prototype is syntax-only. It does not bind, type-check, lower IR, emit code
 
 ## Phase 6 — Self-Hosted Compiler
 
-Phase 6 begins the real self-hosted compiler effort: binding, typed IR, backend integration, validation against the bootstrap compiler, and eventually self-compilation.
+Phase 6 has started the real self-hosted compiler effort. The current foundation adds Hydrogen-owned binding, typed IR, runtime-contract, and Linux x64 codegen projects under `samples/self_hosting`, plus a direct ELF proof path that emits a tiny `System.Console.WriteLine("...")` executable without C emission, an assembler, or a linker.
+
+Remaining Phase 6 work includes broad semantic binding, the managed runtime clone, native backend expansion for compiler-shaped programs, stage1/stage2 builds, and boringly repeatable stage comparison before promotion.
 
 ## Phase 7 — Full Standard Library
 
