@@ -1,3 +1,7 @@
+---
+slug: /
+---
+
 # Hylang
 
 Hylang is a C#-inspired programming language aimed at [Australis OS](https://aurora-softwares.github.io/Australis-Docs/) and general x64 systems.

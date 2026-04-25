@@ -1,0 +1,18 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hy-grad" x1="210" y1="170" x2="805" y2="855" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="hy-grad-soft" x1="300" y1="225" x2="725" y2="820" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67E8F9"/>
+      <stop offset="1" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+  <path d="M806 373A325 325 0 0 1 390 813" stroke="url(#hy-grad)" stroke-width="50" stroke-linecap="round"/>
+  <path d="M263 721A325 325 0 0 1 644 215" stroke="url(#hy-grad)" stroke-width="50" stroke-linecap="round"/>
+  <circle cx="741" cy="278" r="41" fill="url(#hy-grad)"/>
+  <path d="M392 332v306" stroke="url(#hy-grad-soft)" stroke-width="60" stroke-linecap="round"/>
+  <path d="M632 332v306" stroke="url(#hy-grad-soft)" stroke-width="60" stroke-linecap="round"/>
+  <path d="M392 485h240" stroke="url(#hy-grad-soft)" stroke-width="60" stroke-linecap="round"/>
+</svg>

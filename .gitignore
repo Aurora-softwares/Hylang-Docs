@@ -1,2 +1,5 @@
 .claude
 ler/.claude
+node_modules
+.docusaurus
+build
