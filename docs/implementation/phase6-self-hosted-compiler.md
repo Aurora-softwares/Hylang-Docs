@@ -10,9 +10,17 @@ The Phase 6 workspace lives at `samples/self_hosting` in the compiler repo. It n
 - `Hydrogen.Compiler.IR` for the first compiler IR object model.
 - `Hydrogen.Compiler.RuntimeModel` for the native runtime contract surface.
 - `Hydrogen.Compiler.CodeGen.X64` for direct Linux x64 ELF byte writing.
-- `Hydrogen.Compiler.Cli` with `tokens`, `parse`, `check`, `compile`, and a reserved `stage-compare` interface.
+- `Hydrogen.Compiler.Cli` with `tokens`, `parse`, `check`, `compile`, `build`, and a reserved `stage-compare` interface.
 
 The native backend is intentionally tiny today. It recognizes a `System.Console.WriteLine("...")` proof program, lowers it to a small IR object, and writes a Linux x64 ELF executable directly from Hydrogen code. It does not emit C and does not call a C compiler, assembler, or linker.
+
+## Status snapshot (Stage1)
+
+The Hydrogen-written compiler is still in “stage1 bootstrap” form:
+
+- `check` and `--emit-ir` are stable for single files, but the IR is still **entrypoint-only** (not full functions/basic blocks yet).
+- `compile`/`build` can emit a Linux x64 ELF only for the current tiny native subset (a direct `System.Console.WriteLine("...")`-style proof program).
+- The project-driver side (`build <project.hyproj> -o <elf>`) exists, but compiling the full compiler project closure into a runnable stage1 ELF is still blocked on remaining parser + binder completeness work.
 
 ## Commands
 

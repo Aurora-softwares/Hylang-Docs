@@ -44,6 +44,8 @@ bool either = a || b;
 bool flipped = !active;
 ```
 
+> Compatibility note: the bootstrap compiler (`hyrun`/`hyc`/`hy`) treats `&&` and `||` as normal logical operators, but the **Phase 6 self-hosting native proof path** is still evolving and may evaluate both sides eagerly in some cases. Avoid guard patterns that rely on short-circuiting when validating code through `samples/self_hosting/Hydrogen.Compiler.Cli` until Phase 6 IR/control-flow lowering is complete.
+
 ## Unary negation
 
 ```hylang
