@@ -1,6 +1,6 @@
 # Methods and objects
 
-Methods belong to classes. Both compiler routes support static methods, instance methods, constructors, instance fields, parameters, return values, and recursion.
+Methods belong to classes. The released compiler supports static methods, instance methods, constructors, instance fields, parameters, return values, and recursion.
 
 ## Complete example
 
@@ -33,7 +33,7 @@ Save as `counter.hy`, compile using the [native compilation guide](../getting-st
 
 ## Fields and constructors
 
-`new Counter(10)` allocates a managed reference object and invokes its constructor. Native Hydrogen supports field initializers, which run before the constructor body. The SDK parser does not accept field initializers; initialize fields in constructors for code shared between routes. A class with no declared constructor has a parameterless default constructor. Fields otherwise start with their default values: zero, false, or null.
+`new Counter(10)` allocates a managed reference object and invokes its constructor. Field initializers run before the constructor body. A class with no declared constructor has a parameterless default constructor. Fields otherwise start with their default values: zero, false, or null.
 
 Class assignment copies a reference. Two variables referring to the same instance see the same field changes. Private fields can be accessed from the declaring class; use methods to expose controlled operations.
 
@@ -60,6 +60,5 @@ public class Factorials {
 
 Each invocation has its own parameters and local frame. Direct and mutual recursion are supported. Recursive calls consume stack space.
 
-## SDK extensions
-
-[Overloads](overloading.md), [inheritance and virtual dispatch](inheritance.md), [interfaces and structs](interfaces-and-structs.md), generic methods, and static fields require the SDK. They are outside the native compiler's supported surface.
+The current release does not support overloads, inheritance, interfaces, structs,
+generic methods, or static fields.

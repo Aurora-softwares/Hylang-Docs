@@ -55,45 +55,21 @@ public class Program {
 }
 ```
 
-Build from the compiler root with `Demo` beneath it:
+Build with the release compiler:
 
 ```bash
-./build/self_hosting/hydrogen-stage1 build Demo/App/App.hyproj -o build/demo
-chmod +x build/demo
-./build/demo
+"$HYDROGEN" build Demo/App/App.hyproj -o Demo/app
+chmod +x Demo/app
+./Demo/app
 ```
 
 This prints `42`. The native compiler registers types across the complete source/reference closure before checking bodies. Imports remain local to each source file; qualifying a type with its namespace avoids ambiguous simple names. Referenced libraries contribute sources to the final executable rather than separately linked artifacts.
 
-## SDK workspaces
+## Current project boundary
 
-The SDK supports format-2 workspaces:
+The released compiler accepts format-2 executable projects and `project_references`
+only. It does not build workspaces, test projects, standalone library archives,
+packages, or dependency registries. Referenced `type = "lib"` projects are a
+source-organization feature: their source is compiled into the final executable.
 
-```toml
-format = 2
-name = "Demo"
-type = "workspace"
-members = ["App/App.hyproj", "Math/Math.hyproj", "Tests/Tests.hyproj"]
-```
-
-Use `type = "test"` for an executable test project. SDK commands:
-
-```bash
-./build/hy build Demo/Demo.hyproj
-./build/hy test Demo/Demo.hyproj
-./build/hy check Demo/Demo.hyproj --json
-./build/hy fmt Demo --check
-```
-
-`hy test` runs test projects; workspaces without explicit test projects fall back to member projects. A nonzero test exit signals failure. SDK build caching lives under `.hylang/cache/`.
-
-Additional SDK manifest fields include `version`, `[package]` metadata (`id`, `description`, `authors`, `license`), and `[dependencies]` local path entries. For example:
-
-```toml
-[dependencies]
-Shared = { path = "../Shared/Shared.hyproj" }
-```
-
-SDK package commands can publish/search/install from an explicitly supplied filesystem registry; there is no hosted registry or semver range solver. See [SDK commands](hy.md) and the `samples/sdk_demo` example in the compiler repository.
-
-The SDK also reads older manifests using `references`; write format-2 `project_references` for native-compatible projects. Native `build` accepts executable projects, not workspaces or standalone library builds, and does not implement SDK package resolution.
+Write `project_references`, rather than older `references` fields, in new projects.

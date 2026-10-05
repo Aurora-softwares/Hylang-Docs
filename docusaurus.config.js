@@ -6,7 +6,7 @@ const darkCodeTheme = require('prism-react-renderer').themes.dracula;
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Hylang',
-  tagline: 'A C#-inspired systems language for Australis OS and general x64 systems.',
+  tagline: 'A self-hosted systems language for Australis OS and its native applications.',
   favicon: 'img/hylang-mark.svg',
 
   url: 'https://aurora-softwares.github.io',
@@ -51,7 +51,7 @@ const config = {
       metadata: [
         {
           name: 'description',
-          content: 'Documentation for Hylang, a C#-inspired systems language.',
+          content: 'Documentation for Hydrogen, the self-hosted language for Australis OS and its native applications.',
         },
       ],
       navbar: {
@@ -73,6 +73,11 @@ const config = {
             position: 'right',
           },
           {
+            href: 'https://github.com/Aurora-Softwares/Hylang-Compiler/issues/new/choose',
+            label: 'Request a feature',
+            position: 'right',
+          },
+          {
             href: 'https://github.com/Aurora-Softwares/Hylang-Docs',
             label: 'GitHub',
             position: 'right',
@@ -87,7 +92,7 @@ const config = {
             items: [
               {
                 label: 'Getting Started',
-                to: '/getting-started/building',
+                to: '/getting-started/installing',
               },
               {
                 label: 'Language Guide',
@@ -109,6 +114,10 @@ const config = {
               {
                 label: 'Australis OS',
                 href: 'https://aurora-softwares.github.io/Australis-Docs/',
+              },
+              {
+                label: 'Request a feature',
+                href: 'https://github.com/Aurora-Softwares/Hylang-Compiler/issues/new/choose',
               },
             ],
           },

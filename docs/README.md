@@ -3,16 +3,18 @@ slug: /
 title: Hydrogen language guide
 ---
 
-# Hydrogen language guide
+# Hydrogen language guide · [Request a feature](https://github.com/Aurora-Softwares/Hylang-Compiler/issues/new/choose)
 
-Hydrogen, also called Hylang, is a C#-inspired language for programs built around namespaces, classes, and methods. It uses `.hy` sources and `.hyproj` manifests. Managed objects, strings, and arrays provide the application programming model; the SDK also exposes explicit low-level memory operations.
+Hydrogen, also called Hylang, is a self-hosted, C#-inspired language for programs built around namespaces, classes, and methods. It uses `.hy` sources and `.hyproj` manifests. The released compiler is written in Hydrogen and is the compiler used to build Hydrogen programs and the Australis OS proof of concept.
 
 ## Start here
 
-1. [Choose a compiler](getting-started/compiler-options.md): direct native Hydrogen compilation or the broader C++ SDK.
-2. [Build the tools](getting-started/building.md).
+1. [Install the released compiler](getting-started/installing.md).
+2. [Learn the current supported surface](getting-started/compiler-options.md).
 3. [Write and run your first program](getting-started/running.md).
-4. [Compile an executable](getting-started/compiling.md) or [organize a project](tools/projects.md).
+4. [Build with Hydrogen](getting-started/building.md), including executable projects and contributor rebuilds.
+5. [Compile an executable](getting-started/compiling.md) or [organize a project](tools/projects.md).
+6. [Make a bootable UEFI Hello World](getting-started/uefi-hello.md), the current firmware proof of concept.
 
 ```hylang
 public class Program {
@@ -23,7 +25,9 @@ public class Program {
 }
 ```
 
-The native compiler emits standalone Linux x86-64 ELF executables and compiles its own source/project closure. The SDK supplies an interpreter, a host C backend, additional language features, and development tools. Their supported surfaces differ; use the [compiler support table](getting-started/compiler-options.md) when choosing features.
+The release runs on Linux x86-64 and emits standalone Linux x86-64 ELF executables. Its `uefi-x64` target also emits a PE32+ EFI application, currently a deliberately small firmware proof: a `Main` method can write ASCII string literals with `System.Console.WriteLine` through the UEFI console. It is not yet a general UEFI runtime or standard library.
+
+Australis OS and native Australis applications are Hydrogen's primary direction. Linux is the current development host and application target; Windows and macOS support are planned ports. See the [roadmap](roadmap.md) for the order of work, or [request a feature](https://github.com/Aurora-Softwares/Hylang-Compiler/issues/new/choose).
 
 ## Learn the language
 
@@ -33,6 +37,6 @@ Use the [builtin API reference](runtime/builtins.md) for console, files, convers
 
 ## Work with tools
 
-The [native compiler](tools/hydrogen.md) checks and compiles sources and executable projects. The [SDK CLI](tools/hy.md) adds scaffolding, interpreted execution, testing, formatting, packages, and editor services. [Project manifests](tools/projects.md) describe source files and references.
+The [Hydrogen compiler](tools/hydrogen.md) checks and compiles sources and executable projects. [Project manifests](tools/projects.md) describe source files and references.
 
 Architecture notes and the [roadmap](roadmap.md) are separate from the language and usage guides.

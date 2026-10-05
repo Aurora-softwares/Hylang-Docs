@@ -1,6 +1,6 @@
 # Write and run a program
 
-Save this complete program as `hello.hy` in the compiler repository root:
+Save this complete program as `hello.hy`:
 
 ```hylang
 public class Program {
@@ -13,38 +13,22 @@ public class Program {
 }
 ```
 
-## Interpret with the SDK
+## Compile and run native output
 
 ```bash
-./build/hy run hello.hy -- Hydrogen
+"$HYDROGEN" compile hello.hy -o hello
+chmod +x hello
+./hello Hydrogen
 ```
 
-Output:
+For repeat runs, execute `./hello` directly. The release compiler does not have an interpreted `run` command.
 
-```text
-Hello, Hydrogen
-```
-
-The SDK's `run` command interprets the program after parsing, binding, and type checking. It accepts a source file or executable project. `--` separates application arguments from the SDK command. The compatibility runner uses:
-
-```bash
-./build/hyrun hello.hy Hydrogen
-```
-
-## Run native output
-
-```bash
-./build/self_hosting/hydrogen-stage1 compile hello.hy -o build/hello
-chmod +x build/hello
-./build/hello Hydrogen
-```
-
-For repeat runs, execute `build/hello` directly. The native CLI does not have an interpreted `run` command.
+UEFI output is different: an EFI application is booted by firmware, not run from Linux. See [Make a bootable UEFI Hello World](uefi-hello.md) for that workflow and its current restricted source shape.
 
 ## Entry point and arguments
 
 `Main` must be a static class method returning `int` or `void`. It accepts no parameters or one `string[]` parameter. User arguments exclude the executable name. A returned integer becomes the process exit status; use `0` for success.
 
-Array access is checked, so test `args.Length` before indexing. For programs also executed by the SDK interpreter, use explicit `if` guards: that interpreter evaluates both sides of `&&` and `||`.
+Array access is checked, so test `args.Length` before indexing. The released compiler produces a native executable; there is no interpreted `run` command in the release.
 
 See [compilation](compiling.md) for projects, output paths, and diagnostics.

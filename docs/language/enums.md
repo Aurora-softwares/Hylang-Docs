@@ -1,6 +1,6 @@
 # Enums
 
-Enums define named numeric constants and are declared alongside classes at namespace scope. Both compiler routes support basic enums.
+Enums define named numeric constants and are declared alongside classes at namespace scope.
 
 ```hylang
 namespace Demo {
@@ -24,4 +24,5 @@ This complete program prints `Heading north`. Members without explicit values st
 
 ## Formatting
 
-The SDK prints a named enum member as its name. The native console implementation formats enum values numerically. To produce the same human-readable output across routes, select a string explicitly, as in the example above. Do not rely on automatic enum formatting for portable output.
+The console formats an enum value numerically. Select a string explicitly, as in
+the example above, when human-readable output matters.

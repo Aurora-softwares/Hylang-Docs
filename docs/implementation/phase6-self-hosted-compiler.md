@@ -1,6 +1,10 @@
 # Native compiler architecture and bootstrapping
 
-The Hydrogen-written compiler emits standalone Linux x86-64 ELF executables. It binds its CLI project's complete source/reference closure and can compile itself. User-facing commands and feature limits are documented in the [native compiler guide](../tools/hydrogen.md) and [support table](../getting-started/compiler-options.md).
+> This is contributor documentation. Release users should start with
+> [Install the released compiler](../getting-started/installing.md); they do not
+> need the historical C++ bootstrap to use Hydrogen.
+
+The Hydrogen-written compiler emits standalone Linux x86-64 ELF executables by default. It binds its CLI project's complete source/reference closure and can compile itself. It can additionally produce a deliberately constrained PE32+ UEFI console application. User-facing commands and feature limits are documented in the [native compiler guide](../tools/hydrogen.md) and [released compiler guide](../getting-started/compiler-options.md).
 
 ## Executable IR and checking
 
@@ -15,6 +19,12 @@ The backend emits methods reachable from `Main`, patches calls after emission, a
 Arguments are evaluated left to right and pushed into eight-byte stack slots. Instance receivers precede explicit arguments. Callees establish an `rbp` frame, copy parameters to mutable local slots, and return through `rax`. The caller removes argument slots. `rbp` is preserved; `r14`/`r15` are reserved for runtime state, and other registers are caller-clobbered.
 
 This is a Hydrogen internal convention, not System V or C interoperability. The ELF entry stub adapts Linux process startup to `Main`; only that stub exits after a normal entrypoint return.
+
+## UEFI proof target
+
+The `uefi-x64` path is implemented in Hydrogen in `UefiImageBuilder`. It writes a minimal PE32+ EFI image, provides an x86-64 EFI entry stub, encodes the console text as UTF-16, and invokes the firmware text-output function through the UEFI system table. The self-hosted compiler therefore creates the executable EFI image itself; `mtools` and `xorriso` only package it into boot media.
+
+The implementation is intentionally not a general ABI/runtime layer. It currently lowers the small console proof profile—ASCII literals passed to `System.Console.WriteLine` from the static entry point—and has no managed heap, firmware service wrappers, keyboard support, graphics support, or general foreign-function calls. Those belong to the planned `Hydrogen.Uefi` library and backend expansion, not to the current claim of self-hosted UEFI output.
 
 ## Runtime
 
@@ -60,4 +70,4 @@ cmake -DSOURCE_DIR="$PWD" -DOUTPUT_DIR="$PWD/build/native-bootstrap" \
   -DSTAGE1_BINARY="$PWD/build/hydrogen-seed" -P cmake/HyBootstrapProof.cmake
 ```
 
-This establishes repeated native self-compilation for the supported Linux x64 subset. A source-only checkout still needs a seed/bootstrap route. The SDK's broader language and workflow implementation has not been ported wholesale; removing C++ also requires replacing or retiring those features and their build/test dependencies.
+This establishes repeated native self-compilation for the supported Linux x64 subset. The proof also checks that each generation can compile the UEFI Hello World artifact. A source-only checkout still needs a seed/bootstrap route. The SDK's broader language and workflow implementation has not been ported wholesale; removing C++ also requires replacing or retiring those features and their build/test dependencies.

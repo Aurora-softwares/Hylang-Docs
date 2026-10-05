@@ -1,6 +1,6 @@
 # Runtime behavior
 
-Hydrogen programs use managed class objects, immutable byte strings, and mutable arrays. Allocation and collection are automatic for these values. Class/array assignment copies references; SDK structs use value copies.
+Hydrogen programs use managed class objects, immutable byte strings, and mutable arrays. Allocation and collection are automatic for these values. Class/array assignment copies references.
 
 ## Direct native executables
 
@@ -14,23 +14,9 @@ String indexing uses immutable cached one-byte strings. Strings and arrays expos
 
 Native programs do not expose the C backend's GC environment controls or `.hymap.json` debug metadata. Their Hydrogen-to-Hydrogen calling convention is internal, not a C ABI.
 
-## SDK C-backed executables
+This section applies to the default Linux x86-64 target. The `uefi-x64` output has no embedded managed runtime: it is a small PE32+ firmware application that directly calls the UEFI text-console service for its restricted Hello World profile.
 
-The SDK emits C and an in-tree non-moving mark/sweep runtime. Generated root frames identify managed parameters/locals; tracing visits managed fields and array elements. Allocation accounting includes string and array backing storage. The default collection budget grows with retained heap size.
-
-The following controls apply only to C-backed executables:
-
-```bash
-HYLANG_GC_STRESS=1 ./build/app
-HYLANG_GC_THRESHOLD=128 ./build/app
-```
-
-`HYLANG_GC_STRESS` requests collection at runtime safe points. `HYLANG_GC_THRESHOLD` sets a fixed collection budget for testing/debugging. SDK `hy build --debug` emits `.hymap.json`; C-backed runtime failures report the executing Hydrogen statement's source location.
-
-The SDK's unsafe/manual memory uses checked runtime helpers. Invalid free, double free, use-after-free, and pointer bounds violations fail at runtime. This model does not supply arbitrary machine-address interop; see [unsafe operations](unsafe-design.md).
-
-## SDK interpreter
-
-`hy run` and `hyrun` evaluate the SDK's bound IR using reference-managed C++ runtime values. They do not execute the generated ELF runtime. Sharing syntax and binding does not make all execution details identical: in particular the interpreter eagerly evaluates both operands of `&&`/`||`, whereas C-backed and direct native output short-circuit.
-
-Use explicit conditional guards in code that runs in all modes. The [compiler support table](../getting-started/compiler-options.md) and [builtin reference](builtins.md) describe additional differences.
+The released compiler has no interpreter or C-backed execution mode. Use explicit
+conditional guards for bounds and null-sensitive code, and consult [the
+released compiler guide](../getting-started/compiler-options.md) for the
+currently supported language surface.

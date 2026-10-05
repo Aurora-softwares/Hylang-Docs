@@ -1,26 +1,22 @@
-# Access Modifiers
+# Access modifiers
 
-The table below describes SDK access rules. Native Hydrogen checks private members and constructors, but has no inheritance model; use public/private members for native code. Static methods are supported natively; static fields are not.
-
-Hylang uses four access modifiers. The SDK supports normal class-local access rules plus subclass access for `protected`.
+The released compiler supports `public` and `private` members. Use `public` for
+types and members that code in another class must use, and `private` for details
+that belong only to the declaring class.
 
 | Modifier | Visibility |
-|----------|------------|
-| `public` | Visible everywhere |
+| --- | --- |
+| `public` | Visible everywhere in the compilation |
 | `private` | Restricted to the declaring class |
-| `internal` | Visible within the current compilation |
-| `protected` | Visible in the declaring class and its subclasses |
 
 ## Example
 
 ```hylang
-class Account {
-    private int balance;          // only this class
-    internal string owner;        // visible in the same compilation
-    public bool isActive;         // visible everywhere
+public class Account {
+    private int balance;
+    public bool isActive;
 
-    public Account(string name, int initial) {
-        this.owner = name;
+    public Account(int initial) {
         this.balance = initial;
         this.isActive = true;
     }
@@ -30,48 +26,10 @@ class Account {
     }
 
     private void Audit() {
-        // internal helper
+        // Internal implementation detail.
     }
 }
 ```
 
-## Inheritance note
-
-`private` members are not visible from derived classes. `protected` members are.
-
-```hylang
-namespace Banking {
-    public class Account {
-        protected int balance;
-
-        public Account() {
-            balance = 10;
-        }
-    }
-
-    public class SavingsAccount : Account {
-        public int CurrentBalance() {
-            return balance;
-        }
-    }
-}
-```
-
-## Static members
-
-In the SDK, both fields and methods can be `static`; native code supports static methods only. Static members belong to the class rather than an instance:
-
-```hylang
-class MathHelper {
-    public static int Square(int n) {
-        return n * n;
-    }
-}
-
-```
-
-Inside another method, call it without creating an object:
-
-```hylang
-int result = MathHelper.Square(5);
-```
+`protected` is not useful in the current release because inheritance is not yet
+supported. Static methods are supported; static fields are not.

@@ -13,7 +13,9 @@
 
 Class instances are reference values. `null` is assignable to reference types, including strings, class references, and arrays. Accessing a null receiver is a runtime error. Enums provide named numeric constants.
 
-The SDK additionally recognizes `sbyte`, `short`, `ushort`, `uint`, `long`, `ulong`, `nint`, and `nuint`. The native checker can recognize wider numeric declarations, but native generation restricts reachable numeric signatures to its supported subset. Neither route provides a floating-point type. See the [support table](../getting-started/compiler-options.md).
+The current release does not provide floating-point values or wider integer types.
+Use the types in this table for executable native code. See [the released
+compiler guide](../getting-started/compiler-options.md).
 
 ## Strings
 
@@ -41,6 +43,8 @@ var text = "hello";
 
 ## User-defined types
 
-Both routes support classes and enums. [Structs and interfaces](interfaces-and-structs.md), [inheritance](inheritance.md), and [generics](generics.md) are SDK features. Struct assignment/parameter passing copies values; class assignment copies references.
+The released compiler supports classes and enums. It does not yet support
+structs, interfaces, inheritance, or generics. Class assignment copies
+references.
 
 Native numeric casts support integers, bytes, and enums. An explicit cast does not make unsupported object layouts or numeric signatures executable.

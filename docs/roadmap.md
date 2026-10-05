@@ -1,11 +1,67 @@
-# Future work
+# Hydrogen roadmap · [Request a feature](https://github.com/Aurora-Softwares/Hylang-Compiler/issues/new/choose)
 
-This page describes planned work, not available language syntax or APIs. For current capabilities, use the [compiler support table](getting-started/compiler-options.md) and [language guide](language/structure.md).
+Hydrogen's primary purpose is to build Australis OS and native applications for
+Australis. Linux is the current host and native application target because it
+makes the compiler practical to develop and test today. Windows and macOS hosts
+are valuable future ports, but they do not set the order of the core work.
 
-The native Hydrogen compiler already builds its own complete CLI project through repeated, behaviorally tested generations. Future compiler work focuses on broader language parity with the SDK, improved source spans/diagnostics, memory/performance work, and migrating the SDK workflow tools to Hydrogen.
+This page is direction, not a promise that every item is already available. For
+the current supported language, use [the released compiler guide](getting-started/compiler-options.md).
 
-Further platform work includes object-file emission, external ABI/linker integration, richer debug information, and additional target runtimes. Linux x86-64 ELF is the direct native target today; UEFI and Australis OS integration remain design work.
+## Completed foundation
 
-The standard-library plan covers reusable collections, text/encoding, streams/filesystems, process/environment services, testing, and platform abstractions. Hylang-Stdlib currently contains a design plan rather than installable library projects; existing `System.*` builtins are implemented in the compiler runtimes.
+- The compiler is self-hosted: Hydrogen compiles its own compiler project
+  closure.
+- The default output is direct Linux x86-64 ELF.
+- The self-hosted compiler emits a PE32+ `uefi-x64` application.
+- Australis packages that output into a bootable ISO that displays a Hydrogen
+  Hello World in QEMU/OVMF.
 
-See the [compiler roadmap](https://github.com/Aurora-Softwares/Hylang-Compiler/blob/main/ROADMAP.md), [OS design plan](https://github.com/Aurora-Softwares/Hylang-Compiler/blob/main/OS_ROADMAP.md), and [standard-library plan](https://github.com/Aurora-Softwares/Hylang-Stdlib/blob/main/hydrogen-standard-library-roadmap.md).
+## Next: usable UEFI programs
+
+The present firmware target is intentionally a console-output proof, not a
+runtime. The next milestone is a minimal `Hydrogen.Uefi` library and the
+compiler support it needs:
+
+- Console `Write`, `WriteLine`, and `Clear`.
+- Keyboard input.
+- Basic boot-service and memory wrappers.
+- Explicit UEFI data layouts, function pointers, strings, and ABI support.
+- Tests that compile and boot each feature.
+
+This enables a firmware-hosted command shell written completely in Hydrogen.
+
+## Then: Australis kernel work
+
+Once the shell and firmware library are stable, Australis can stop depending on
+UEFI services in the right order:
+
+1. Obtain the firmware memory map and call `ExitBootServices`.
+2. Provide allocation and framebuffer output without firmware services.
+3. Add interrupts plus keyboard and storage drivers.
+4. Define the kernel/runtime boundary.
+5. Grow userland and system calls.
+
+At that point the project changes from an EFI application to an operating
+system kernel with its own services.
+
+## Native application platform
+
+Hydrogen is intended to be the main language for native Australis applications,
+not only for the kernel. Application libraries, process/system interfaces, and
+the application model follow after the lower-level OS boundary is reliable.
+
+Australis will eventually need its own coherent native visual system, in the
+same broad sense that Material and Liquid Glass give other platforms a visual
+language. That work comes after input, rendering, windowing, and application
+runtime foundations exist; the project should not invent a UI style before it
+can support the systems that make it usable.
+
+## Host platforms
+
+Linux x86-64 is the current released host. Windows and macOS compiler releases
+are planned once their host executables, packaging, and validation are ready.
+They are ports of the Hydrogen toolchain, not a change in Australis-first
+priority.
+
+Have a use case or missing capability? [Request it on GitHub](https://github.com/Aurora-Softwares/Hylang-Compiler/issues/new/choose).

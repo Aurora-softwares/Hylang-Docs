@@ -25,17 +25,17 @@ using MyLibrary;
 
 Put namespace imports before declarations. Imports let a file use simple names for types from those namespaces. Imports do not leak to other files. Use fully qualified names when simple names are ambiguous.
 
-Use fully qualified builtin API names such as `System.Console.WriteLine` in portable native code. The SDK also resolves shortened builtin names with imports such as `using System;`; that spelling is not guaranteed by the native intrinsic recognizer.
+Use fully qualified builtin API names such as `System.Console.WriteLine`. That is the stable spelling recognized by the released compiler.
 
 ## Types and members
 
 Classes contain instance fields, constructors, and static/instance methods. See [methods and objects](methods-and-objects.md) for a runnable example. Enums declare named constants at namespace scope.
 
-The SDK additionally supports structs, interfaces, generic classes/interfaces/methods, inheritance, overloads, and static fields. Refer to [compiler options](../getting-started/compiler-options.md) before using these features with the native route.
+The current release does not support structs, interfaces, generic types or methods, inheritance, overloads, or static fields. Keep programs within the [released compiler surface](../getting-started/compiler-options.md).
 
 ## Entry point
 
-Both routes accept these static class entry signatures:
+The released compiler accepts these static class entry signatures:
 
 ```hylang
 public static void Main()

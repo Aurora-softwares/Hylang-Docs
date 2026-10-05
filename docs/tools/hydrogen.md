@@ -1,6 +1,6 @@
 # Native Hydrogen compiler
 
-The Hydrogen-written compiler emits Linux x86-64 ELF executables directly. After [building it](../getting-started/building.md), use `build/self_hosting/hydrogen-stage1`. Verified stage 2/3 binaries expose the same commands.
+The released, Hydrogen-written compiler emits Linux x86-64 ELF executables directly by default. It also has a constrained `uefi-x64` target which emits a PE32+ EFI application for the current console Hello World proof. Install the release first, then use its `hydrogen-stage1` executable. See [Install the released compiler](../getting-started/installing.md).
 
 ## Commands
 
@@ -8,7 +8,7 @@ The Hydrogen-written compiler emits Linux x86-64 ELF executables directly. After
 hydrogen-stage1 tokens <file.hy>
 hydrogen-stage1 parse <file.hy>
 hydrogen-stage1 check <file.hy|project.hyproj> [--emit-ir]
-hydrogen-stage1 compile <file.hy> -o <output>
+hydrogen-stage1 compile <file.hy> [--target uefi-x64] -o <output>
 hydrogen-stage1 build <project.hyproj> -o <output>
 hydrogen-stage1 stage-compare <project.hyproj> --stage1 <artifact> --stage2 <artifact>
 ```
@@ -17,18 +17,24 @@ hydrogen-stage1 stage-compare <project.hyproj> --stage1 <artifact> --stage2 <art
 
 `compile` emits a single-file executable. `build` requires a format-2 `type = "exe"` manifest and follows `project_references` to library sources. It does not support SDK workspaces, packages, or standalone library artifacts.
 
+## Targets
+
+Without `--target`, `compile` and `build` produce Linux x86-64 ELF files. These use the native runtime and support the subset described in [The released Hydrogen compiler](../getting-started/compiler-options.md).
+
+`compile --target uefi-x64` produces an x86-64 PE32+ EFI application. It is currently limited to the firmware console proof: a static `Main` can call `System.Console.WriteLine` with ASCII string literals. The target has no general runtime, object allocation, file API, command-line arguments, keyboard input, graphics support, or `Hydrogen.Uefi` library yet. Use the [UEFI Hello World guide](../getting-started/uefi-hello.md) to package and boot it.
+
 `stage-compare` compares existing artifacts byte for byte and returns failure on length/content differences. It does not compile generations or test their behavior; the CMake bootstrap proof performs those additional checks.
 
 ## Example
 
 ```bash
-./build/self_hosting/hydrogen-stage1 check tests/phase6/native_hello.hy --emit-ir
-./build/self_hosting/hydrogen-stage1 compile tests/phase6/native_hello.hy -o build/hello
-chmod +x build/hello
-./build/hello
+"$HYDROGEN" check hello.hy --emit-ir
+"$HYDROGEN" compile hello.hy -o hello
+chmod +x hello
+./hello
 ```
 
-Output paths are explicit. The containing directory must exist, and emitted files need execute permission.
+Output paths are explicit. The containing directory must exist. Linux ELF output needs execute permission; EFI output is loaded by firmware and is normally named `EFI/BOOT/BOOTX64.EFI` when placed on removable-media-style boot media.
 
 ## Errors
 
@@ -36,4 +42,4 @@ Commands return `0` on success and `1` on invalid input or unsupported compilati
 
 Failed compilation does not create or overwrite the output. An existing executable may therefore be from an earlier build. Checking/IR inspection alone does not establish backend support. There is no fallback debug executable for unsupported programs.
 
-Consult the [supported features](../getting-started/compiler-options.md) and [builtin APIs](../runtime/builtins.md). The native CLI does not implement the SDK's `run`, `test`, `fmt`, `new`, `package`, `lsp`, `--json`, or `--debug` options.
+Consult [the released compiler guide](../getting-started/compiler-options.md) and [builtin APIs](../runtime/builtins.md). The current CLI has no interpreted `run`, test runner, formatter, project scaffolder, package manager, language server, JSON diagnostics, or debug-metadata mode.

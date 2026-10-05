@@ -44,7 +44,8 @@ bool either = a || b;
 bool flipped = !active;
 ```
 
-> Execution modes: native Hydrogen output and C-backed SDK output short-circuit `&&` and `||`. The SDK interpreter (`hy run`/`hyrun`) evaluates both operands. Use nested `if` statements for bounds/null guards when sharing code with the interpreter.
+`&&` and `||` short-circuit: the right-hand side is evaluated only when needed.
+Use an explicit `if` when it makes a bounds or null guard easier to read.
 
 ## Unary negation
 
