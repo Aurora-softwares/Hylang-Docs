@@ -1,40 +1,22 @@
-# Phase 5 Self-Hosting Preparation
+# Compiler workspace architecture
 
-Phase 5 prepared Hydrogen to write its own compiler incrementally. It did not replace the C++ bootstrap compiler.
+The Hydrogen compiler lives in `samples/self_hosting` in Hylang-Compiler. Its executable project is `Hydrogen.Compiler.Cli/Hydrogen.Compiler.Cli.hyproj`; the workspace manifest additionally includes its tests.
 
-## Delivered Prototype
+| Project | Responsibility |
+| --- | --- |
+| `Hydrogen.Compiler.Core` | Source text, spans, locations, diagnostic storage |
+| `Hydrogen.Compiler.Syntax` | Lexer, outline parser, AST parser, syntax declarations/statements/expressions |
+| `Hydrogen.Compiler.IR` | Executable module, types, fields, methods, structured operations |
+| `Hydrogen.Compiler.Binding` | Project-aware type resolution and body checking |
+| `Hydrogen.Compiler.RuntimeModel` | Native runtime contracts |
+| `Hydrogen.Compiler.CodeGen.X64` | Method-body lowering, runtime emission, ELF image construction |
+| `Hydrogen.Compiler.Cli` | Tokens, parse, check, compile, build, artifact comparison |
+| `Hydrogen.Compiler.Tests` | Compiler library regressions |
 
-The Phase 5 proof workspace lives in the compiler repo at `samples/self_hosting`:
+The lexer preserves source positions. The CLI `parse` command uses an outline view for stable syntax dumps; this is distinct from the AST parser and executable IR used by `check`/compilation. Parsing a construct does not establish its native executable support.
 
-- `Hydrogen.Compiler.Core` provides source text, text spans, locations, and diagnostics.
-- `Hydrogen.Compiler.Syntax` provides syntax kinds, syntax tokens, syntax nodes, syntax trees, a lexer, and a parser.
-- `Hydrogen.Compiler.Cli` exposes `tokens <file>` and `parse <file>`.
-- `Hydrogen.Compiler.Tests` validates the prototype from Hydrogen code.
+The binder registers a complete project/reference closure before checking declarations and bodies. Each file keeps its namespace/import context. Declared types and resolved calls become canonical names in IR; methods carry bodies with allocations, fields, calls, casts, indexing, returns, branches, and loops.
 
-The parser prototype is syntax-only. It handles usings, namespaces, classes, structs, interfaces, enums, members, parameters, blocks, statements, and core expressions, but it does not bind, type-check, lower IR, emit code, or self-compile.
+The x64 backend consumes executable IR and emits reachable methods and a native runtime into one Linux ELF. See [native compilation and bootstrapping](phase6-self-hosted-compiler.md) for the internal convention and rebuild checks.
 
-## Bootstrap Compiler Contract
-
-The trusted C++ compiler still owns the real pipeline:
-
-- lexing
-- parsing
-- semantic model construction
-- binding and type checking
-- bound IR
-- interpreter execution
-- C backend emission
-- runtime support
-
-The Hydrogen frontend mirrored the lexer/parser side first because it was the safest path into self-hosting. Phase 6 now uses these libraries as the foundation for binding, typed IR, native backend integration, and eventually self-compilation.
-
-## Proof Commands
-
-```bash
-./build/hy build samples/self_hosting/Hydrogen.Compiler.hyproj
-./build/hy test samples/self_hosting/Hydrogen.Compiler.hyproj
-./build/hy run samples/self_hosting/Hydrogen.Compiler.Cli/Hydrogen.Compiler.Cli.hyproj -- tokens tests/hello_world.hy
-./build/hy run samples/self_hosting/Hydrogen.Compiler.Cli/Hydrogen.Compiler.Cli.hyproj -- parse tests/hello_world.hy
-```
-
-Phase 5 is complete at prototype scope when the workspace builds, tests, format-checks, check-runs, and matches golden token/parse fixtures.
+The SDK is a separate implementation: its interpreter and C emitter share the C++ bound semantic model. SDK-only generics, inheritance, struct semantics, overloads, and tooling are not inferred to exist in the Hydrogen backend merely because SDK builds accept its compiler sources.

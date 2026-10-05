@@ -1,131 +1,42 @@
-# Inheritance and Dispatch
+# Inheritance and dispatch
 
-Hylang supports single inheritance, explicit base-constructor chaining, `base.Member`, and non-static virtual dispatch.
+Inheritance, base-constructor chaining, and virtual dispatch require the C++ SDK. The native Hydrogen compiler does not emit these features.
 
-## Declaring a derived class
-
-Use `:` after the class name:
+## Complete example
 
 ```hylang
 namespace Demo {
-    public class Entity {
-        protected int seed;
-
-        public Entity() {
-            seed = 4;
-        }
-
-        public int Total() {
-            return seed + 2;
-        }
+    public class Reader {
+        protected int value;
+        public Reader(int initial) { value = initial; }
+        public virtual int Read() { return value; }
     }
 
-    public class Widget : Entity {
-        public Widget() {
-            seed = seed + 1;
-        }
-    }
-}
-```
-
-Only one base class is allowed, but a class may also implement interfaces.
-
-## Inherited members
-
-Derived classes can use accessible instance members and static members from their base class.
-
-```hylang
-namespace Demo {
-    public class Entity {
-        public static int Created;
-        protected int seed;
-
-        public Entity() {
-            seed = 4;
-            Created = Created + 1;
-        }
-
-        protected int Bump(int value) {
-            return value + seed;
-        }
+    public class BetterReader : Reader {
+        public BetterReader(int initial) : base(initial) { }
+        public override int Read() { return base.Read() + 1; }
     }
 
-    public class Widget : Entity {
-        public int Total() {
-            return Bump(6);
+    public class Program {
+        public static int Main() {
+            Reader reader = new BetterReader(41);
+            System.Console.WriteLine(reader.Read());
+            return 0;
         }
     }
 }
 ```
 
-## Assignability
+Run with `hy run`, or compile with `hy build`. It prints `42`: a base-typed reference invokes the derived override.
 
-A derived value can be used anywhere its base type is expected:
+## Base classes and constructors
 
-```hylang
-Entity first = new Widget();
+Declare one base class with `class Derived : Base`. A class may also implement multiple interfaces. Constructors are not inherited. `: base(args)` selects a base constructor; without an explicit initializer, the SDK chains to a parameterless base constructor.
 
-public static Entity Echo(Entity value) {
-    return value;
-}
-```
+Inherited accessible instance/static members can be used by a derived class. Private members remain restricted to their declaring class; protected members are accessible in subclasses. A derived reference is assignable to its base type, including when passed or returned by methods.
 
-This also applies during overload resolution. Exact matches are preferred, and derived-to-base matches are considered after that.
+## Virtual methods
 
-## Constructor behavior
+Mark a non-static instance method `virtual` to enable replacement. A matching derived method must use `override`; invalid overrides produce diagnostics. `base.Member` is available inside instance methods/constructors and binds directly to the base implementation, bypassing virtual dispatch.
 
-Constructors are not inherited. Hylang supports both implicit parameterless chaining and explicit `: base(...)` chaining.
-
-```hylang
-public class Base {
-    protected int value;
-
-    public Base(int seed) {
-        value = seed;
-    }
-}
-
-public class Derived : Base {
-    public Derived(int seed) : base(seed) {
-    }
-}
-```
-
-## `base.Member`
-
-`base.Member` is valid inside instance methods and constructors and binds to the base implementation directly:
-
-```hylang
-public class Derived : Base {
-    public override int Read() {
-        return base.Read() + 1;
-    }
-}
-```
-
-## `virtual` and `override`
-
-Non-static instance methods may be marked `virtual`, and derived replacements must use `override`:
-
-```hylang
-public class Base {
-    public virtual int Read() {
-        return 10;
-    }
-}
-
-public class Derived : Base {
-    public override int Read() {
-        return base.Read() + 5;
-    }
-}
-```
-
-Calls through a base-typed reference use virtual dispatch.
-
-## Current limitations
-
-- Single inheritance only
-- No `abstract`, `sealed`, or member-hiding keyword yet
-- No multiple base classes
-- Interface members are method signatures only
+The SDK does not implement multiple base classes, `abstract`, `sealed`, or a member-hiding keyword. Interfaces contain method signatures only; see [interfaces and structs](interfaces-and-structs.md).

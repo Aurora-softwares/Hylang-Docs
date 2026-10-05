@@ -1,75 +1,27 @@
 # Enums
 
-Enums define a named set of constant values. They are declared at the namespace level alongside classes.
-
-## Declaration
+Enums define named numeric constants and are declared alongside classes at namespace scope. Both compiler routes support basic enums.
 
 ```hylang
 namespace Demo {
-    public enum Direction {
-        North,
-        South,
-        East,
-        West
-    }
-}
-```
-
-## Using enum values
-
-Reference members through the enum type name:
-
-```hylang
-Direction d = Direction.North;
-```
-
-## Enums as field, parameter, and return types
-
-```hylang
-public class Navigator {
-    public static Direction Last;
-
-    public static Direction Echo(Direction value) {
-        Last = value;
-        return Last;
-    }
-}
-```
-
-## Equality
-
-Enum values support `==` and `!=`. Both operands must be the same enum type:
-
-```hylang
-if (d == Direction.North) {
-    System.Console.WriteLine("Heading north");
-}
-```
-
-## Printing
-
-Enum values can be passed directly to `Console.Write` and `Console.WriteLine`, which will print the member name:
-
-```hylang
-System.Console.WriteLine(Direction.North);   // prints: North
-```
-
-## Using directives
-
-With `using System;` at the top of the file, you can shorten `System.Console` to just `Console`:
-
-```hylang
-using System;
-
-namespace Demo {
-    public enum Mode { Scan, Dump }
+    public enum Direction { North, South, East, West }
 
     public class Program {
-        public static void Main(string[] args) {
-            Mode m = Mode.Scan;
-            Console.Write(m);          // prints: Scan
-            Console.WriteLine(m == Mode.Scan);  // prints: true
+        public static Direction Echo(Direction value) { return value; }
+
+        public static int Main() {
+            Direction direction = Echo(Direction.North);
+            if (direction == Direction.North) {
+                System.Console.WriteLine("Heading north");
+            }
+            return 0;
         }
     }
 }
 ```
+
+This complete program prints `Heading north`. Members without explicit values start at zero and increase by one. Enums can be field, local, parameter, return, and array element types. Compare members of the same enum with `==` or `!=`.
+
+## Formatting
+
+The SDK prints a named enum member as its name. The native console implementation formats enum values numerically. To produce the same human-readable output across routes, select a string explicitly, as in the example above. Do not rely on automatic enum formatting for portable output.

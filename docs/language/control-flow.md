@@ -1,5 +1,7 @@
 # Control Flow
 
+Both routes support `if`, `while`, `break`, `continue`, and `return`. These snippets belong inside methods. The native parser does not support `for`; use a `while` loop with an explicit increment.
+
 ## if / else
 
 ```hylang
@@ -19,7 +21,7 @@ while (i < 10) {
 }
 ```
 
-## for
+## for (SDK only)
 
 ```hylang
 for (int i = 0; i < 10; i = i + 1) {
@@ -53,5 +55,17 @@ public int Max(int a, int b) {
         return a;
     }
     return b;
+}
+```
+
+## String exceptions (SDK only)
+
+The SDK supports string `throw` and `try`/`catch`; typed catch variables must be `string`. Native code generation rejects exceptions. There is no exception-class hierarchy or `finally` construct.
+
+```hylang
+try {
+    throw "invalid input";
+} catch (string message) {
+    System.Console.WriteLine(message);
 }
 ```

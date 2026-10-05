@@ -1,62 +1,48 @@
-# Unsafe Design
+# Unsafe and manual memory
 
-Unsafe and manual-memory features are executable in the current bootstrap at a deliberately narrow systems-programming boundary.
+This page describes C++ SDK features. The direct native Hydrogen compiler does not implement pointers, manual-memory APIs, `stackalloc`, or `Buffer`.
 
-## Executable Surface
+## Operations
 
-The current bootstrap supports:
+Inside `unsafe { ... }`, the SDK supports `T*`, address-of `&expr`, dereference `*ptr`, pointer indexing, pointer addition/subtraction, pointer difference, explicit pointer casts, `sizeof(T)`, and `stackalloc T[count]`.
 
-- `unsafe { ... }`
-- pointer types `T*`
-- address-of `&expr`
-- dereference `*ptr`
-- pointer indexing `ptr[index]`
-- pointer arithmetic `ptr + n` and `ptr - n`
-- pointer difference returning `nint`
-- `stackalloc T[count]`
-- `System.Runtime.Memory` manual allocation APIs
-- `sizeof(T)`
-- explicit numeric and pointer casts
+Pointer access is backed by checked runtime helpers rather than unrestricted machine addresses. Primitive, enum, and boolean element loads/stores are implemented. The runtime detects invalid free, double free, use-after-free, and out-of-range access.
 
-## Safety Boundary
+## Complete example
 
-Managed Hylang remains the default experience:
+```hylang
+using System.Runtime;
 
-- normal object allocation uses the managed runtime
-- strings and arrays remain managed
-- `System.Runtime.Buffer` is the safe byte-storage abstraction
-- unsafe features should only be needed for low-level runtime, OS, or interop scenarios
+public class Program {
+    public static int Main() {
+        unsafe {
+            byte* data = Memory.Alloc(4);
+            Memory.Set(data, 0, 4);
+            data[0] = 65;
+            System.Console.WriteLine(data[0]);
+            Memory.Free(data);
+        }
+        return 0;
+    }
+}
+```
 
-Unsafe code stays:
+Run with `hy run` or compile with `hy build`. It prints `65`. Free manual allocations explicitly and do not access their pointers afterward.
 
-- explicit
-- locally auditable
-- opt-in at the block or API boundary
+## Memory services
 
-## Rules
+- `Memory.Alloc(bytes)` returns a byte pointer.
+- `Memory.Free(pointer)` releases its allocation.
+- `Memory.Copy(destination, source, bytes)` copies bytes.
+- `Memory.Set(destination, value, bytes)` fills bytes.
+- `Memory.Compare(left, right, bytes)` compares memory.
 
-- pointer creation, dereference, indexing, arithmetic, and `DangerousData()` require `unsafe`
-- unsafe operations do not silently leak into surrounding safe code
-- `stackalloc` memory is scoped to the current stack lifetime
-- manual allocation APIs are explicit and never implied by normal object creation
-- low-level memory APIs live in `System.Runtime.Memory`
-- address-of is rejected for managed objects, strings, managed arrays, and managed object fields
-- non-zero integer-to-pointer casts are intentionally rejected in the bootstrap runtime
+`System.Runtime.Buffer` is the safe byte-storage wrapper, with bounds-checked operations and explicit `Free`. Its `DangerousData()` bridge requires an unsafe block. See the [builtin reference](builtins.md).
 
-## Current Status
+## Restrictions
 
-These forms execute in both `hyrun` and compiled output through checked runtime helpers. Invalid frees, double frees, use-after-free, and out-of-range pointer access report runtime failures.
+Pointer creation/access and the dangerous buffer bridge require `unsafe`. Address-of managed objects, strings, arrays, and managed object fields is rejected. Nonzero integer-to-pointer casts are rejected. Arbitrary layout/ABI controls, pinning, `void*`, and broader unmanaged-struct pointer materialization are not provided.
 
-## Bootstrap Boundaries
+`stackalloc` syntax uses checked allocation helpers in the SDK. It is not a promise of a raw native stack buffer or enforced lexical lifetime: the C backend lowers it to manual allocation. Do not use it as an ABI/interoperability mechanism or rely on automatic scope-based reclamation. For explicit ownership, prefer `Memory.Alloc`/`Free`.
 
-The current compiler/runtime still keeps these boundaries:
-
-- ABI/layout controls for low-level interop
-- managed-object pinning
-- `void*`
-- floating-point numerics
-- broader unmanaged-struct pointer materialization beyond the current primitive, enum, and `bool` element paths
-
-## Goal
-
-Hylang remains managed-by-default. Unsafe features exist for low-level runtime, OS, and interop work, and they stay explicit and locally auditable.
+Managed allocation with `new` remains separate from these manual-memory services.

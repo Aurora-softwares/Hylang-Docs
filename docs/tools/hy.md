@@ -1,8 +1,8 @@
 # hy
 
-`hy` is the primary Hylang workflow CLI.
+`hy` is the C++ SDK workflow CLI. For the Hydrogen-written direct native tool, see [native compiler commands](hydrogen.md).
 
-It wraps the current bootstrap compiler/runtime with one entry point for scaffolding, building, running, testing, formatting, checking, and packaging.
+It exposes the SDK compiler/runtime through one entry point for scaffolding, building, running, testing, formatting, checking, and packaging.
 
 ## Usage
 
@@ -53,10 +53,14 @@ build/hy package search SdkDemo --registry build/local-registry
 
 ## Notes
 
-- `hy` is the documented/default CLI for the completed Phase 4 local tooling slice
+- `hy run` interprets sources; `hy build` compiles through the host C toolchain
 - `hyrun` and `hyc build` still exist as compatibility shims
 - `hy build --debug` emits a `.hymap.json` file next to the generated artifact
 - compiled runtime failures now report Hylang file/line/column context, and debug builds keep the matching `.hymap.json` artifact metadata
 - `hy check --json` emits diagnostics with severity, file, line, column, and message fields
 - workspace/package support is local-first, including filesystem-backed registries
 - `hy lsp` provides lightweight diagnostics, document symbols, hover, and formatting over stdio
+
+See [project manifests](projects.md) for workspace/reference rules. These SDK commands and flags are not available on the native compiler.
+
+The included VS Code extension starts the LSP subprocess but does not yet connect its protocol to editor language providers. Use its check/format tasks; format-on-save needs a client/formatter integration.

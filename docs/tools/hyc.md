@@ -1,6 +1,6 @@
 # hyc
 
-`hyc` is the Hylang compiler. It compiles `.hy` files and `.hyproj` projects to native binaries via a C backend.
+`hyc` is the C++ SDK compatibility compiler. It compiles `.hy` files and `.hyproj` projects to native binaries via a C backend.
 
 ## Usage
 
@@ -36,11 +36,11 @@ build/hyc build Math.hyproj --target lib -o build/libmath.a
 2. The bound IR is lowered to a single C translation unit.
 3. The host C compiler (`cc`) is invoked to produce the final binary.
 
-The C backend is the primary output path for the current bootstrap. A native x64 backend is planned for a later phase.
+The SDK uses the C backend. The separate [Hydrogen native compiler](hydrogen.md) emits Linux x64 ELF directly and has a narrower language/API surface.
 
 ## Runtime notes
 
-- Compiled output uses the current bootstrap managed runtime.
+- Compiled output uses the SDK managed runtime.
 - Managed strings and general `T[]` arrays are supported.
 - Runtime stress/debug controls:
 

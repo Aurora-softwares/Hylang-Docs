@@ -1,145 +1,36 @@
-# Runtime Model
+# Runtime behavior
 
-This page records the current managed runtime contract implemented by the bootstrap compiler.
+Hydrogen programs use managed class objects, immutable byte strings, and mutable arrays. Allocation and collection are automatic for these values. Class/array assignment copies references; SDK structs use value copies.
 
-## Scope
+## Direct native executables
 
-The current runtime surface includes:
+The native compiler embeds a Linux x86-64 runtime and uses raw Linux syscalls for console, files, and memory mappings. It does not depend on libc, a C++ runtime, an assembler, or a linker at application compilation time.
 
-- managed `string`
-- general managed `T[]`
-- bootstrap `System.Collections.List<T>`
-- bootstrap `System.Runtime.Buffer`
-- bootstrap `System.Runtime.Memory`
-- bootstrap `System.Runtime.BinaryPrimitives`
-- compiled-runtime garbage collection
-- executable bootstrap `unsafe`
-- runtime stress controls
+The heap uses a conservative, non-moving mark/sweep collector. Stack/register values and heap payloads are scanned for allocation/interior pointers. Reachable graphs and cycles are retained; unreachable mappings are reclaimed. Conservative scanning can retain values that are no longer logically reachable.
 
-Executable unsafe/manual-memory behavior now exists in both `hyrun` and compiled mode, with a few bootstrap caveats noted below.
+Collection occurs under allocation pressure. Small live heaps use a larger growth budget than large compiler heaps. A bounded pool can retain up to 16 MiB of freed single-page mappings for reuse; recycled pages are cleared. `System.Runtime.GC.Collect()` releases this pool as well as collecting. `GetAllocatedBytes()` reports active managed mapping bytes, excluding the pool.
 
-## Strings
+String indexing uses immutable cached one-byte strings. Strings and arrays expose byte/element length, respectively. Native file reads require seekable files. Null access, out-of-range indices, invalid allocation sizes, malformed integers, failed I/O, and allocation failure report errors on stderr and terminate with status `1`.
 
-- `string` is immutable
-- runtime storage is UTF-8 byte-oriented
-- `string.Length` returns byte length
-- `text[index]` is byte-based and returns a one-byte `string`
-- concatenation, equality, console output, and file IO keep the same source syntax as earlier phases
+Native programs do not expose the C backend's GC environment controls or `.hymap.json` debug metadata. Their Hydrogen-to-Hydrogen calling convention is internal, not a C ABI.
 
-## Arrays
+## SDK C-backed executables
 
-- `T[]` is a first-class managed reference type
-- allocate with `new T[count]`
-- `count` must be an integral size expression accepted by the current bootstrap
-- `void[]` is invalid
-- elements are zero/default-initialized
-- arrays support `.Length`, indexed reads, and indexed assignment
-- out-of-range access is a runtime failure
+The SDK emits C and an in-tree non-moving mark/sweep runtime. Generated root frames identify managed parameters/locals; tracing visits managed fields and array elements. Allocation accounting includes string and array backing storage. The default collection budget grows with retained heap size.
 
-## Bootstrap Collections
-
-The current bootstrap ships a minimal `System.Collections.List<T>` backed by managed arrays.
-
-Supported API:
-
-- `public List()`
-- `public void Add(T value)`
-- `public T Get(int index)`
-- `public void Set(int index, T value)`
-- `public int Count()`
-
-Capacity starts at `4` and doubles when full.
-
-## Safe Buffer Primitive
-
-The current follow-on runtime work also ships a safe bootstrap `System.Runtime.Buffer`.
-
-Supported API:
-
-- `Buffer.Allocate`
-- `Buffer.FromArray`
-- `Length`
-- `Get`
-- `Set`
-- `Slice`
-- `Fill`
-- `ToArray`
-- `DangerousData`
-- `Free`
-
-Current semantics:
-
-- slices share underlying storage
-- `Free()` invalidates the owning storage and all related views
-- later access after `Free()` is a runtime failure
-- `DangerousData()` requires `unsafe` and returns a `byte*`
-- the current bootstrap path bridges through checked raw memory rather than a fully native unmanaged backing store
-
-## Unsafe and Manual Memory
-
-The bootstrap runtime now supports:
-
-- `unsafe { ... }`
-- pointer types `T*`
-- address-of `&expr`
-- dereference `*ptr`
-- pointer indexing and arithmetic
-- `stackalloc T[count]`
-- `sizeof(T)`
-- `System.Runtime.Memory.Alloc/Free/Copy/Set/Compare`
-
-Current bootstrap boundaries:
-
-- the low-level surface is checked in both execution modes
-- non-zero integer-to-pointer casts remain intentionally rejected
-- pointer loads/stores are currently strongest for primitive, enum, and `bool` element types
-- the interpreter and compiled runtime now match the same visible behavior, while deeper internal unification remains follow-on work
-
-## Binary Primitives
-
-The bootstrap runtime includes `System.Runtime.BinaryPrimitives` helpers for:
-
-- 16-bit reads/writes
-- 32-bit reads/writes
-- 64-bit reads/writes
-- little-endian and big-endian forms
-
-These helpers are currently used by showcase code such as `hexlab`.
-
-## Compiled Runtime
-
-Compiled output currently uses:
-
-- an in-tree non-moving mark-sweep collector
-- managed string objects
-- managed array objects
-- class-specific trace helpers
-- precise emitted root frames for live reference-like values
-- checked raw-manual-memory helpers for the bootstrap unsafe/manual-memory surface
-
-Current collector properties:
-
-- single-threaded
-- stop-the-world
-- non-moving
-- no finalizers
-- no compaction
-- no weak references
-
-Compiled runtime failures now report Hylang file/line/column context for the currently executing statement instead of only raw generated-runtime messages.
-
-## Stress Controls
-
-The compiled runtime supports internal stress/debug controls:
+The following controls apply only to C-backed executables:
 
 ```bash
-HYLANG_GC_STRESS=1 ./build/myapp
-HYLANG_GC_THRESHOLD=128 ./build/myapp
+HYLANG_GC_STRESS=1 ./build/app
+HYLANG_GC_THRESHOLD=128 ./build/app
 ```
 
-- `HYLANG_GC_STRESS=1` forces collection at runtime safe points
-- `HYLANG_GC_THRESHOLD=<bytes>` changes the collection threshold
+`HYLANG_GC_STRESS` requests collection at runtime safe points. `HYLANG_GC_THRESHOLD` sets a fixed collection budget for testing/debugging. SDK `hy build --debug` emits `.hymap.json`; C-backed runtime failures report the executing Hydrogen statement's source location.
 
-## Interpreter Note
+The SDK's unsafe/manual memory uses checked runtime helpers. Invalid free, double free, use-after-free, and pointer bounds violations fail at runtime. This model does not supply arbitrary machine-address interop; see [unsafe operations](unsafe-design.md).
 
-`hyrun` matches the same visible string/array/List/Buffer semantics, but the interpreter still uses a bootstrap reference-managed implementation internally. The language/runtime contract is aligned first, and deeper internal unification can continue later without changing source behavior.
+## SDK interpreter
+
+`hy run` and `hyrun` evaluate the SDK's bound IR using reference-managed C++ runtime values. They do not execute the generated ELF runtime. Sharing syntax and binding does not make all execution details identical: in particular the interpreter eagerly evaluates both operands of `&&`/`||`, whereas C-backed and direct native output short-circuit.
+
+Use explicit conditional guards in code that runs in all modes. The [compiler support table](../getting-started/compiler-options.md) and [builtin reference](builtins.md) describe additional differences.

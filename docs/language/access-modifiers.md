@@ -1,6 +1,8 @@
 # Access Modifiers
 
-Hylang uses four access modifiers. The current bootstrap supports normal class-local access rules plus subclass access for `protected`.
+The table below describes SDK access rules. Native Hydrogen checks private members and constructors, but has no inheritance model; use public/private members for native code. Static methods are supported natively; static fields are not.
+
+Hylang uses four access modifiers. The SDK supports normal class-local access rules plus subclass access for `protected`.
 
 | Modifier | Visibility |
 |----------|------------|
@@ -57,7 +59,7 @@ namespace Banking {
 
 ## Static members
 
-Both fields and methods can be `static`. Static members belong to the class rather than an instance:
+In the SDK, both fields and methods can be `static`; native code supports static methods only. Static members belong to the class rather than an instance:
 
 ```hylang
 class MathHelper {
@@ -66,6 +68,10 @@ class MathHelper {
     }
 }
 
-// Called without creating an object:
+```
+
+Inside another method, call it without creating an object:
+
+```hylang
 int result = MathHelper.Square(5);
 ```

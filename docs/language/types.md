@@ -1,78 +1,46 @@
-# Types
+# Types and strings
 
-## Primitive types
+## Core types
 
-| Type     | Description                                        |
-|----------|----------------------------------------------------|
-| `int`    | 64-bit signed integer                              |
-| `bool`   | Boolean (`true` / `false`)                         |
-| `string` | Managed immutable UTF-8 byte string                |
-| `null`   | The null literal; assignable to any reference type |
+| Type | Meaning |
+| --- | --- |
+| `int` | Signed 64-bit integer; this differs from C#'s 32-bit `int` |
+| `byte` | Unsigned byte, useful for file contents |
+| `bool` | `true` or `false` |
+| `string` | Immutable managed byte string |
+| `void` | A method returns no value |
+| `T[]` | Mutable managed array |
 
-## Arrays
+Class instances are reference values. `null` is assignable to reference types, including strings, class references, and arrays. Accessing a null receiver is a runtime error. Enums provide named numeric constants.
 
-Any non-`void` element type can form an array: `T[]`.
+The SDK additionally recognizes `sbyte`, `short`, `ushort`, `uint`, `long`, `ulong`, `nint`, and `nuint`. The native checker can recognize wider numeric declarations, but native generation restricts reachable numeric signatures to its supported subset. Neither route provides a floating-point type. See the [support table](../getting-started/compiler-options.md).
 
-Arrays are created with `new T[count]` and have a `.Length` property.
+## Strings
 
-```hylang
-int[] values = new int[4];
-string[] names = new string[2];
-int len = values.Length;
-values[0] = 42;
-```
-
-## String operations
-
-Strings support concatenation with `+` across `string`, `int`, and `bool` operands:
+Inside a method:
 
 ```hylang
-string msg = "Count: " + 42;
-string flag = "Enabled: " + true;
+string message = "Count: " + 42 + ", active: " + true;
+int size = message.Length;
+string firstByte = message[0];
+bool same = "hello" == "hel" + "lo";
 ```
 
-String length:
+`+` concatenates strings with strings, integers, and booleans. Equality compares string contents. Length and indexing operate on bytes, not Unicode code points; an indexed value is a one-byte string. Strings are immutable, so assigning to a string index is invalid.
+
+Native source literals accept ASCII and escapes `\n`, `\r`, `\t`, `\\`, and `\"`. Non-ASCII literals are rejected by native emission. File contents and command-line arguments preserve raw bytes, which can contain UTF-8; byte indexing may split an encoded character.
+
+## Local inference
 
 ```hylang
-int n = someString.Length;
+var count = 42;
+var text = "hello";
 ```
 
-String indexing is byte-based in the current bootstrap:
-
-```hylang
-string ch = someString[0];   // single-character string
-```
-
-## void
-
-`void` is the return type for methods that do not return a value.
+`var` is local type inference, not a dynamic type. It requires an initializer with a usable type; do not use it for parameters, fields, or method returns.
 
 ## User-defined types
 
-Hylang currently supports:
+Both routes support classes and enums. [Structs and interfaces](interfaces-and-structs.md), [inheritance](inheritance.md), and [generics](generics.md) are SDK features. Struct assignment/parameter passing copies values; class assignment copies references.
 
-- classes
-- structs
-- interfaces
-- enums
-- generic classes, interfaces, and methods
-
-Class and interface values are reference types, so `null` is valid and derived classes can be used anywhere a base class is expected:
-
-```hylang
-Animal value = new Dog();
-Animal maybe = null;
-```
-
-Structs use bootstrap by-value semantics:
-
-```hylang
-Point p = new Point(2, 3);
-Point copy = p;
-```
-
-`var` is also supported for local variables when an initializer is present:
-
-```hylang
-var box = new Box<int>(42);
-```
+Native numeric casts support integers, bytes, and enums. An explicit cast does not make unsupported object layouts or numeric signatures executable.

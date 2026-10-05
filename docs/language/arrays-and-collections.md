@@ -1,5 +1,7 @@
 # Arrays and Collections
 
+Both routes support arrays of their supported element types. Struct arrays require the SDK. The following allocation and indexing snippets belong inside a method.
+
 ## Managed arrays
 
 Hylang supports general managed arrays with C#-style allocation syntax:
@@ -38,13 +40,14 @@ Arrays may store:
 Example:
 
 ```hylang
+// Inside a method, with a declared Pair(int, string) constructor:
 Pair[] pairs = new Pair[2];
 pairs[0] = new Pair(9, "pair");
 ```
 
-## Bootstrap `System.Collections.List<T>`
+## SDK `System.Collections.List<T>`
 
-Phase 3 includes a minimal bootstrap `List<T>` in `System.Collections`.
+The SDK supplies a minimal `List<T>` in `System.Collections`. This generic collection is not supported by the native compiler.
 
 Supported API:
 
@@ -59,11 +62,16 @@ Example:
 ```hylang
 using System.Collections;
 
-List<int> values = new List<int>();
-values.Add(10);
-values.Add(20);
-System.Console.WriteLine(values.Count());
-System.Console.WriteLine(values.Get(0));
+public class Program {
+    public static int Main() {
+        List<int> values = new List<int>();
+        values.Add(10);
+        values.Add(20);
+        System.Console.WriteLine(values.Count());
+        System.Console.WriteLine(values.Get(0));
+        return 0;
+    }
+}
 ```
 
-This is intentionally small. Richer collection types belong to later standard-library phases.
+This complete SDK program prints `2`, then `10`. Maps, sets, and richer collection APIs are not provided by this builtin.

@@ -1,5 +1,7 @@
 # Overloading
 
+Method and constructor overloads require the C++ SDK. Native Hydrogen classes must use distinct method names and a single declared constructor.
+
 Hylang supports overloading for both methods and constructors. Multiple members may share the same name as long as their parameter types differ.
 
 ## Method overloading

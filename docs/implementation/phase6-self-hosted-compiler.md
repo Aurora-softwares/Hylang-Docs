@@ -1,51 +1,63 @@
-# Phase 6 Self-Hosted Compiler
+# Native compiler architecture and bootstrapping
 
-Phase 6 is the real self-hosting effort. The C++ compiler remains the trusted stage0 builder and oracle while the Hydrogen-written compiler grows toward a complete stage1 compiler.
+The Hydrogen-written compiler emits standalone Linux x86-64 ELF executables. It binds its CLI project's complete source/reference closure and can compile itself. User-facing commands and feature limits are documented in the [native compiler guide](../tools/hydrogen.md) and [support table](../getting-started/compiler-options.md).
 
-## Current Foundation
+## Executable IR and checking
 
-The Phase 6 workspace lives at `samples/self_hosting` in the compiler repo. It now includes:
+`ExecutableLowering` copies syntax declarations and bodies into independent structured IR. `ExecutableChecker` resolves types/calls and checks scopes, arguments, returns, fields, access, indexing, assignments, and loop control. All bodies are checked, including methods unreachable from `Main`.
 
-- `Hydrogen.Compiler.Binding` for the first Hydrogen-owned checker path.
-- `Hydrogen.Compiler.IR` for the first compiler IR object model.
-- `Hydrogen.Compiler.RuntimeModel` for the native runtime contract surface.
-- `Hydrogen.Compiler.CodeGen.X64` for direct Linux x64 ELF byte writing.
-- `Hydrogen.Compiler.Cli` with `tokens`, `parse`, `check`, `compile`, `build`, and a reserved `stage-compare` interface.
+`IrLowering` supplies the executable module to the backend. IR contains parameter and return types plus actual method operations; native compilation does not depend on an outline/signature-only dump. Semantic locations use `1:1` where AST node spans are unavailable. Return-path analysis is conservative.
 
-The native backend is intentionally tiny today. It recognizes a `System.Console.WriteLine("...")` proof program, lowers it to a small IR object, and writes a Linux x64 ELF executable directly from Hydrogen code. It does not emit C and does not call a C compiler, assembler, or linker.
+The backend emits methods reachable from `Main`, patches calls after emission, and supports recursion. Unsupported executable operations or runtime intrinsics cause compilation failure, with no output creation/overwrite. `check --emit-ir` is an explicit inspection command, not a fallback runnable ELF.
 
-## Status snapshot (Stage1)
+## Internal calling convention
 
-The Hydrogen-written compiler is still in “stage1 bootstrap” form:
+Arguments are evaluated left to right and pushed into eight-byte stack slots. Instance receivers precede explicit arguments. Callees establish an `rbp` frame, copy parameters to mutable local slots, and return through `rax`. The caller removes argument slots. `rbp` is preserved; `r14`/`r15` are reserved for runtime state, and other registers are caller-clobbered.
 
-- `check` and `--emit-ir` are stable for single files, but the IR is still **entrypoint-only** (not full functions/basic blocks yet).
-- `compile`/`build` can emit a Linux x64 ELF only for the current tiny native subset (a direct `System.Console.WriteLine("...")`-style proof program).
-- The project-driver side (`build <project.hyproj> -o <elf>`) exists, but compiling the full compiler project closure into a runnable stage1 ELF is still blocked on remaining parser + binder completeness work.
+This is a Hydrogen internal convention, not System V or C interoperability. The ELF entry stub adapts Linux process startup to `Main`; only that stub exits after a normal entrypoint return.
 
-## Commands
+## Runtime
+
+See [runtime behavior](../runtime/runtime-model.md) for application-level details.
+
+The runtime uses raw Linux syscalls and anonymous mappings, with conservative non-moving mark/sweep collection. It preserves interior roots, deep object graphs, and cycles. A temporary page index finds allocation headers during tracing; an intrusive worklist visits marked payloads. Generated frames zero slots and clear locals on normal scope exit to limit stale roots.
+
+A bounded 16 MiB recycled-page pool reduces syscall churn and is released by explicit collection. String indexing uses immutable one-byte runtime strings. This runtime is separate from the SDK's C-generated collector and environment stress controls.
+
+`tools/native-runtime/runtime.S` is the runtime assembly authoring source. `python3 tools/native-runtime/generate.py` regenerates the checked-in Hydrogen byte emitter. GNU binutils are needed for that development step, not for normal native compiler/application builds.
+
+## Initial seed and native generations
+
+From the compiler repository root:
 
 ```bash
-./build/hy run samples/self_hosting/Hydrogen.Compiler.Cli/Hydrogen.Compiler.Cli.hyproj -- check tests/phase6/native_hello.hy
-./build/hy run samples/self_hosting/Hydrogen.Compiler.Cli/Hydrogen.Compiler.Cli.hyproj -- compile tests/phase6/native_hello.hy -o build/native_hello
-chmod +x build/native_hello
-./build/native_hello
+cmake -S . -B build
+cmake --build build --target hydrogen_stage1
+cmake --build build --target hydrogen_bootstrap_proof
+cat build/self_hosting/bootstrap-proof.txt
 ```
 
-The generated executable prints:
+The initial target uses the C++ SDK's C backend to create `hydrogen-bootstrap`. That Hydrogen CLI emits the native compiler `hydrogen-stage1`. The proof uses stage 1 to build stage 2 and stage 2 to build stage 3 through the same compiler project closure.
 
-```text
-Hydrogen native hello
+All three native compilers run token/parser goldens and the same function/recursion, runtime/GC/files, project-semantic/IR, and compilation-failure suites. Stage 2/3 compiler executables and representative application outputs must have identical hashes. Stage 1 equality is reported as well; an older seed may differ after a backend change but must still pass behavioral checks.
+
+Native proof builds/tests run with an empty `PATH` and a 1 GiB address-space limit. CMake and `prlimit` are test drivers. Artifacts and the success report are published after checks pass.
+
+## Rebuild without stage 0
+
+Preserve a verified native seed outside the new output directory:
+
+```bash
+cp build/self_hosting/hydrogen-stage3 build/hydrogen-seed
+./build/hydrogen-seed build samples/self_hosting/Hydrogen.Compiler.Cli/Hydrogen.Compiler.Cli.hyproj -o build/hydrogen-rebuilt
+chmod +x build/hydrogen-rebuilt
 ```
 
-## Still To Do
+To repeat the full proof from that seed:
 
-Phase 6 is complete only when Hydrogen can compile itself. The remaining work includes:
+```bash
+cmake -DSOURCE_DIR="$PWD" -DOUTPUT_DIR="$PWD/build/native-bootstrap" \
+  -DSTAGE1_BINARY="$PWD/build/hydrogen-seed" -P cmake/HyBootstrapProof.cmake
+```
 
-- broad binding and type checking
-- a managed runtime clone for strings, arrays, classes, static fields, calls, and file IO
-- native codegen for compiler-shaped programs
-- stage0 building stage1
-- stage1 building stage2
-- stage1/stage2 diagnostics and runtime behavior matching on a shared corpus
-
-The bootstrap compiler should remain in-tree as the historical seed and fallback after promotion.
+This establishes repeated native self-compilation for the supported Linux x64 subset. A source-only checkout still needs a seed/bootstrap route. The SDK's broader language and workflow implementation has not been ported wholesale; removing C++ also requires replacing or retiring those features and their build/test dependencies.

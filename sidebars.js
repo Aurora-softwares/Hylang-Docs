@@ -9,6 +9,7 @@ const sidebars = {
       label: 'Getting Started',
       collapsed: false,
       items: [
+        'getting-started/compiler-options',
         'getting-started/building',
         'getting-started/running',
         'getting-started/compiling',
@@ -20,6 +21,7 @@ const sidebars = {
       collapsed: false,
       items: [
         'language/structure',
+        'language/methods-and-objects',
         'language/types',
         'language/arrays-and-collections',
         'language/operators',
@@ -36,18 +38,18 @@ const sidebars = {
       type: 'category',
       label: 'Tools',
       collapsed: false,
-      items: ['tools/hy', 'tools/hyrun', 'tools/hyc'],
+      items: ['tools/hydrogen', 'tools/projects', 'tools/hy', 'tools/hyrun', 'tools/hyc'],
     },
     {
       type: 'category',
       label: 'Runtime',
       collapsed: false,
-      items: ['runtime/runtime-model', 'runtime/unsafe-design'],
+      items: ['runtime/builtins', 'runtime/runtime-model', 'runtime/unsafe-design'],
     },
     {
       type: 'category',
-      label: 'Implementation Notes',
-      collapsed: false,
+      label: 'Compiler Architecture',
+      collapsed: true,
       items: [
         'implementation/phase2-bootstrap-spec',
         'implementation/phase4-tooling-slice',

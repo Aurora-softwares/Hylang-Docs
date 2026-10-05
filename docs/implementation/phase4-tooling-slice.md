@@ -1,209 +1,27 @@
-# Phase 4 Tooling Slice
+# SDK project and tooling model
 
-This page records the Phase 4 workflow surface implemented by the bootstrap compiler. It is local-first rather than hosted-service-oriented, but it is complete at bootstrap scope.
+The C++ SDK provides development workflows around its parser, binder, interpreter, and C backend. This page retains its historical URL; user-facing commands are documented under [SDK CLI](../tools/hy.md) and [projects](../tools/projects.md).
 
-## Summary
+## Projects and build cache
 
-The shipped Phase 4 slice focuses on developer workflow:
+Format-2 manifests describe executable, library, test, and workspace projects. Workspaces list members; project references and path dependencies bring library sources into a build. Older manifests remain readable for compatibility.
 
-- a primary `hy` CLI
-- v2 `.hyproj` manifests
-- workspaces and local path dependencies
-- build, run, test, format, check, and package workflows
-- incremental build caching
-- simple debug/source-map metadata
-- warning-bearing `hy check --json` diagnostics
-- local filesystem package registries
-- lightweight `hy lsp` support
-- VS Code assets in-repo
-- pure-Hylang showcase workspaces: `hexlab` and `sdk_demo`
+`hy build` accepts a source, project, or workspace and caches builds under `.hylang/cache/`. Cache inputs include manifests, source hashes, compiler version, target kind, and debug flags. `--debug` additionally emits simple `.hymap.json` artifact/source metadata.
 
-The raw-memory systems surface from Phase 3 is executable at bootstrap scope: `unsafe`, pointers, `stackalloc`, `sizeof`, `System.Runtime.Memory`, and `Buffer.DangerousData()` run in both interpreter and compiled mode.
+`hy test` runs explicit test projects, falling back to workspace members when no test projects are declared. `hy run` interprets rather than executing a previously built artifact.
 
-## CLI
+## Diagnostics and formatting
 
-The `hy` executable is the default entry point.
+`hy check --json` reports severity, file, line, column, and message fields. Besides binding errors, the SDK warns about unused imports/locals/parameters/private members, unreachable statements, shadowed locals, redundant unsafe blocks, statically detectable buffer use-after-free, duplicate dependencies, and invalid metadata.
 
-Supported commands:
+`hy fmt` formats sources and canonicalizes format-2 manifests; `--check` reports differences without changing files.
 
-- `hy new app|lib|tool|test|workspace <name>`
-- `hy build <target> [--target exe|lib] [-o output] [--debug]`
-- `hy run <target> [-- args...]`
-- `hy test [target]`
-- `hy fmt <path...> [--check]`
-- `hy check <target> [--json]`
-- `hy package pack <target> [-o output]`
-- `hy package add <target> <path>`
-- `hy package init-registry <path>`
-- `hy package publish <project.hyproj> --registry <path>`
-- `hy package search <query> --registry <path>`
-- `hy package install <target.hyproj> <package-id> [--version <version>] --registry <path>`
-- `hy lsp`
+## Local packages
 
-Compatibility shims remain available:
+The SDK can pack projects and publish/search/install packages using an explicitly supplied filesystem registry. It does not provide a hosted registry, authentication/signing, remote downloads, or semver range solving. `samples/sdk_demo` provides a complete local workflow.
 
-- `hyrun <file.hy|project.hyproj> [args...]`
-- `hyc build <file.hy|project.hyproj> [--target exe|lib] [-o output]`
+## Editor services
 
-## Manifest v2
+`hy lsp` communicates over stdio and supports diagnostics, document symbols, hover, and formatting. The compiler repository's `tools/vscode/hylang` supplies highlighting, snippets, tasks, a fallback JSON-diagnostic wrapper, and an entrypoint that starts the server. It does not yet implement an LSP client or register VS Code formatting/language providers; use the check/format tasks. Completion, go-to-definition, references, rename, semantic tokens, and full workspace indexing are not implemented.
 
-New projects scaffolded by `hy new` use the v2 manifest format.
-
-Current supported fields:
-
-- `format = 2`
-- `name`
-- `version`
-- `type = "exe" | "lib" | "test" | "workspace"`
-- `sources = [...]`
-- `project_references = [...]`
-- `members = [...]`
-- `[package]`
-  - `id`
-  - `description`
-  - `authors`
-  - `license`
-- `[dependencies]`
-  - inline tables with `path`
-  - optional `id`
-  - optional `version`
-
-Current manifest rules:
-
-- workspace manifests use `type = "workspace"` and `members = [...]`
-- test projects use `type = "test"`
-- v1 manifests still load for compatibility
-- local path dependencies are resolved directly
-- registry dependencies are resolved only from an explicitly supplied local filesystem registry
-- `hy fmt` canonicalizes v2 manifests only
-
-## Build and Test Workflow
-
-Current behavior:
-
-- `hy build` can build a script, a project, or every member of a workspace
-- `hy run` executes a script or project through the direct run path
-- `hy test` runs explicit `type = "test"` projects inside a workspace
-- if a workspace has no explicit test projects, `hy test` falls back to its member projects
-- build caching lives under `.hylang/cache/`
-- cache keys include manifest data, source hashes, compiler version, target type, and debug flags
-- `hy build --debug` emits a simple `.hymap.json` next to generated output
-
-`hy check` currently performs parse/bind/type-check validation plus a bootstrap lint pass. `--json` writes machine-readable diagnostics for editor and task integration.
-
-Current warning categories:
-
-- unused `using`
-- unused local
-- unused parameter
-- unreachable statement after terminating control flow
-- local shadowing another local or parameter
-- empty or unnecessary `unsafe` block
-- statically provable `Buffer` use-after-free
-- unused private field
-- unused private method
-- duplicate dependency entries
-- invalid manifest/package metadata
-
-## Bootstrap Standard Library Additions Used By Phase 4
-
-The workflow and showcase slice currently depends on these additional runtime pieces:
-
-- `System.IO.File.ReadAllBytes(string path) -> byte[]`
-- `System.IO.File.WriteAllBytes(string path, byte[] data)`
-- `System.Convert.ToInt32(string text)`
-- `System.Runtime.Buffer`
-  - `Allocate`
-  - `FromArray`
-  - `Length`
-  - `Get`
-  - `Set`
-  - `Slice`
-  - `Fill`
-  - `ToArray`
-  - `DangerousData`
-  - `Free`
-- `System.Runtime.Memory.Alloc`
-- `System.Runtime.Memory.Free`
-- `System.Runtime.Memory.Copy`
-- `System.Runtime.Memory.Set`
-- `System.Runtime.Memory.Compare`
-- `System.Testing.Assert.True`
-- `System.Testing.Assert.False`
-- `System.Testing.Assert.Equal`
-- `System.Testing.Assert.NotEqual`
-- `System.Testing.Assert.Fail`
-- `System.Runtime.BinaryPrimitives`
-  - `ReadUInt16LE`, `ReadUInt16BE`
-  - `ReadUInt32LE`, `ReadUInt32BE`
-  - `ReadUInt64LE`, `ReadUInt64BE`
-  - `ReadInt16LE`, `ReadInt16BE`
-  - `ReadInt32LE`, `ReadInt32BE`
-  - `ReadInt64LE`, `ReadInt64BE`
-  - matching 16-bit, 32-bit, and 64-bit write helpers
-
-## Showcase: HexLab
-
-`hexlab` is the current showcase workspace for the delivered Phase 4 slice.
-
-Workspace members:
-
-- `HexLab.Core`
-- `HexLab.Cli`
-- `HexLab.Tests`
-
-CLI surface:
-
-- `dump <file> [width] [start] [count]`
-- `inspect <file>`
-- `diff <left> <right>`
-- `search <file> <hex-pattern>`
-- `slice <file> <start> <count> <out>`
-
-Implemented showcase behavior:
-
-- hex dump output for binary files
-- binary signature inspection for PNG, ZIP, ELF, and PE/DOS headers
-- file diff reporting
-- byte-pattern search from hex strings
-- byte slicing and write-back
-- Buffer-backed core byte handling
-- explicit unsafe search fast path through `Buffer.DangerousData()`
-- package/build/test/fmt/check flow through the `hy` CLI
-
-Golden coverage currently exercises:
-
-- `inspect`
-- `dump`
-- `diff`
-- `search`
-- `slice`
-
-## Showcase: SDK Demo
-
-`sdk_demo` is the Phase 4 tooling ecosystem proof workspace.
-
-Workspace members:
-
-- `SdkDemo.Core`
-- `SdkDemo.Cli`
-- `SdkDemo.Tests`
-- `SdkDemo.Consumer`
-
-It proves:
-
-- workspace build and test
-- format and check workflows
-- package publishing into a local registry
-- package search
-- package install into a consumer project
-- running the consumer through the installed registry dependency
-
-## Deliberate Exclusions
-
-The following remain beyond Phase 4:
-
-- hosted registry service, authentication, signing, and remote downloads
-- semver range solving
-- full semantic IDE features such as completion, go-to-definition, references, rename, semantic tokens, and workspace indexing
-- debugger integration beyond source-mapped runtime failures
+These tooling services are SDK features, not commands of the direct native Hydrogen CLI.

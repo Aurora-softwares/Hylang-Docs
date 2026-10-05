@@ -1,34 +1,50 @@
-# Running a Script
+# Write and run a program
 
-`hyrun` interprets `.hy` source files and `.hyproj` project files directly — no compilation step needed.
+Save this complete program as `hello.hy` in the compiler repository root:
 
-## Run a single file
-
-```bash
-build/hyrun tests/hello_world.hy
+```hylang
+public class Program {
+    public static int Main(string[] args) {
+        string name = "World";
+        if (args.Length > 0) { name = args[0]; }
+        System.Console.WriteLine("Hello, " + name);
+        return 0;
+    }
+}
 ```
 
-## Run a project
+## Interpret with the SDK
 
 ```bash
-build/hyrun tests/projects/app/App.hyproj
+./build/hy run hello.hy -- Hydrogen
 ```
 
-You can also run the shipped proof projects directly:
+Output:
+
+```text
+Hello, Hydrogen
+```
+
+The SDK's `run` command interprets the program after parsing, binding, and type checking. It accepts a source file or executable project. `--` separates application arguments from the SDK command. The compatibility runner uses:
 
 ```bash
-build/hyrun samples/mini_frontend_model/MiniFrontendModel.hyproj
-build/hyrun samples/managed_collections/ManagedCollections.hyproj
+./build/hyrun hello.hy Hydrogen
 ```
 
-## Pass arguments
-
-Command-line arguments after the file path are forwarded to `Main`:
+## Run native output
 
 ```bash
-build/hyrun myscript.hy arg1 arg2
+./build/self_hosting/hydrogen-stage1 compile hello.hy -o build/hello
+chmod +x build/hello
+./build/hello Hydrogen
 ```
 
-Inside Hylang, read them through `string[] args` on your `Main` method.
+For repeat runs, execute `build/hello` directly. The native CLI does not have an interpreted `run` command.
 
-`hyrun` follows the same parser, binder, and type-checker pipeline as `hyc build`, so the interpreted path is meant to stay aligned with compiled behavior.
+## Entry point and arguments
+
+`Main` must be a static class method returning `int` or `void`. It accepts no parameters or one `string[]` parameter. User arguments exclude the executable name. A returned integer becomes the process exit status; use `0` for success.
+
+Array access is checked, so test `args.Length` before indexing. For programs also executed by the SDK interpreter, use explicit `if` guards: that interpreter evaluates both sides of `&&` and `||`.
+
+See [compilation](compiling.md) for projects, output paths, and diagnostics.
