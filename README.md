@@ -1,27 +1,48 @@
-# Hylang documentation
+# Hydrogen documentation site
 
-This repository builds the Hydrogen language and tool reference with Docusaurus. The published guide is at [Hylang-Docs](https://aurora-softwares.github.io/Hylang-Docs/).
+This is the Astro Starlight documentation site for Hydrogen/Hylang. It is
+independent from the legacy Docusaurus tree and is the site to deploy for the
+release-first Hydrogen documentation.
 
-## Preview and build
-
-Use Node.js 20 or newer and npm:
+## Local development
 
 ```bash
-npm ci
-npm start
+npm install
+npm run dev
 ```
 
-For a production build and local preview:
+Build the static site with:
 
 ```bash
 npm run build
-npm run serve
 ```
 
-Docs live under `docs/`; `sidebars.js` defines navigation. The home page is `docs/README.md`. Existing implementation-page IDs are retained for links, while their content describes architecture rather than phase progress.
+The deployable output is `dist/`.
 
-## Editing
+## Cloudflare Pages
 
-Document executable syntax and commands against the compiler implementation and tests. Distinguish the native Hydrogen compiler from the broader C++ SDK; mark route-specific language and APIs explicitly. Prefer complete runnable tutorial examples, and identify context for reference fragments. Project-relative paths in CLI examples assume the compiler checkout, not this documentation repository.
+Create a Cloudflare Pages project connected to this repository and use:
 
-Future proposals belong in the roadmap or design plans. Run `npm run build` to verify MDX and internal links after changes.
+| Setting | Value |
+| --- | --- |
+| Root directory | `Astra Starlight` |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Node.js version | 20 or newer |
+
+After adding the custom domain in Cloudflare Pages, set the project environment
+variable `SITE_URL` to its complete public origin, for example:
+
+```text
+https://docs.example.com
+```
+
+Astro uses that value when generating absolute sitemap and canonical URLs. Do not
+include a trailing slash.
+
+## Content
+
+Documentation pages live in `src/content/docs/`; navigation and site identity are
+configured in `astro.config.mjs`. The current site documents the released,
+self-hosted Hydrogen compiler, the UEFI Hello World proof, and the Australis-first
+roadmap.
