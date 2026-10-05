@@ -25,7 +25,7 @@ Create a Cloudflare Pages project connected to this repository and use:
 
 | Setting | Value |
 | --- | --- |
-| Root directory | `Astra Starlight` |
+| Root directory | Repository root (leave blank) |
 | Build command | `npm run build` |
 | Build output directory | `dist` |
 | Node.js version | 20 or newer |

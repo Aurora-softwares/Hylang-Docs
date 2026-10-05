@@ -10,7 +10,7 @@ export default defineConfig({
         description: 'The self-hosted language for Australis OS and its native applications.',
         social: [{ icon: 'github', label: 'Hydrogen Compiler on GitHub', href: 'https://github.com/Aurora-Softwares/Hylang-Compiler' }],
         editLink: {
-            baseUrl: 'https://github.com/Aurora-Softwares/Hylang-Docs/edit/main/Astra%20Starlight/',
+            baseUrl: 'https://github.com/Aurora-Softwares/Hylang-Docs/edit/main/',
         },
         customCss: ['./src/styles/custom.css'],
         head: [
