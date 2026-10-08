@@ -7,12 +7,23 @@ export default defineConfig({
     site: process.env.SITE_URL,
     integrations: [starlight({
         title: 'Hydrogen',
+		logo: {
+			src: './assets/hydrogen.icon.svg',
+		},
         description: 'The self-hosted language for Australis OS and its native applications.',
-        social: [{ icon: 'github', label: 'Hydrogen Compiler on GitHub', href: 'https://github.com/Aurora-Softwares/Hylang-Compiler' }],
+        social: [
+			{
+				icon: 'github',
+				label: 'Hydrogen Compiler on GitHub',
+				href: 'https://github.com/Aurora-Softwares/Hylang-Compiler'
+			}
+		],
         editLink: {
             baseUrl: 'https://github.com/Aurora-Softwares/Hylang-Docs/edit/main/',
         },
-        customCss: ['./src/styles/custom.css'],
+        customCss: [
+			'./src/styles/custom.css'
+		],
         head: [
             {
                 tag: 'meta',
@@ -64,7 +75,10 @@ export default defineConfig({
                     { label: 'Self-hosted compiler', slug: 'implementation/phase6-self-hosted-compiler' },
                 ],
             },
-            { label: 'Roadmap', slug: 'roadmap' },
+            {
+				label: 'Roadmap',
+				slug: 'roadmap'
+			},
 
 		],
 	})],
