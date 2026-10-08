@@ -1,5 +1,7 @@
 # Hydrogen documentation site
 
+<img src="assets/hydrogen.icon.svg" style="display: block;margin-left: auto; margin-right: auto; width: 30%;" />
+
 This is the Astro Starlight documentation site for Hydrogen/Hylang. It is
 independent from the legacy Docusaurus tree and is the site to deploy for the
 release-first Hydrogen documentation.
