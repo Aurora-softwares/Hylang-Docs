@@ -3,8 +3,8 @@ title: Control flow
 description: Branch, loop, continue, break, and return from Hydrogen methods.
 ---
 
-The released compiler supports `if`, `while`, `break`, `continue`, and `return`.
-It does not support `for`; use a `while` loop with an explicit increment.
+The released compiler supports `if`, `while`, `for`, `break`, `continue`, and
+`return`.
 
 ```csharp
 int i = 0;
@@ -18,6 +18,14 @@ while (i < 100) {
     }
     System.Console.WriteLine(i);
     i = i + 1;
+}
+```
+
+Use `for` when initialization, condition, and update belong together:
+
+```csharp
+for (int index = 0; index < 10; index = index + 1) {
+    System.Console.WriteLine(index);
 }
 ```
 

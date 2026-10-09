@@ -3,9 +3,9 @@ title: Runtime behavior
 description: Managed values, the Linux-native runtime, and the UEFI target boundary.
 ---
 
-Hydrogen programs use managed class objects, immutable byte strings, and mutable
-arrays. Allocation and collection are automatic. Class and array assignment copy
-references.
+Hydrogen programs use managed class objects, value-type structs, immutable byte
+strings, and mutable arrays. Allocation and collection are automatic. Class and
+array assignment copy references; struct assignment copies the value.
 
 ## Linux-native executables
 
@@ -23,6 +23,8 @@ failure report errors and terminate with status `1`.
 
 ## UEFI output
 
-The `uefi-x64` target has no embedded managed runtime. It is a small PE32+
-firmware application that directly calls the UEFI text-console service for the
-restricted Hello World profile.
+The `uefi-x64` target has no embedded managed runtime. It emits PE32+ firmware
+applications from a restricted static-entry sequence. Boot images can use UEFI
+console, key-wait, and image-launch services. Kernel images can leave boot
+services, establish early memory and paging, write to the GOP framebuffer, and
+halt. See [UEFI Hello World and kernel handoff](/getting-started/uefi-hello/).

@@ -18,8 +18,9 @@ For an executable project:
 hy build app/App.hyproj -o app/bin/app
 ```
 
-Project references supply source to one combined executable. The current CLI does
-not produce standalone library archives or workspace manifests.
+Project references supply source to one combined executable. `efi` and `kernel`
+manifests emit PE32+ images, while an `os` manifest builds its referenced images
+into an output directory. The CLI does not produce standalone library archives.
 
 ## Diagnostics and IR
 

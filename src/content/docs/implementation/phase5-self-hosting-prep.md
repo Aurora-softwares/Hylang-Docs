@@ -8,8 +8,8 @@ description: How the Hydrogen compiler reaches executable IR and native output.
 
 The compiler parses Hydrogen source, binds names and types, lowers reachable
 methods into executable IR, and emits native x86-64 output. The current Linux
-backend includes its runtime in each executable; the UEFI path uses a deliberately
-small PE32+ image builder for the firmware console proof.
+backend includes its runtime in each executable; the UEFI path uses a PE32+ image
+builder for the constrained console, image-launch, and early-kernel profiles.
 
 The compiler's own CLI project is within the supported language subset, enabling a
 verified Hydrogen binary to rebuild that project closure without a C++ toolchain.

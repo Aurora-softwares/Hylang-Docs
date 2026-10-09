@@ -4,7 +4,7 @@ description: Learn Hydrogen, the self-hosted language for Australis OS and nativ
 template: splash
 hero:
   title: Build the future of Australis in Hydrogen.
-  tagline: A self-hosted systems language with direct Linux output today and a growing UEFI path toward Australis OS.
+  tagline: A self-hosted systems language with native Linux output and an early UEFI-to-kernel path.
   actions:
     - text: Install Hydrogen
       link: /getting-started/installing/
@@ -18,22 +18,22 @@ hero:
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
 Hydrogen, also called Hylang, is a C#-inspired language built around namespaces,
-classes, and methods. Its released compiler is written in Hydrogen itself. Use it
-to build Linux-native programs now and to help build the firmware and kernel layers
-of Australis OS next.
+classes, structs, and methods. Its released compiler is written in Hydrogen itself.
+The current release is [`alpha-0.0.2`](https://github.com/Aurora-Softwares/Hylang-Compiler/releases/tag/alpha-0.0.2).
+Use it to build Linux-native programs and early Australis firmware and kernel images.
 
 <CardGrid stagger>
   <Card title="Start with the release" icon="download">
     Download the self-hosted compiler, write a first program, and produce a Linux executable without a C++ toolchain.
   </Card>
   <Card title="Understand the current scope" icon="information">
-    Learn the supported language subset and the exact boundary between Linux-native output and the UEFI proof target.
+    Learn the supported language subset and the exact boundary between Linux-native output and the UEFI target.
   </Card>
-  <Card title="Boot the proof of concept" icon="rocket">
-    Compile a PE32+ EFI application, package it with Australis, and boot it in QEMU with OVMF.
+  <Card title="Build UEFI images" icon="rocket">
+    Compile PE32+ bootloader and kernel images, including the early memory and framebuffer handoff.
   </Card>
   <Card title="See where it is going" icon="code-branch">
-    Follow the roadmap from firmware services and keyboard input to a command shell, kernel services, and native apps.
+    Follow the roadmap toward general firmware APIs, kernel services, and native apps.
   </Card>
   <Card title="Help shape Hydrogen" icon="comment">
     [Request a feature or share a use case](https://github.com/Aurora-Softwares/Hylang-Compiler/issues/new/choose).
@@ -43,9 +43,10 @@ of Australis OS next.
 ## The current milestone
 
 The released compiler runs on Linux x86-64 and directly emits standalone Linux
-x86-64 executables. Its `uefi-x64` target can also create a bootable UEFI text
-console Hello World. This is a real compiler-to-firmware milestone, but not yet a
-complete UEFI library or an independent operating-system kernel.
+x86-64 executables. Its `uefi-x64` target can create bootloader and early-kernel
+images, including a constrained transition out of UEFI boot services and direct
+framebuffer text. This is still a fixed compilation profile rather than a complete
+UEFI library or a general operating-system kernel.
 
 Australis OS and native Australis applications are the primary direction. Linux
 is the development host today; Windows and macOS compiler ports will follow when

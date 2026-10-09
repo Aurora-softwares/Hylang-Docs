@@ -15,27 +15,31 @@ valuable future ports, but they do not set the core work order.
 - The self-hosted compiler emits a PE32+ `uefi-x64` application.
 - Australis packages that output into a bootable ISO that displays Hydrogen text
   in QEMU/OVMF.
+- The UEFI target clears the console, waits for a key, and chain-loads an EFI image.
+- The early kernel path exits boot services, initializes physical memory and
+  paging, and writes to a framebuffer after firmware services end.
+- OS manifests build separate bootloader and kernel EFI images into an output tree.
 
-## Next: usable UEFI programs
+## Next: general UEFI and kernel facilities
 
-The current firmware target is a console-output proof, not a runtime. The next
-milestone is a minimal `Hydrogen.Uefi` library and the compiler support it needs:
+The current firmware target supports a fixed sequence of built-in operations,
+not a general runtime. A broader UEFI and kernel programming model still needs:
 
-- Console `Write`, `WriteLine`, and `Clear`.
-- Keyboard input.
-- Basic boot-service and memory-map wrappers.
+- General console and keyboard APIs beyond literal output and one key wait.
+- General boot-service and memory-map wrappers.
 - Explicit UEFI data layouts, function pointers, strings, and ABI support.
 - Tests that compile and boot each feature.
 
-This enables a firmware-hosted command shell written completely in Hydrogen.
+Those capabilities would enable a firmware-hosted command shell written in
+Hydrogen.
 
-## Then: Australis kernel work
+## Further Australis kernel work
 
-1. Obtain the firmware memory map and call `ExitBootServices`.
-2. Provide allocation and framebuffer output without firmware services.
-3. Add interrupts plus keyboard and storage drivers.
-4. Define the kernel/runtime boundary.
-5. Grow userland and system calls.
+1. Turn the current fixed early-memory and framebuffer sequence into reusable
+   kernel APIs.
+2. Add interrupt, input, and storage facilities suitable for kernel code.
+3. Define the kernel/runtime boundary.
+4. Grow userland and system calls.
 
 ## Native application platform
 

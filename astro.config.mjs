@@ -42,7 +42,7 @@ export default defineConfig({
                     { label: 'Write and run a program', slug: 'getting-started/running' },
                     { label: 'Build with Hydrogen', slug: 'getting-started/building' },
                     { label: 'Compile an executable', slug: 'getting-started/compiling' },
-                    { label: 'Make a bootable UEFI Hello World', slug: 'getting-started/uefi-hello' },
+                    { label: 'UEFI Hello World and kernel handoff', slug: 'getting-started/uefi-hello' },
                 ],
             },
             {
