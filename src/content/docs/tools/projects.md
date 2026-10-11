@@ -1,6 +1,6 @@
 ---
 title: Projects and references
-description: Organize executable, EFI, kernel, and OS projects.
+description: Organize executable, EFI, kernel, OS, and Australis application projects.
 ---
 
 A `.hyproj` manifest lists sources compiled together. Paths are relative to the
@@ -85,3 +85,28 @@ The CLI can scaffold manifests with `hy new os Demo`, `hy new efi Boot`, and
 `hy new kernel Kernel`. Edit the generated manifests to add the OS references.
 It does not build workspace or test projects as native outputs, standalone
 library archives, packages, or dependency registries.
+
+## Current Australis development projects
+
+The compiler checkout used by the current Australis OS development build adds
+`type = "exec"` for AUEX `.exec` applications and emits the OS kernel as a raw
+`AUKR` image. These features are newer than the published `alpha-0.0.2`
+release described above. Use a compiler checkout with this support when building
+the current OS tree.
+
+An `exec` manifest uses format 2 and a plain `.exec` output filename:
+
+```toml
+format = 2
+name = "Example"
+type = "exec"
+output = "example.exec"
+sources = ["Program.hy"]
+project_references = []
+```
+
+Create one with `hy new exec Example`, or build an existing project with
+`hy build Example/Example.hyproj -o example.exec`. An aggregate `os` project
+can reference `exec` projects alongside the bootloader and kernel. See
+[Australis applications](/tools/australis-applications/) for the supported
+entry point and source features.

@@ -47,4 +47,6 @@ include a trailing slash.
 Documentation pages live in `src/content/docs/`; navigation and site identity are
 configured in `astro.config.mjs`. The current site documents Hydrogen
 `alpha-0.0.2`, including its self-hosted compiler, Linux-native language surface,
-UEFI bootloader and early-kernel profiles, and Australis-first roadmap.
+UEFI bootloader and early-kernel profiles. It also describes newer Australis
+project and application features in the development compiler checkout, clearly
+separated from the published release.

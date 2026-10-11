@@ -63,6 +63,7 @@ export default defineConfig({
                 items: [
                     { label: 'Hydrogen compiler', slug: 'tools/hydrogen' },
                     { label: 'Projects and references', slug: 'tools/projects' },
+                    { label: 'Australis applications', slug: 'tools/australis-applications' },
                     { label: 'Builtin APIs', slug: 'runtime/builtins' },
                     { label: 'Runtime behavior', slug: 'runtime/runtime-model' },
                 ],

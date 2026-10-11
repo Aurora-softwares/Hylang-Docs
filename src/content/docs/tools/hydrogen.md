@@ -41,3 +41,12 @@ are not supported by this target.
 Commands return `0` on success and nonzero for invalid input or unsupported
 compilation. A failed compilation does not create or overwrite the requested output.
 An existing executable may therefore be from an earlier successful build.
+
+## Features in the development checkout
+
+The current compiler source checkout extends `hy new` and `hy build` with
+Australis `exec` projects. It emits checked AUEX `.exec` applications and a raw
+`AUKR` kernel image for the current Australis OS tree. These capabilities are
+not part of the published `alpha-0.0.2` command and target summary above.
+See [Projects and references](/tools/projects/) and
+[Australis applications](/tools/australis-applications/) for examples.
