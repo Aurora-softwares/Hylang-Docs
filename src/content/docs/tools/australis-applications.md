@@ -28,8 +28,8 @@ project_references = []
 ```
 
 An AUEX v1 entry point is `public static void Main(string[] args)` or
-`public static int Main(string[] args)`. The current backend does not populate
-`args`, so do not depend on command-line arguments yet. For example:
+`public static int Main(string[] args)`. Shell arguments populate `args`.
+For example:
 
 ```csharp
 public class Program {
@@ -48,14 +48,31 @@ public class Program {
 hy build Example/Example.hyproj -o example.exec
 ```
 
-The source subset supports scoped integer and Boolean locals, assignment,
+The source subset supports scoped scalar and string locals, assignment,
 arithmetic, comparisons, short-circuit Boolean operators, `if`/`else`, `while`,
 `for`, `break`, `continue`, scalar console output, and computed exit codes.
-Australis builtins provide literal terminal output, bounded terminal input,
-read-only file open/read/close, and cooperative yield. Read capacities must be
-literals; file paths and string output must be ASCII literals. General strings,
-arrays, method calls, writable files, and process creation are not yet in this
-backend.
+Portable source can use `System.Console.ReadLine()`,
+`System.IO.File.Exists(path)`, `System.IO.File.ReadAllText(path)`,
+`System.IO.File.WriteAllText(path, text)`, and
+`System.Convert.ToInt32(text)`.
+Returned strings remain valid across later reads; console lines and text files
+are currently limited to 255 bytes. The `System.Australis.*` builtins provide
+additional metadata, directory, writable-file, cooperative-yield, and low-level
+operations. General arrays, method calls, and process creation are not yet in
+this backend.
+
+```csharp
+public class Program {
+    public static void Main(string[] args) {
+        System.Console.Write("Name: ");
+        string name = System.Console.ReadLine();
+        string message = System.IO.File.ReadAllText("/hello.txt");
+        System.IO.File.WriteAllText("/data/last-name.txt", name);
+        System.Console.WriteLine(name);
+        System.Console.Write(message);
+    }
+}
+```
 
 ## Add it to an Australis image
 

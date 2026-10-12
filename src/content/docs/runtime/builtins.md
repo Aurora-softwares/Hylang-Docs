@@ -4,7 +4,11 @@ description: Linux runtime services and the constrained UEFI built-ins.
 ---
 
 These services are implemented by the released compiler's Linux-native runtime.
-Use the fully qualified names shown here.
+The development AUEX backend also implements `Console.Write`, `WriteLine`,
+`System.IO.File.Exists`, `ReadAllText`, `WriteAllText`, and
+`System.Convert.ToInt32`. AUEX additionally implements `Console.ReadLine`;
+its console and file text values are limited to 255 bytes. Use the fully
+qualified names shown here.
 
 | Call | Result | Use |
 | --- | --- | --- |
@@ -19,7 +23,7 @@ Use the fully qualified names shown here.
 
 `ToInt32` returns Hydrogen's 32-bit `int`. Malformed/out-of-range values and failed
 I/O terminate the application with an error. `WriteLine()` accepts no argument for
-an empty line. `Console.ReadLine` is not implemented.
+an empty line. `Console.ReadLine` is currently AUEX-only.
 
 ## GC diagnostics
 
