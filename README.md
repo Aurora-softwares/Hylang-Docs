@@ -53,4 +53,6 @@ configured in `astro.config.mjs`. The current site documents Hydrogen
 `alpha-0.0.2`, including its self-hosted compiler, Linux-native language surface,
 UEFI bootloader and early-kernel profiles. It also describes newer Australis
 project and application features in the development compiler checkout, clearly
-separated from the published release.
+separated from the published release. The current Australis checkout adds
+raw-kernel/AUEX project support; its small AUN1 ring-3 loader is an OS feature,
+not yet a Hydrogen source compilation target.

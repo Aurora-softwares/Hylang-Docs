@@ -7,6 +7,8 @@ The current **development compiler checkout** can build Hylang `exec` projects
 for Australis OS. This workflow is newer than the published Hydrogen
 `alpha-0.0.2` release. Australis loads the resulting `.exec` file through its
 checked AUEX v1 interpreter; it is not a Linux ELF or native ring-3 process.
+Australis also has a separate, bounded AUN1 ring-3 loader, but Hydrogen does
+not yet compile Hylang source into AUN1.
 
 ## Create and build a project
 
@@ -58,8 +60,10 @@ Portable source can use `System.Console.ReadLine()`,
 Returned strings remain valid across later reads; console lines and text files
 are currently limited to 255 bytes. The `System.Australis.*` builtins provide
 additional metadata, directory, writable-file, cooperative-yield, and low-level
-operations. General arrays, method calls, and process creation are not yet in
-this backend.
+operations. The current development backend also supports application method
+calls, bounded strings and byte arrays, and concurrent AUEX child processes.
+Native thread preemption and a general managed native Australis runtime remain
+future work.
 
 ```csharp
 public class Program {
@@ -85,10 +89,10 @@ make iso
 make run-serial
 ```
 
-At the shell, run the output name from the root filesystem:
+At the shell, run the output name from the read-only system bin directory:
 
 ```text
-australis> run /example.exec
+australis> run /System/Bin/example.exec
 australis> ps
 ```
 

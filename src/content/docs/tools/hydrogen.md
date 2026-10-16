@@ -50,3 +50,5 @@ Australis `exec` projects. It emits checked AUEX `.exec` applications and a raw
 not part of the published `alpha-0.0.2` command and target summary above.
 See [Projects and references](/tools/projects/) and
 [Australis applications](/tools/australis-applications/) for examples.
+The OS's separate AUN1 ring-3 loader accepts small native machine-code images;
+`hy build` does not yet emit AUN1 or provide its native terminal/file/IPC ABI.

@@ -19,8 +19,8 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 
 Hydrogen, also called Hylang, is a C#-inspired language built around namespaces,
 classes, structs, and methods. Its released compiler is written in Hydrogen itself.
-The current release is [`alpha-0.0.2`](https://github.com/Aurora-Softwares/Hylang-Compiler/releases/tag/alpha-0.0.2).
-Use it to build Linux-native programs and early Australis firmware and kernel images.
+The documented published release is [`alpha-0.0.2`](https://github.com/Aurora-Softwares/Hylang-Compiler/releases/tag/alpha-0.0.2).
+Use it for Linux-native programs and its constrained UEFI/early-kernel profile. The current Australis OS tree requires a newer development compiler checkout.
 
 <CardGrid stagger>
   <Card title="Start with the release" icon="download">
@@ -33,7 +33,7 @@ Use it to build Linux-native programs and early Australis firmware and kernel im
     Compile PE32+ bootloader and kernel images, including the early memory and framebuffer handoff.
   </Card>
   <Card title="See where it is going" icon="code-branch">
-    Follow the roadmap toward general firmware APIs, kernel services, and native apps.
+    Follow the roadmap toward general firmware APIs and full native Australis application support.
   </Card>
   <Card title="Help shape Hydrogen" icon="comment">
     [Request a feature or share a use case](https://github.com/Aurora-Softwares/Hylang-Compiler/issues/new/choose).
@@ -54,8 +54,9 @@ they can be properly packaged and validated.
 
 ## Current Australis development
 
-The compiler source checkout used by Australis now builds a separate raw kernel
-image and checked `.exec` applications. These capabilities are newer than the
-published `alpha-0.0.2` release. See [Projects and references](/tools/projects/)
-and [Australis applications](/tools/australis-applications/) for the development
-workflow.
+The compiler source checkout used by Australis builds a separate raw `AUKR`
+kernel image and checked AUEX `.exec` applications. Australis also loads small
+AUN1 machine-code programs in hardware ring 3; the Hydrogen compiler does not
+yet emit that native format. These capabilities are newer than the documented
+`alpha-0.0.2` release. See [Projects and references](/tools/projects/) and
+[Australis applications](/tools/australis-applications/) for the development workflow.

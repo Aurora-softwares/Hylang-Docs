@@ -20,6 +20,8 @@ valuable future ports, but they do not set the core work order.
 - OS manifests build separate bootloader and kernel images into an output tree.
 - The current compiler checkout builds checked AUEX `.exec` applications from
   Hylang projects for the Australis shell.
+- Australis loads bounded AUN1 machine-code children in ring 3 and contains
+  their faults. This native loader is separate from Hydrogen's AUEX backend.
 
 ## Next: general UEFI and kernel facilities
 
@@ -38,16 +40,17 @@ kernel. The broader UEFI APIs above would enable other firmware-hosted programs.
 
 1. Turn bootstrap memory, interrupts, input, and storage code into reusable
    kernel APIs with broader hardware coverage.
-2. Extend the checked user-program ABI and external userland services.
-3. Add native process privilege separation and scheduling.
-4. Expand filesystem writes and recovery in the live kernel.
+2. Extend native terminal, file, process, and channel syscalls beyond PID/exit.
+3. Add native scheduling/preemption and broader capability/resource policy.
+4. Expand filesystem recovery and physical-media validation.
 
 ## Native application platform
 
-Hydrogen now compiles a constrained AUEX application format for Australis.
-Application libraries, a richer process interface, and native execution remain
-future work. See [Australis applications](/tools/australis-applications/) for the
-current development workflow.
+Hydrogen compiles AUEX for Australis, with a bounded process interface and
+software-checked execution. The OS's AUN1 path proves native ring-3 isolation
+for small programs; compiling Hydrogen source into AUN1, implementing its full
+syscall ABI, and providing native application libraries remain future work. See
+[Australis applications](/tools/australis-applications/) for the AUEX workflow.
 
 Australis will eventually need its own coherent native visual system, in the broad
 sense that Material and Liquid Glass give other platforms a visual language. That

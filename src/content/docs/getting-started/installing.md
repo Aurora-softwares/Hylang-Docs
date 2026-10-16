@@ -3,9 +3,10 @@ title: Install the released compiler
 description: Download and use the self-hosted Hydrogen compiler on Linux x86-64.
 ---
 
-Hydrogen is distributed as a self-hosted compiler binary. For normal language and
-Australis development, download that release binary; you do not need the older
-C++ SDK or a C++ compiler.
+Hydrogen is distributed as a self-hosted compiler binary. Use the documented
+release for its Linux-native and constrained UEFI features. Building the current
+Australis OS tree requires the newer compiler source checkout; its Makefile
+builds a local application compiler from that source.
 
 ## Linux x86-64
 

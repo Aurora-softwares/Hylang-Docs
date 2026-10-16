@@ -3,10 +3,11 @@ title: The released Hydrogen compiler
 description: The supported language surface and output targets in the current release.
 ---
 
-The latest published release is [Hydrogen `alpha-0.0.2`](https://github.com/Aurora-Softwares/Hylang-Compiler/releases/tag/alpha-0.0.2).
+This guide describes the published [Hydrogen `alpha-0.0.2`](https://github.com/Aurora-Softwares/Hylang-Compiler/releases/tag/alpha-0.0.2) release.
 Hydrogen releases ship the self-hosted Hydrogen compiler. This is the compiler you
-use to write programs, build native applications, and build Australis OS. There is
-no compiler choice in the normal user workflow.
+use to write programs and build Linux-native applications. The current Australis
+OS tree requires a newer development compiler checkout for raw `AUKR` kernels
+and AUEX `.exec` applications.
 
 The current release runs on Linux x86-64. Its default output is a standalone Linux
 x86-64 executable. It can also emit PE32+ `uefi-x64` firmware images for a

@@ -28,3 +28,13 @@ applications from a restricted static-entry sequence. Boot images can use UEFI
 console, key-wait, and image-launch services. Kernel images can leave boot
 services, establish early memory and paging, write to the GOP framebuffer, and
 halt. See [UEFI Hello World and kernel handoff](/getting-started/uefi-hello/).
+
+## Australis development formats
+
+The current development compiler emits AUEX `.exec` images for Australis. The
+kernel checks their instructions and memory accesses in its interpreter, and
+provides bounded terminal, file, process, and channel calls. AUEX does not run
+in hardware user mode. Separately, the OS can load small AUN1 machine-code
+children in ring 3, with private user mappings and a stack guard. AUN1 currently
+has PID and exit syscalls, and a fault ends only that child. Hydrogen does not
+yet compile source into AUN1 or supply a managed native Australis runtime.

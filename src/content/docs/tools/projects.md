@@ -90,7 +90,7 @@ library archives, packages, or dependency registries.
 
 The compiler checkout used by the current Australis OS development build adds
 `type = "exec"` for AUEX `.exec` applications and emits the OS kernel as a raw
-`AUKR` image. These features are newer than the published `alpha-0.0.2`
+`AUKR` image at `EFI/AUSTRALIS/KERNEL.BIN`. These features are newer than the documented `alpha-0.0.2`
 release described above. Use a compiler checkout with this support when building
 the current OS tree.
 
@@ -110,3 +110,7 @@ Create one with `hy new exec Example`, or build an existing project with
 can reference `exec` projects alongside the bootloader and kernel. See
 [Australis applications](/tools/australis-applications/) for the supported
 entry point and source features.
+
+The current OS also accepts bounded AUN1 native images under `/System/Bin`,
+but the Hydrogen `exec` backend emits AUEX, not AUN1. AUN1 is presently built
+by the OS's small machine-code test-image tool.
