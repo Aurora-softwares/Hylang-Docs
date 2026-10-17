@@ -29,8 +29,10 @@ an empty line. `Console.ReadLine` is currently AUEX-only.
 
 | Call | Result | Meaning |
 | --- | --- | --- |
-| `System.Runtime.GC.Collect()` | `void` | Force collection and release cached free pages |
+| `System.Runtime.GC.Collect()` | `void` | Force collection and release cached free pages in native output; the development SDK's C output also supports it, while its interpreter treats it as a no-op |
 | `System.Runtime.GC.GetAllocatedBytes()` | `int` | Active managed mapping bytes, excluding cached free pages |
+
+`GetAllocatedBytes()` is available to native source programs only.
 
 ## UEFI boundary
 
