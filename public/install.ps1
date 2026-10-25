@@ -19,7 +19,7 @@ try {
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
         $headers = @{ Accept = 'application/vnd.github+json'; 'User-Agent' = 'Hydrogen-installer' }
-        $releases = @(Invoke-RestMethod -Uri 'https://api.github.com/repos/Aurora-softwares/Hylang-Compiler/releases?per_page=100' -Headers $headers -TimeoutSec 30)
+        $releases = Invoke-RestMethod -Uri 'https://api.github.com/repos/Aurora-softwares/Hylang-Compiler/releases?per_page=100' -Headers $headers -TimeoutSec 30
         $eligible = @($releases | Where-Object {
             -not $_.draft -and $_.tag_name -match '^[A-Za-z0-9][A-Za-z0-9._-]*$' -and
             $(if ($channel -eq 'stable') {
@@ -60,46 +60,62 @@ try {
         Add-Type -AssemblyName System.IO.Compression.FileSystem
         $dirname = "hydrogen-$version-windows-x86_64"
         $allowed = @(
-            "$dirname/", "$dirname/bin/", "$dirname/libexec/", "$dirname/bin/hy.exe",
+            "$dirname/", "$dirname/bin/", "$dirname/libexec/", "$dirname/bin/hy.cmd",
             "$dirname/libexec/hy-core.exe", "$dirname/libexec/hy-maintenance.ps1",
             "$dirname/BUILD-INFO.txt", "$dirname/README.md", "$dirname/LICENSE",
             "$dirname/SHA256SUMS", "$dirname/INSTALL-MANIFEST"
         )
         $zip = [IO.Compression.ZipFile]::OpenRead($archive)
+        $seen = @{}
         try {
             foreach ($entry in $zip.Entries) {
                 if ($entry.FullName -cnotin $allowed) { throw "Unexpected archive member: $($entry.FullName)" }
+                if ($seen.ContainsKey($entry.FullName)) { throw "Repeated archive member: $($entry.FullName)" }
+                $seen[$entry.FullName] = $true
                 $unixType = ($entry.ExternalAttributes -shr 16) -band 0xF000
                 if ($unixType -eq 0xA000) { throw 'Archive contains a symbolic link.' }
             }
         } finally { $zip.Dispose() }
         [IO.Compression.ZipFile]::ExtractToDirectory($archive, $work)
         $stage = Join-Path $work $dirname
-        $required = @('bin/hy.exe', 'libexec/hy-core.exe', 'libexec/hy-maintenance.ps1',
-            'BUILD-INFO.txt', 'README.md', 'SHA256SUMS', 'INSTALL-MANIFEST')
+        $required = @('bin/hy.cmd', 'libexec/hy-core.exe', 'libexec/hy-maintenance.ps1',
+            'BUILD-INFO.txt', 'README.md', 'LICENSE', 'SHA256SUMS', 'INSTALL-MANIFEST')
         $manifest = Get-Content -LiteralPath (Join-Path $stage 'INSTALL-MANIFEST')
         if ($manifest[0] -cne 'hydrogen-install-manifest-v1') { throw 'Unknown installation manifest.' }
+        if ($manifest.Count -ne ($required.Count + 1)) { throw 'Unknown installation manifest file count.' }
         foreach ($file in $required) {
             $path = Join-Path $stage $file
-            if (-not (Test-Path -LiteralPath $path -PathType Leaf) -or $file -cnotin $manifest) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf) -or
+                @($manifest | Where-Object { $_ -ceq $file }).Count -ne 1) {
                 throw "Release file missing or unowned: $file"
+            }
+        }
+        foreach ($item in (Get-ChildItem -LiteralPath $stage -Force -Recurse)) {
+            if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+                throw "Release contains a link: $($item.FullName)"
             }
         }
         $buildInfo = Get-Content -LiteralPath (Join-Path $stage 'BUILD-INFO.txt')
         if ("Hydrogen release: $version" -cnotin $buildInfo) { throw 'Release version mismatch.' }
         foreach ($line in (Get-Content -LiteralPath (Join-Path $stage 'SHA256SUMS'))) {
             if ($line -cnotmatch '^([0-9a-f]{64})  ([A-Za-z0-9./_-]+)$') { throw 'Invalid release checksum list.' }
+            $expectedHash = $Matches[1]
             $file = $Matches[2]
             if ($file -cnotin $manifest) { throw "Checksum file is not in manifest: $file" }
             $fileHash = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $stage $file)).Hash.ToLowerInvariant()
-            if ($fileHash -cne $Matches[1]) { throw "Internal checksum mismatch: $file" }
+            if ($fileHash -cne $expectedHash) { throw "Internal checksum mismatch: $file" }
         }
         Move-Item -LiteralPath $stage -Destination $root
         $bin = Join-Path $root 'bin'
         $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
-        if ($bin -notin @($userPath -split ';')) {
-            $newPath = if ($userPath) { "$userPath;$bin" } else { $bin }
-            [Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
+        try {
+            if ($bin -notin @($userPath -split ';')) {
+                $newPath = if ($userPath) { "$userPath;$bin" } else { $bin }
+                [Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
+            }
+        } catch {
+            Remove-Item -LiteralPath $root -Recurse -Force
+            throw
         }
         Write-Output "Installed Hydrogen $version at $root"
         Write-Output 'Open a new terminal to use hy.'

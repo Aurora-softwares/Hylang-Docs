@@ -1,6 +1,6 @@
 ---
 title: Install the released compiler
-description: Download and use the self-hosted Hydrogen compiler on Linux x86-64.
+description: Download and use the self-hosted Hydrogen compiler on Linux and Windows x64.
 ---
 
 Hydrogen is distributed as a self-hosted compiler binary. Use the documented
@@ -31,9 +31,10 @@ Both scripts download an official release archive, verify the release digest
 and SHA-256 sidecar, then install to a user-owned directory. The Linux script
 creates `~/.local/bin/hy`; add that directory to `PATH` if necessary. The
 Windows script adds the new `bin` directory to the user `PATH` for new
-terminals. Stable-channel installers omit the `HYDROGEN_CHANNEL` setting once
-a stable release exists. Native update and uninstall commands for these new
-assets are still in development.
+terminals; the command is provided by `hy.cmd`. Stable-channel installers omit
+the `HYDROGEN_CHANNEL` setting once a stable release exists. Packaged Linux
+builds have update and uninstall commands. The Windows lifecycle helper is
+awaiting validation on a real Windows host.
 
 ## Linux x86-64
 
