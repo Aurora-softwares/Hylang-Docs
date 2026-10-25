@@ -1,6 +1,10 @@
+<div align="center">
+
+<img src="assets/hydrogen.icon.svg" width="30%" />
+
 # Hydrogen documentation site
 
-<img src="assets/hydrogen.icon.svg" style="display: block;margin-left: auto; margin-right: auto; width: 30%;" />
+</div>
 
 This is the Astro Starlight documentation site for Hydrogen/Hylang. It is
 independent from the legacy Docusaurus tree and is the site to deploy for the
@@ -19,7 +23,11 @@ Build the static site with:
 npm run build
 ```
 
-The deployable output is `dist/`.
+The deployable output is `dist/`. The static assets in `public/` include
+`install.sh`, `install.ps1`, and the curated source registry at
+`registry/v1/`. Rebuild registry assets with `python3 tools/build-registry.py`
+after changing `registry/approved.json`; check them with
+`python3 tools/build-registry.py --check`.
 
 ## Cloudflare Pages
 
@@ -36,7 +44,7 @@ After adding the custom domain in Cloudflare Pages, set the project environment
 variable `SITE_URL` to its complete public origin, for example:
 
 ```text
-https://docs.example.com
+https://hylang.co.uk
 ```
 
 Astro uses that value when generating absolute sitemap and canonical URLs. Do not
@@ -45,6 +53,10 @@ include a trailing slash.
 ## Content
 
 Documentation pages live in `src/content/docs/`; navigation and site identity are
-configured in `astro.config.mjs`. The current site documents the released,
-self-hosted Hydrogen compiler, the UEFI Hello World proof, and the Australis-first
-roadmap.
+configured in `astro.config.mjs`. The current site documents Hydrogen
+`alpha-0.0.2`, including its self-hosted compiler, Linux-native language surface,
+UEFI bootloader and early-kernel profiles. It also describes newer Australis
+project and application features in the development compiler checkout, clearly
+separated from the published release. The current Australis checkout adds
+raw-kernel/AUEX project support; its small AUN1 ring-3 loader is an OS feature,
+not yet a Hydrogen source compilation target.

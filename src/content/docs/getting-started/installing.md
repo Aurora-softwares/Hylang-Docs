@@ -3,25 +3,55 @@ title: Install the released compiler
 description: Download and use the self-hosted Hydrogen compiler on Linux x86-64.
 ---
 
-Hydrogen is distributed as a self-hosted compiler binary. For normal language and
-Australis development, download that release binary; you do not need the older
-C++ SDK or a C++ compiler.
+Hydrogen is distributed as a self-hosted compiler binary. Use the documented
+release for its Linux-native and constrained UEFI features. Building the current
+Australis OS tree requires the newer compiler source checkout; its Makefile
+builds a local application compiler from that source.
+
+## One-line installers for the next preview
+
+The website now serves the installer scripts below. They require a newer,
+manifest-bearing GitHub release asset. The current `alpha-0.0.2` release does
+not contain those assets, so the scripts will report that no compatible release
+is available until the next preview is published.
+
+Linux x86-64:
+
+```bash
+curl -fsSL https://hylang.co.uk/install.sh | HYDROGEN_CHANNEL=alpha bash
+```
+
+Windows x64 PowerShell:
+
+```powershell
+$env:HYDROGEN_CHANNEL='alpha'; irm https://hylang.co.uk/install.ps1 | iex
+```
+
+Both scripts download an official release archive, verify the release digest
+and SHA-256 sidecar, then install to a user-owned directory. The Linux script
+creates `~/.local/bin/hy`; add that directory to `PATH` if necessary. The
+Windows script adds the new `bin` directory to the user `PATH` for new
+terminals. Stable-channel installers omit the `HYDROGEN_CHANNEL` setting once
+a stable release exists. Native update and uninstall commands for these new
+assets are still in development.
 
 ## Linux x86-64
 
-Download the current Linux x86-64 asset from the
-[Hydrogen compiler releases](https://github.com/Aurora-Softwares/Hylang-Compiler/releases),
+Download the `hydrogen-alpha-0.0.2-linux-x86_64.tar.gz` asset from the
+[Hydrogen alpha-0.0.2 release](https://github.com/Aurora-Softwares/Hylang-Compiler/releases/tag/alpha-0.0.2),
 extract it, and add its `bin` directory to your shell `PATH`. The release command
 is named `hy`. (`.hy` remains the extension for Hydrogen source files.)
 
 ```bash
-export PATH="/path/to/hydrogen-release/bin:$PATH"
-hy tokens hello.hy
+export PATH="/path/to/hydrogen-alpha-0.0.2-linux-x86_64/bin:$PATH"
 ```
 
+The companion `.tar.gz.sha256` file verifies the downloaded archive with
+`sha256sum -c hydrogen-alpha-0.0.2-linux-x86_64.tar.gz.sha256` before extraction.
+
 Add the same `PATH` entry to your shell profile (for example `~/.profile`) to make
-`hy` available in new terminals. The next page compiles a first program and
-confirms the release works.
+`hy` available in new terminals. Compile the program below to confirm the
+release works.
 
 ## First program
 
@@ -39,6 +69,7 @@ public class Program {
 Compile and run it:
 
 ```bash
+hy check hello.hy
 hy compile hello.hy -o hello
 chmod +x hello
 ./hello

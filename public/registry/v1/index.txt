@@ -1,0 +1,2 @@
+hydrogen-registry-v1
+hydrogen.math 0.1.0 90cf4602e9a9b7d8631ba7aa2c727942fb49367f5c43d2fbdfa9452f46cfff63

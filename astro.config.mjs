@@ -42,7 +42,7 @@ export default defineConfig({
                     { label: 'Write and run a program', slug: 'getting-started/running' },
                     { label: 'Build with Hydrogen', slug: 'getting-started/building' },
                     { label: 'Compile an executable', slug: 'getting-started/compiling' },
-                    { label: 'Make a bootable UEFI Hello World', slug: 'getting-started/uefi-hello' },
+                    { label: 'UEFI Hello World and kernel handoff', slug: 'getting-started/uefi-hello' },
                 ],
             },
             {
@@ -63,6 +63,8 @@ export default defineConfig({
                 items: [
                     { label: 'Hydrogen compiler', slug: 'tools/hydrogen' },
                     { label: 'Projects and references', slug: 'tools/projects' },
+                    { label: 'Packages and the registry', slug: 'tools/packages' },
+                    { label: 'Australis applications', slug: 'tools/australis-applications' },
                     { label: 'Builtin APIs', slug: 'runtime/builtins' },
                     { label: 'Runtime behavior', slug: 'runtime/runtime-model' },
                 ],

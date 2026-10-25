@@ -1,0 +1,36 @@
+HYLANG_PACKAGE_V1
+FILE hydrogen.math.hyproj 254
+format = 2
+name = "Hydrogen Math"
+version = "0.1.0"
+type = "lib"
+sources = ["IntegerMath.hy"]
+project_references = []
+
+[package]
+id = "hydrogen.math"
+description = "Small integer helpers for Hydrogen projects"
+authors = ["Aurora Softwares"]
+license = ""
+
+FILE IntegerMath.hy 551
+namespace HydrogenMath {
+    public class IntegerMath {
+        public static int Min(int left, int right) {
+            if (left < right) { return left; }
+            return right;
+        }
+
+        public static int Max(int left, int right) {
+            if (left > right) { return left; }
+            return right;
+        }
+
+        public static int Clamp(int value, int minimum, int maximum) {
+            if (value < minimum) { return minimum; }
+            if (value > maximum) { return maximum; }
+            return value;
+        }
+    }
+}
+

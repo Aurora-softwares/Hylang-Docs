@@ -13,35 +13,44 @@ valuable future ports, but they do not set the core work order.
 - Hydrogen compiles its own compiler project closure.
 - The default output is direct Linux x86-64 ELF.
 - The self-hosted compiler emits a PE32+ `uefi-x64` application.
-- Australis packages that output into a bootable ISO that displays Hydrogen text
-  in QEMU/OVMF.
+- Australis packages a UEFI bootloader and raw Hylang kernel into a hybrid ISO.
+- The UEFI target clears the console, waits for a key, and chain-loads an EFI image.
+- The early kernel path exits boot services, initializes physical memory and
+  paging, and writes to a framebuffer after firmware services end.
+- OS manifests build separate bootloader and kernel images into an output tree.
+- The current compiler checkout builds checked AUEX `.exec` applications from
+  Hylang projects for the Australis shell.
+- Australis loads bounded AUN1 machine-code children in ring 3 and contains
+  their faults. This native loader is separate from Hydrogen's AUEX backend.
 
-## Next: usable UEFI programs
+## Next: general UEFI and kernel facilities
 
-The current firmware target is a console-output proof, not a runtime. The next
-milestone is a minimal `Hydrogen.Uefi` library and the compiler support it needs:
+The current firmware target supports a fixed sequence of built-in operations,
+not a general runtime. A broader UEFI and kernel programming model still needs:
 
-- Console `Write`, `WriteLine`, and `Clear`.
-- Keyboard input.
-- Basic boot-service and memory-map wrappers.
+- General console and keyboard APIs beyond literal output and one key wait.
+- General boot-service and memory-map wrappers.
 - Explicit UEFI data layouts, function pointers, strings, and ABI support.
 - Tests that compile and boot each feature.
 
-This enables a firmware-hosted command shell written completely in Hydrogen.
+The current Australis shell runs after the UEFI handoff in its freestanding
+kernel. The broader UEFI APIs above would enable other firmware-hosted programs.
 
-## Then: Australis kernel work
+## Further Australis kernel work
 
-1. Obtain the firmware memory map and call `ExitBootServices`.
-2. Provide allocation and framebuffer output without firmware services.
-3. Add interrupts plus keyboard and storage drivers.
-4. Define the kernel/runtime boundary.
-5. Grow userland and system calls.
+1. Turn bootstrap memory, interrupts, input, and storage code into reusable
+   kernel APIs with broader hardware coverage.
+2. Extend native terminal, file, process, and channel syscalls beyond PID/exit.
+3. Add native scheduling/preemption and broader capability/resource policy.
+4. Expand filesystem recovery and physical-media validation.
 
 ## Native application platform
 
-Hydrogen is intended to be the main language for native Australis applications,
-not only for the kernel. Application libraries, process/system interfaces, and the
-application model follow after the lower-level OS boundary is reliable.
+Hydrogen compiles AUEX for Australis, with a bounded process interface and
+software-checked execution. The OS's AUN1 path proves native ring-3 isolation
+for small programs; compiling Hydrogen source into AUN1, implementing its full
+syscall ABI, and providing native application libraries remain future work. See
+[Australis applications](/tools/australis-applications/) for the AUEX workflow.
 
 Australis will eventually need its own coherent native visual system, in the broad
 sense that Material and Liquid Glass give other platforms a visual language. That

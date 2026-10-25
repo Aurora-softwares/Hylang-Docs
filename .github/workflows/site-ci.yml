@@ -1,0 +1,27 @@
+name: Hydrogen site and registry
+
+on:
+  push:
+    branches: [Development, main]
+  pull_request:
+    branches: [Development, main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Check reviewed registry assets
+        run: python3 tools/build-registry.py --check
+      - name: Test Linux installer against a mocked release
+        run: bash tools/test-install.sh
+      - name: Build static site
+        run: npm run build

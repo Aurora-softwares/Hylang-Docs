@@ -3,8 +3,9 @@ title: Methods and objects
 description: Use classes, fields, constructors, instance methods, and recursion.
 ---
 
-Methods belong to classes. The released compiler supports static methods, instance
-methods, constructors, instance fields, parameters, return values, and recursion.
+Methods belong to classes or structs. The released compiler supports static and
+instance methods, constructors, fields, parameters, return values, overloads,
+inheritance, interfaces, virtual dispatch, and recursion.
 
 ```csharp
 namespace Counters {
@@ -40,5 +41,8 @@ Class assignment copies a reference, not an object. `this` refers to the current
 instance. Static methods have no `this`; pass an object explicitly to access its
 instance members.
 
-The current release does not support overloads, inheritance, interfaces, structs,
-generic methods, or static fields.
+An overload can use the same name with different parameter types. Derived classes
+can call base constructors and use inherited members; interface calls dispatch
+to the implementing class or struct. Struct assignment copies the value, while
+class assignment copies a reference. Static fields are shared by the class.
+Generic methods are not part of this release.

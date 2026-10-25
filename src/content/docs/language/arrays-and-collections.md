@@ -18,7 +18,7 @@ Array counts must be `int`; `void[]` is invalid. Elements are zero/default
 initialized. Arrays are mutable reference types, so assignment and passing to a
 method retain the same underlying array. Out-of-range access is a runtime error.
 
-Arrays may contain primitive values, strings, enums, and classes:
+Arrays may contain primitive values, strings, enums, structs, and class references:
 
 ```csharp
 Pair[] pairs = new Pair[2];

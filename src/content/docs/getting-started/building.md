@@ -28,8 +28,9 @@ chmod +x app/bin/app
 ```
 
 Executable project references contribute source files to one native compilation.
-The current release does not produce library archives, build workspaces, resolve
-packages, or run tests for you.
+The current release also builds `efi`, `kernel`, and `os` manifests; see
+[Projects and references](/tools/projects/). It does not produce library archives,
+build workspaces, resolve packages, or run tests for you.
 
 ## Rebuild the compiler
 
