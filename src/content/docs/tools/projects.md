@@ -83,8 +83,10 @@ The compiler does not package the result as a bootable ISO.
 
 The CLI can scaffold manifests with `hy new os Demo`, `hy new efi Boot`, and
 `hy new kernel Kernel`. Edit the generated manifests to add the OS references.
-It does not build workspace or test projects as native outputs, standalone
-library archives, packages, or dependency registries.
+It does not build workspace or test projects as native outputs. The newer
+development compiler has source packages, described in
+[Packages and the registry](/tools/packages/); the published `alpha-0.0.2`
+compiler does not include that workflow.
 
 ## Current Australis development projects
 

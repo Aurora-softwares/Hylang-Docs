@@ -23,7 +23,11 @@ Build the static site with:
 npm run build
 ```
 
-The deployable output is `dist/`.
+The deployable output is `dist/`. The static assets in `public/` include
+`install.sh`, `install.ps1`, and the curated source registry at
+`registry/v1/`. Rebuild registry assets with `python3 tools/build-registry.py`
+after changing `registry/approved.json`; check them with
+`python3 tools/build-registry.py --check`.
 
 ## Cloudflare Pages
 
@@ -40,7 +44,7 @@ After adding the custom domain in Cloudflare Pages, set the project environment
 variable `SITE_URL` to its complete public origin, for example:
 
 ```text
-https://docs.example.com
+https://hylang.co.uk
 ```
 
 Astro uses that value when generating absolute sitemap and canonical URLs. Do not

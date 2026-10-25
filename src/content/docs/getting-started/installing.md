@@ -8,6 +8,33 @@ release for its Linux-native and constrained UEFI features. Building the current
 Australis OS tree requires the newer compiler source checkout; its Makefile
 builds a local application compiler from that source.
 
+## One-line installers for the next preview
+
+The website now serves the installer scripts below. They require a newer,
+manifest-bearing GitHub release asset. The current `alpha-0.0.2` release does
+not contain those assets, so the scripts will report that no compatible release
+is available until the next preview is published.
+
+Linux x86-64:
+
+```bash
+curl -fsSL https://hylang.co.uk/install.sh | HYDROGEN_CHANNEL=alpha bash
+```
+
+Windows x64 PowerShell:
+
+```powershell
+$env:HYDROGEN_CHANNEL='alpha'; irm https://hylang.co.uk/install.ps1 | iex
+```
+
+Both scripts download an official release archive, verify the release digest
+and SHA-256 sidecar, then install to a user-owned directory. The Linux script
+creates `~/.local/bin/hy`; add that directory to `PATH` if necessary. The
+Windows script adds the new `bin` directory to the user `PATH` for new
+terminals. Stable-channel installers omit the `HYDROGEN_CHANNEL` setting once
+a stable release exists. Native update and uninstall commands for these new
+assets are still in development.
+
 ## Linux x86-64
 
 Download the `hydrogen-alpha-0.0.2-linux-x86_64.tar.gz` asset from the
