@@ -1,5 +1,5 @@
 HYLANG_PACKAGE_V1
-FILE hydrogen.math.hyproj 254
+FILE hydrogen.math.hyproj 257
 format = 2
 name = "Hydrogen Math"
 version = "0.1.0"
@@ -11,7 +11,7 @@ project_references = []
 id = "hydrogen.math"
 description = "Small integer helpers for Hydrogen projects"
 authors = ["Aurora Softwares"]
-license = ""
+license = "MIT"
 
 FILE IntegerMath.hy 551
 namespace HydrogenMath {

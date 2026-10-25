@@ -14,6 +14,6 @@ stale or manually changed generated files. Package IDs, versions, archive file
 lists, manifest identity, declared dependencies, and file sizes are validated.
 
 The first curated package is `hydrogen.math@0.1.0`, built from the compiler
-repository's `samples/packages/hydrogen.math` example. Its license is not yet
-declared, so do not treat it as a redistributable third-party module. Only
-committed assets appear on the website; users cannot publish packages directly.
+repository's `samples/packages/hydrogen.math` example under the repository's
+MIT license. Only committed assets appear on the website; users cannot publish
+packages directly.
