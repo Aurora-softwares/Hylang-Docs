@@ -27,6 +27,7 @@ try {
     $sums | Set-Content -LiteralPath (Join-Path $stage 'SHA256SUMS') -Encoding Ascii
     @('hydrogen-install-manifest-v1') + $files + @('SHA256SUMS', 'INSTALL-MANIFEST') |
         Set-Content -LiteralPath (Join-Path $stage 'INSTALL-MANIFEST') -Encoding Ascii
+    Add-Type -AssemblyName System.IO.Compression
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $archive = Join-Path $work "$name.zip"
     $zip = [IO.Compression.ZipFile]::Open($archive, [IO.Compression.ZipArchiveMode]::Create)
