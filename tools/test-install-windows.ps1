@@ -29,7 +29,13 @@ try {
         Set-Content -LiteralPath (Join-Path $stage 'INSTALL-MANIFEST') -Encoding Ascii
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $archive = Join-Path $work "$name.zip"
-    [IO.Compression.ZipFile]::CreateFromDirectory($stageParent, $archive)
+    $zip = [IO.Compression.ZipFile]::Open($archive, [IO.Compression.ZipArchiveMode]::Create)
+    try {
+        foreach ($file in @($files + @('SHA256SUMS', 'INSTALL-MANIFEST'))) {
+            [IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+                $zip, (Join-Path $stage $file), "$name/$file") | Out-Null
+        }
+    } finally { $zip.Dispose() }
     $digest = (Get-FileHash -Algorithm SHA256 $archive).Hash.ToLowerInvariant()
     "$digest  $name.zip" | Set-Content -LiteralPath "$archive.sha256" -Encoding Ascii
     $env:MOCK_ARCHIVE = $archive
