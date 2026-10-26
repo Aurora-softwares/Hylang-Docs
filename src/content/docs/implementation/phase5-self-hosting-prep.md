@@ -1,19 +1,26 @@
 ---
-title: Self-hosting preparation
-description: How the Hydrogen compiler reaches executable IR and native output.
+title: "Compiler workspace architecture"
 ---
 
-> This is contributor documentation. To use Hydrogen, start with the released
-> compiler in the Getting Started section.
+> Development reference from [Hylang-Compiler](https://github.com/Aurora-softwares/Hylang-Compiler/tree/Development). Commands and source paths on this page are relative to that repository checkout. For current task status, use the [development project](https://github.com/orgs/Aurora-softwares/projects/4).
 
-The compiler parses Hydrogen source, binds names and types, lowers reachable
-methods into executable IR, and emits native x86-64 output. The current Linux
-backend includes its runtime in each executable; the UEFI path uses a PE32+ image
-builder for the constrained console, image-launch, and early-kernel profiles.
+The Hydrogen compiler lives in `samples/self_hosting` in Hylang-Compiler. Its executable project is `Hydrogen.Compiler.Cli/Hydrogen.Compiler.Cli.hyproj`; the workspace manifest additionally includes its tests.
 
-The compiler's own CLI project is within the supported language subset, enabling a
-verified Hydrogen binary to rebuild that project closure without a C++ toolchain.
+| Project | Responsibility |
+| --- | --- |
+| `Hydrogen.Compiler.Core` | Source text, spans, locations, diagnostic storage |
+| `Hydrogen.Compiler.Syntax` | Lexer, outline parser, AST parser, syntax declarations/statements/expressions |
+| `Hydrogen.Compiler.IR` | Executable module, types, fields, methods, structured operations |
+| `Hydrogen.Compiler.Binding` | Project-aware type resolution and body checking |
+| `Hydrogen.Compiler.RuntimeModel` | Native runtime contracts |
+| `Hydrogen.Compiler.CodeGen.X64` | Method-body lowering, runtime emission, ELF image construction |
+| `Hydrogen.Compiler.Cli` | Tokens, parse, check, compile, build, artifact comparison |
+| `Hydrogen.Compiler.Tests` | Compiler library regressions |
 
-Features outside the released subset must not be assumed to work merely because
-older design material describes them. Extend the parser, checker, IR, backend, and
-tests together when adding language features.
+The lexer preserves source positions. The CLI `parse` command uses an outline view for stable syntax dumps; this is distinct from the AST parser and executable IR used by `check`/compilation. Parsing a construct does not establish its native executable support.
+
+The binder registers a complete project/reference closure before checking declarations and bodies. Each file keeps its namespace/import context. Declared types and resolved calls become canonical names in IR; methods carry bodies with allocations, fields, calls, casts, indexing, returns, branches, and loops.
+
+The x64 backend consumes executable IR and emits reachable methods and a native runtime into one Linux ELF. See [native compilation and bootstrapping](https://hylang.co.uk/implementation/phase6-self-hosted-compiler/) for the internal convention and rebuild checks.
+
+The SDK is a separate implementation: its interpreter and C emitter share the C++ bound semantic model. SDK-only generics, inheritance, struct semantics, overloads, and tooling are not inferred to exist in the Hydrogen backend merely because SDK builds accept its compiler sources.

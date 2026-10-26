@@ -49,14 +49,16 @@ framebuffer text. This is still a fixed compilation profile rather than a comple
 UEFI library or a general operating-system kernel.
 
 Australis OS and native Australis applications are the primary direction. Linux
-is the development host today; Windows and macOS compiler ports will follow when
-they can be properly packaged and validated.
+is the host of the published `alpha-0.0.2` release. The Development compiler
+also emits Windows x64 programs and has a Windows release candidate layout;
+published Windows assets and live Windows installation remain release gates.
+macOS is not a current target.
 
 ## Current Australis development
 
 The compiler source checkout used by Australis builds a separate raw `AUKR`
-kernel image and checked AUEX `.exec` applications. Australis also loads small
-AUN1 machine-code programs in hardware ring 3; the Hydrogen compiler does not
-yet emit that native format. These capabilities are newer than the documented
+kernel image and checked AUEX `.exec` applications. A narrow `native` project
+also emits AUN1 version 2 for one static entry point; Australis loads such
+programs in hardware ring 3. These capabilities are newer than the documented
 `alpha-0.0.2` release. See [Projects and references](/tools/projects/) and
 [Australis applications](/tools/australis-applications/) for the development workflow.

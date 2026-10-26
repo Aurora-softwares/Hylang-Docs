@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
-    site: process.env.SITE_URL,
+    site: process.env.SITE_URL ?? 'https://hylang.co.uk',
     integrations: [starlight({
         title: 'Hydrogen',
 		logo: {
@@ -19,7 +19,7 @@ export default defineConfig({
 			}
 		],
         editLink: {
-            baseUrl: 'https://github.com/Aurora-Softwares/Hylang-Docs/edit/main/',
+            baseUrl: 'https://github.com/Aurora-Softwares/Hylang-Docs/edit/Development/',
         },
         customCss: [
 			'./src/styles/custom.css'
@@ -73,8 +73,46 @@ export default defineConfig({
                 label: 'Contributors',
                 collapsed: true,
                 items: [
+                    { label: 'Compiler source checkout', slug: 'contributing/compiler-source' },
+                    { label: 'Native compiler and bootstrap', slug: 'contributing/native-compiler' },
+                    { label: 'VS Code assets', slug: 'contributing/vscode-assets' },
                     { label: 'Self-hosting preparation', slug: 'implementation/phase5-self-hosting-prep' },
                     { label: 'Self-hosted compiler', slug: 'implementation/phase6-self-hosted-compiler' },
+                ],
+            },
+            {
+                label: 'Standard Library',
+                items: [
+                    { label: 'Current APIs and scope', slug: 'stdlib/overview' },
+                    { label: 'Design proposal', slug: 'stdlib/design-plan' },
+                ],
+            },
+            {
+                label: 'Editor',
+                items: [
+                    { label: 'VS Code extension', slug: 'editor/vscode' },
+                    { label: 'Extension changelog', slug: 'editor/changelog' },
+                ],
+            },
+            {
+                label: 'Examples',
+                items: [
+                    { label: 'HexLab', slug: 'examples/hexlab' },
+                    { label: 'Native text builder', slug: 'examples/native-text-builder' },
+                    { label: 'SDK demo', slug: 'examples/sdk-demo' },
+                ],
+            },
+            {
+                label: 'Releases and engineering',
+                items: [
+                    { label: 'Linux archive', slug: 'releasing/linux-archive' },
+                    { label: 'Windows archive', slug: 'releasing/windows-archive' },
+                    { label: 'Runtime benchmarks', slug: 'performance/benchmarking' },
+                    { label: 'Optimisation evidence', slug: 'performance/optimisation-evidence' },
+                    { label: 'Security review', slug: 'security/review-evidence' },
+                    { label: 'AUDR driver image', slug: 'reference/audr-driver-image' },
+                    { label: 'Windows runtime', slug: 'reference/windows-runtime' },
+                    { label: 'Compiler development roadmap', slug: 'development/compiler-roadmap' },
                 ],
             },
             {
