@@ -483,7 +483,7 @@ Australis OS additionally loads bounded AUN1 machine-code children in hardware
 ring 3. Hydrogen's `exec` backend emits AUEX; a separate `native` project emits
 AUN1 version 2 for a single static `Main(string[] args)` with ASCII literal
 `System.Australis.Terminal.Write` calls and a literal integer return status.
-The native target has no general-purpose runtime yet. See the [Australis kernel completion criteria](https://aurora-softwares.github.io/Australis-Docs/components/kernel-gates/) for OS-side loader status.
+The native target has no general-purpose runtime yet. See the [Australis kernel completion criteria](https://aurora-softwares.github.io/Australis-Docs/reference/aun1-v2/) for OS-side loader status.
 
 SDK projects additionally support workspaces, test projects, local package dependencies, caching, and static-library artifacts. Useful SDK commands:
 
