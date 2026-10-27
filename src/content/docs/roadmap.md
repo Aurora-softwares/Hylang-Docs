@@ -13,12 +13,12 @@ future target.
 
 The [Hydrogen development project](https://github.com/orgs/Aurora-softwares/projects/4)
 is the source of truth for target versions and task status. As of 27 October
-2026, `0.1.0` is a pre-release qualification gate with 8 Ready, 4 In Progress,
-and 1 Done item. The `0.2.0` language milestone has 11 Done, 1 In Progress,
+2026, `0.1.0` is a pre-release qualification gate with 8 Ready, 3 In Progress,
+and 2 Done items. The `0.2.0` language milestone has 11 Done, 1 In Progress,
 1 Ready, and 10 Backlog items. The next `0.1.0` gates include verified release
 artifacts, real Windows-host validation, and compiler release tests. The
 [documentation migration](https://github.com/Aurora-softwares/Hylang-Compiler/issues/174)
-is in progress. The Development documentation is prepared in [Hylang-Docs PR #3](https://github.com/Aurora-softwares/Hylang-Docs/pull/3); default-branch source documentation is still being reconciled. This work does not by itself qualify a compiler release.
+is complete and published in [Hylang Docs](https://hylang.co.uk/). Compiler, standard-library, and editor source default branches are free of project documentation Markdown. This work does not by itself qualify a compiler release.
 
 ## Completed foundation
 
