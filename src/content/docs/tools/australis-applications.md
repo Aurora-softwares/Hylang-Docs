@@ -100,4 +100,4 @@ For a separate aggregate manifest, set
 `APPLICATIONS_PROJECT=/path/to/MyApplications.hyproj` on `make iso`. To include
 an already built `.exec`, set
 `APPLICATION_ARTIFACTS="/path/to/example.exec"`. The OS repository's
-`applications/README.md` documents the full AUEX call set and packaging rules.
+The [Australis application platform guide](https://aurora-softwares.github.io/Australis-Docs/applications/platform/) documents the full AUEX call set and packaging rules.

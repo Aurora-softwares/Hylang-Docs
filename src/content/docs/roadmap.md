@@ -4,9 +4,21 @@ description: Australis-first language, firmware, kernel, and native-application 
 ---
 
 Hydrogen's primary purpose is to build Australis OS and native Australis
-applications. Linux is the current host and application target because it makes the
-compiler practical to develop and validate today. Windows and macOS hosts are
-valuable future ports, but they do not set the core work order.
+applications. Linux is the host of the published compiler. The Development
+compiler also emits Windows x64 programs and Windows release candidates; live
+Windows installation from published assets remains a release gate. macOS is a
+future target.
+
+## Current development status
+
+The [Hydrogen development project](https://github.com/orgs/Aurora-softwares/projects/4)
+is the source of truth for target versions and task status. As of 27 October
+2026, `0.1.0` is a pre-release qualification gate with 8 Ready, 4 In Progress,
+and 1 Done item. The `0.2.0` language milestone has 11 Done, 1 In Progress,
+1 Ready, and 10 Backlog items. The next `0.1.0` gates include verified release
+artifacts, real Windows-host validation, and compiler release tests. The
+[documentation migration](https://github.com/Aurora-softwares/Hylang-Compiler/issues/174)
+is in progress. The Development documentation is prepared in [Hylang-Docs PR #3](https://github.com/Aurora-softwares/Hylang-Docs/pull/3); default-branch source documentation is still being reconciled. This work does not by itself qualify a compiler release.
 
 ## Completed foundation
 
@@ -20,6 +32,8 @@ valuable future ports, but they do not set the core work order.
 - OS manifests build separate bootloader and kernel images into an output tree.
 - The current compiler checkout builds checked AUEX `.exec` applications from
   Hylang projects for the Australis shell.
+- A narrow AUN1 native project emits a single static entry point; a general
+  Australis native runtime and syscall ABI remain planned.
 - Australis loads bounded AUN1 machine-code children in ring 3 and contains
   their faults. This native loader is separate from Hydrogen's AUEX backend.
 
@@ -40,7 +54,8 @@ kernel. The broader UEFI APIs above would enable other firmware-hosted programs.
 
 1. Turn bootstrap memory, interrupts, input, and storage code into reusable
    kernel APIs with broader hardware coverage.
-2. Extend native terminal, file, process, and channel syscalls beyond PID/exit.
+2. Extend native terminal, file, process, and channel syscalls beyond the
+   current bounded PID, exit, and terminal-write path.
 3. Add native scheduling/preemption and broader capability/resource policy.
 4. Expand filesystem recovery and physical-media validation.
 
@@ -48,8 +63,8 @@ kernel. The broader UEFI APIs above would enable other firmware-hosted programs.
 
 Hydrogen compiles AUEX for Australis, with a bounded process interface and
 software-checked execution. The OS's AUN1 path proves native ring-3 isolation
-for small programs; compiling Hydrogen source into AUN1, implementing its full
-syscall ABI, and providing native application libraries remain future work. See
+for small programs. Hydrogen's narrow AUN1 project path is a first compiler
+step; its full syscall ABI and native application libraries remain future work. See
 [Australis applications](/tools/australis-applications/) for the AUEX workflow.
 
 Australis will eventually need its own coherent native visual system, in the broad
