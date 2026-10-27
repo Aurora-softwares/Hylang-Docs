@@ -20,6 +20,11 @@ artifacts, real Windows-host validation, and compiler release tests. The
 [documentation migration](https://github.com/Aurora-softwares/Hylang-Compiler/issues/174)
 is complete and published in [Hylang Docs](https://hylang.co.uk/). Compiler, standard-library, and editor source default branches are free of project documentation Markdown. This work does not by itself qualify a compiler release.
 
+The compiler now emits AUDR v2 device-match metadata for Australis driver
+projects while preserving v1 images. [The v2 format work](https://github.com/Aurora-softwares/Hylang-Compiler/issues/176)
+supports a selected xHCI hardware probe; DMA, interrupt, and long-lived
+operation contracts remain work for [Australis device binding](https://github.com/Aurora-softwares/Australis-OS/issues/156).
+
 ## Completed foundation
 
 - Hydrogen compiles its own compiler project closure.
