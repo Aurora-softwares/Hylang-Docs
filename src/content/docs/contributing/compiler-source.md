@@ -25,8 +25,10 @@ tracks the 0.2.0 development target.
 The 0.9.0 cross-platform qualification work now includes an Intel macOS
 runtime that passed self-hosting, byte-identical compiler output, argv,
 console, Unicode and binary file I/O, garbage collection, and process execution
-on a GitHub-hosted macOS runner. Release archive and installer lifecycle checks
-are the next gate; native Apple Silicon output remains future work. Track this
+on a GitHub-hosted macOS runner. The macOS archive, website installer fixture,
+package workflow, update, and uninstall checks also passed on macOS. The next
+release gate is a tagged archive and live install from published assets; native
+Apple Silicon output remains future work. Track this
 in [#145](https://github.com/Aurora-softwares/Hylang-Compiler/issues/145). Fixed-width bitwise operators, integral
 compound assignment, increment/decrement, conditional expressions, null
 coalescing, null-conditional access, `foreach` over arrays and strings, interpolated strings,
