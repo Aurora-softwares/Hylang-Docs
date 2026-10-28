@@ -4,8 +4,9 @@ description: Build, verify, install, update, and remove the Hydrogen compiler on
 ---
 
 The Development branch can produce a self-hosted Intel macOS compiler and a
-`hydrogen-<version>-macos-x86_64.tar.gz` release archive. The compiler and
-runtime pass the [macOS integration job](https://github.com/Aurora-softwares/Hylang-Compiler/actions/workflows/hydrogen-ci.yml).
+`hydrogen-<version>-macos-x86_64.tar.gz` release archive. The compiler,
+runtime, archive, update, and uninstall pass the
+[macOS integration job](https://github.com/Aurora-softwares/Hylang-Compiler/actions/workflows/hydrogen-ci.yml).
 No macOS archive has been published on GitHub Releases yet.
 
 ## Build a candidate
@@ -20,8 +21,9 @@ cmake -DSOURCE_DIR="$PWD" -DHOST_COMPILER="/path/to/verified/hy" \
 
 The script checks the Mach-O header and writes the `.tar.gz` archive plus a
 `.tar.gz.sha256` sidecar. The full release candidate script builds Linux,
-Windows, and macOS archives together. Do not publish a candidate until the
-macOS archive, installer, and lifecycle job passes on a macOS runner.
+Windows, and macOS archives together. The macOS archive, installer, and
+lifecycle fixture checks are green. The remaining release gate is a live
+install from a published GitHub release asset.
 
 ## Install a published archive
 
