@@ -6,11 +6,11 @@ title: "Hydrogen (Hylang)"
 
 Hydrogen is a C#-inspired language with classes, methods, managed strings and arrays, and explicit low-level facilities. Source files use `.hy`; project manifests use `.hyproj`.
 
-The Hydrogen-written compiler produces Linux x86-64 ELF and Windows x64 PE32+ executables from the same direct language backend, constrained x86-64 UEFI images, and can compile itself. The C++ SDK provides additional language features, an interpreter, packaging, formatting, and editor integration. Choose the tool according to the features your program needs.
+The Hydrogen-written compiler produces Linux x86-64 ELF, Windows x64 PE32+, and macOS x64 Mach-O executables from the same direct language backend, constrained x86-64 UEFI images, and can compile itself. The C++ SDK provides additional language features, an interpreter, packaging, formatting, and editor integration. Choose the tool according to the features your program needs.
 
 | Tool | Use it for | Output or execution |
 | --- | --- | --- |
-| `hydrogen-stage1` (Hydrogen) | Direct native compilation, source/project checking, IR inspection, UEFI boot/kernel images, and project scaffolding | Linux x64 ELF, Windows x64 PE32+ console executable, constrained `uefi-x64` PE32+, raw `AUKR` kernel, checked AUEX `.exec`, or narrow AUN1; no external compiler or linker for these outputs |
+| `hydrogen-stage1` (Hydrogen) | Direct native compilation, source/project checking, IR inspection, UEFI boot/kernel images, and project scaffolding | Linux x64 ELF, Windows x64 PE32+ console executable, macOS x64 Mach-O, constrained `uefi-x64` PE32+, raw `AUKR` kernel, checked AUEX `.exec`, or narrow AUN1; no external compiler or linker for these outputs |
 | `hy` (C++ SDK) | Build/run/test/check/fmt/new/package/LSP workflows; UEFI console proof | Interpreter, host C backend, or constrained `uefi-x64` PE32+ output |
 | `hyrun` | Direct interpreted execution | Shares the SDK semantic pipeline |
 | `hyc build` | Compatibility build command | Host C backend, executables or static libraries |
@@ -21,7 +21,13 @@ The [runtime comparison harness](https://hylang.co.uk/performance/benchmarking/)
 The [security review](https://hylang.co.uk/security/review-evidence/) records confirmed issues and hardening work.
 
 The [Hydrogen Development project](https://github.com/orgs/Aurora-softwares/projects/4)
-tracks the 0.2.0 development target. Fixed-width bitwise operators, integral
+tracks the 0.2.0 development target.
+The 0.9.0 cross-platform qualification work now includes an Intel macOS
+runtime that passed self-hosting, byte-identical compiler output, argv,
+console, Unicode and binary file I/O, garbage collection, and process execution
+on a GitHub-hosted macOS runner. Release archive and installer lifecycle checks
+are the next gate; native Apple Silicon output remains future work. Track this
+in [#145](https://github.com/Aurora-softwares/Hylang-Compiler/issues/145). Fixed-width bitwise operators, integral
 compound assignment, increment/decrement, conditional expressions, null
 coalescing, null-conditional access, `foreach` over arrays and strings, interpolated strings,
 switch statements and expressions, and range-based slicing are implemented across the
@@ -65,7 +71,7 @@ Use `--hide-progress`, `--hide-spinner`, or `--hide-log` to remove individual pa
 
 ## Manage a released Hydrogen installation
 
-The **packaged native compiler** for Linux x86-64 includes a shell launcher and
+The **packaged native compiler** for Linux and macOS x86-64 includes a shell launcher and
 safe lifecycle commands. These are not commands of the C++ development SDK
 binary (`./build/hy`) or an unbundled `hydrogen-stage1` binary.
 
@@ -120,7 +126,7 @@ at another HTTPS or local-file registry with `--registry <origin>`.
 ## Package a self-hosted release
 
 The release candidate command compiles the current self-hosted compiler source
-for Linux x86-64 and Windows x64, then creates both installer-compatible
+for Linux, Windows, and macOS x64, then creates installer-compatible
 archives and their `.sha256` sidecars. Pass a verified self-hosted compiler:
 
 ```bash
@@ -130,7 +136,7 @@ cmake -DSOURCE_DIR="$PWD" -DHOST_COMPILER="/path/to/verified/hy" \
   -P cmake/MakeHydrogenReleaseCandidate.cmake
 ```
 
-The command stages outputs until both platforms build and their archive
+The command stages outputs until all three platforms build and their archive
 checksums pass. It refuses to overwrite existing assets unless `-DFORCE=ON` is
 set. Australis is not included: its current AUEX/AUN1 targets are constrained
 OS program formats, and there is no self-hosted compiler CLI project that runs
@@ -173,8 +179,14 @@ This builds the Windows compiler executable, checks its PE header, then writes
 Like the Linux script, it refuses to overwrite an existing release unless
 `-DFORCE=ON` is set. The ZIP contains `bin/hy.cmd`, `libexec/hy-core.exe`, a
 PowerShell lifecycle helper, and the same manifest/checksum contract as the
-Linux archive. Keep both platform archives and their sidecars together for an
+Linux archive. Keep all platform archives and their sidecars together for an
 installer-compatible GitHub release.
+
+For a macOS x64 archive only, run `cmake/MakeHydrogenMacOSRelease.cmake` with
+the same `SOURCE_DIR`, `HOST_COMPILER`, `VERSION`, and `RELEASES_DIR` values.
+It checks the Mach-O header and writes
+`hydrogen-<version>-macos-x86_64.tar.gz` plus its `.sha256` sidecar. The
+equivalent configured target is `hydrogen_package_macos_release`.
 
 If CMake is already configured with `HYDROGEN_RELEASE_VERSION` and
 `HYDROGEN_RELEASE_BINARY`, the equivalent target is
@@ -184,7 +196,7 @@ To package an already-built Windows executable without rebuilding it, use
 
 ## Build the tools
 
-Run these commands from this repository's root. The SDK requires CMake 3.20 or newer and a C++20 compiler. Its executable builds also require a host C compiler; static-library builds require an archiver. The direct native compiler targets Linux x86-64 and Windows x64.
+Run these commands from this repository's root. The SDK requires CMake 3.20 or newer and a C++20 compiler. Its executable builds also require a host C compiler; static-library builds require an archiver. The direct native compiler targets Linux, Windows, and macOS x64.
 
 ```bash
 cd /path/to/Hylang-Compiler
