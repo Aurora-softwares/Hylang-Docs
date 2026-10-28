@@ -1,6 +1,6 @@
 ---
 title: Install the released compiler
-description: Download and use the self-hosted Hydrogen compiler on Linux and Windows x64.
+description: Download and use the self-hosted Hydrogen compiler on Linux, Windows, and macOS x64.
 ---
 
 Hydrogen is distributed as a self-hosted compiler binary. Use the documented
@@ -27,14 +27,20 @@ Windows x64 PowerShell:
 $env:HYDROGEN_CHANNEL='alpha'; irm https://hylang.co.uk/install.ps1 | iex
 ```
 
-Both scripts download an official release archive, verify the release digest
+macOS Intel (or an Apple Silicon Mac with Rosetta 2):
+
+```bash
+curl -fsSL https://hylang.co.uk/install.sh | HYDROGEN_CHANNEL=alpha bash
+```
+
+The scripts download an official platform-specific release archive, verify the release digest
 and SHA-256 sidecar, then install to a user-owned directory. The Linux script
 creates `~/.local/bin/hy`; add that directory to `PATH` if necessary. The
 Windows script adds the new `bin` directory to the user `PATH` for new
 terminals; the command is provided by `hy.cmd`. Stable-channel installers omit
 the `HYDROGEN_CHANNEL` setting once a stable release exists. Packaged Linux
-builds have update and uninstall commands. The Windows lifecycle helper is
-awaiting validation on a real Windows host.
+and macOS builds have update and uninstall commands. The macOS release is in
+development; use the source build until a macOS archive is published.
 
 ## Linux x86-64
 
