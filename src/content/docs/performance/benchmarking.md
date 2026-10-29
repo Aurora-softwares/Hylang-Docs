@@ -33,7 +33,7 @@ From the Hylang-Compiler repository root:
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --target hy hydrogen_stage1
-python3 benchmarks/runtime/run.py \
+python3 assets/benchmarks/runtime/run.py \
   --native build/self_hosting/hydrogen-stage1 \
   --iterations 10000000 --records 100000 --bytes 1600000 --nodes 20000 \
   --runs 7 --warmups 2 \
@@ -51,7 +51,7 @@ optional routes require `build/hy`, selectable with `--sdk`.
 For a quick correctness check:
 
 ```bash
-python3 benchmarks/runtime/run.py \
+python3 assets/benchmarks/runtime/run.py \
   --native build/self_hosting/hydrogen-stage1 \
   --iterations 1000 --records 100 --bytes 1024 --nodes 100 \
   --runs 1 --warmups 0
@@ -85,27 +85,27 @@ The self-hosted compiler previously allocated a new string on every evaluation
 of a string literal. On this same hashed log input, the native scan took 8.07
 seconds before literals were stored in executable data and 25.9 ms afterwards,
 about 312 times faster. The pre-change samples are in
-[`results-2026-10-17-before-literals.json`](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-17-before-literals.json),
+[`results-2026-10-17-before-literals.json`](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-before-literals.json),
 and the first full after-change samples are in
-[`results-2026-10-17.json`](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-17.json).
+[`results-2026-10-17.json`](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17.json).
 
 The compiler lowers signed `int` division by a positive constant with a
 reciprocal multiply, and the runtime packs small objects into shared pages.
 The next pass packed native `byte[]` and `int[]`, removed the string copy from
 byte-file reads and writes, specialised one-byte literal comparison, encoded
 numeric literal operations directly, and inlined checked packed-array
-addresses. Against the [previous six-case run](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-17-two-optimisations.json),
+addresses. Against the [previous six-case run](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-two-optimisations.json),
 the loop improved from 136.1 to 94.7 ms, the array pass from 194.8 to
 157.1 ms, the log scan from 25.5 to 6.54 ms, CSV from 9.65 to 4.27 ms,
 and the binary checksum from 35.2 to 15.2 ms.
 
 The short linked-object case varies with process startup. It measured 4.51 ms
-in the seven-run table, while a separate [21-run check](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-17-nodes-21-run.json)
+in the seven-run table, while a separate [21-run check](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-nodes-21-run.json)
 measured 3.41 ms native and 1.22 ms C. The allocator's earlier 100,000-object
 check measured 25.3 ms native. Its 20,000-object peak RSS diagnostic fell from
 80,012 to 2,560 KB, and `mmap` calls from 20,013 to 650 (including startup).
-Raw [current six-case](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-17-main-issues.json) and
-[100,000-object](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-17-nodes-100k.json) samples are retained.
+Raw [current six-case](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-main-issues.json) and
+[100,000-object](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-nodes-100k.json) samples are retained.
 See [optimisations.md](https://hylang.co.uk/performance/optimisation-evidence/) for the remaining ranked work.
 
 These ratios depend on CPU, OS, input size, compiler versions, and load. In
@@ -113,17 +113,32 @@ particular, process startup dominates tiny runs; use the reference sizes or
 larger when assessing steady execution. The six cases do not establish an
 overall language speed ranking.
 
-The later [25 October loop/array/byte code-generation comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-loop-array-byte-codegen.json)
+The later [25 October loop/array/byte code-generation comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-loop-array-byte-codegen.json)
 records 30 paired before/after runs after constant-remainder and conditional
 branch improvements. Its matching checksums and compiler/executable hashes
 are retained alongside the raw timings. See [optimisations.md](https://hylang.co.uk/performance/optimisation-evidence/)
 for the diagnosis and remaining bounds-check work.
 
-The [proven packed-array bounds comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-proven-array-bounds.json)
+The [proven packed-array bounds comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-proven-array-bounds.json)
 records the narrow loop optimisation and its array improvement. A
-[longer byte confirmation](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-proven-array-bounds-byte-confirm.json)
+[longer byte confirmation](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-proven-array-bounds-byte-confirm.json)
 did not establish a byte-checksum speedup. The final
-[direct-read and loop-entry check comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-proven-packed-reads.json)
+[direct-read and loop-entry check comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-proven-packed-reads.json)
 records 300 paired array runs and 200 paired byte runs with matching outputs,
 compiler/binary hashes, and a measurable improvement in both cases. See
 [optimisations.md](https://hylang.co.uk/performance/optimisation-evidence/) for the results and remaining costs.
+
+## 29 October development check
+
+The current `0.8.0` performance work is tracked by [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128); both remain In Progress.
+With 21 runs and two warmups at the reference sizes, the updated native compiler
+measured 71.45 ms for `loop`, 119.51 ms for `array`, 4.00 ms for `log`,
+2.22 ms for `csv`, 12.42 ms for `bytes`, and 2.54 ms for `nodes`. The same
+run's slowest C/C++/Rust comparison times were 44.98, 62.22, 4.88, 3.91,
+11.44, and 1.90 ms respectively. Thus `log` and `csv` met the requested
+slowest-comparison speed on this host; the other four cases did not. In
+particular, array fill and scan still needs roughly a twofold improvement.
+The [raw six-case run](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-29-loop-register.json)
+records inputs, checksums, tool versions, and every sample. Paired change
+measurements are described in the [optimisation evidence](/performance/optimisation-evidence/).

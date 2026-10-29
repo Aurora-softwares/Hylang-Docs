@@ -52,7 +52,13 @@ The 0.8.0 optimisation work has completed
 [proven packed-array bounds elimination](https://github.com/Aurora-softwares/Hylang-Compiler/issues/167)
 for guarded native loops. Broader local register and loop code generation in
 [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127) is the
-next performance target; real Windows-host validation remains a release gate.
+next performance target. Guarded string scans and loop-index lowering have
+improved the measured log and CSV cases. The array and integer remainder
+workloads remain above the slowest comparison route; [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remain In Progress under the 0.8.0 performance target. The development project
+still tracks 0.2.0 language work and the 0.1.0 release qualification gate;
+published release assets and real Windows-host validation remain open.
 Native source package work for the 0.5.0 target is in progress under
 [#111](https://github.com/Aurora-softwares/Hylang-Compiler/issues/111).
 The native CLI now packs and adds local source archives, removes direct
