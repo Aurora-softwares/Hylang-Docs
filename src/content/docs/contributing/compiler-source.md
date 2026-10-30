@@ -71,6 +71,33 @@ Wine-checked candidate. The PowerShell lifecycle and website installer pass
 fixture tests on GitHub-hosted Windows runners. Published installer-ready assets
 and a live Windows install from those assets remain open release gates.
 
+## Native macOS UI layout
+
+The Development HYUI AppKit renderer measures wrapped text at the available
+column width, sizes panels from their contents, and places native controls in a
+vertically scrolling document. Rows and grids reflow when the window is resized;
+controls retain their parents and backend event bindings. Label roles distinguish
+titles, headings, and captions. This fixes the overlapping controls and empty
+space seen in `samples/ui_studio/Studio.hyui` on macOS.
+
+The macOS layout regression checks the sample at 1120, 800, and 360 pixels,
+including sibling overlap, parent bounds, wrapped text, nested rows, scrolling,
+repeated resizing, backend text updates, and hidden controls. Run it alongside
+the sample's SDK backend integration after configuring Qt Core 6.8 or newer:
+
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DHYDROGEN_BUILD_UI=ON
+cmake --build build --target hy hyui hyui_appkit_tests --parallel
+ctest --test-dir build -R '^hyui_(appkit_layout|sdk_integration)$' --output-on-failure
+```
+
+This completes the Studio layout repair within the current development work;
+it does not change the milestone versions above. Next UI qualification work
+includes the pre-existing macOS Unicode argument-normalization contract failure
+and packaged application checks on the target architectures. Tagged release
+assets, live installation from those assets, native Apple Silicon code generation,
+and the other release gates above still require their own validation.
+
 ## Build output
 
 `hy build`, `hyc build`, and the self-hosted `hy build` update one terminal line per action. The braille spinner and bar show overall build progress, with a separate percentage for the active action. The bar uses up to 60 characters and shrinks in narrow terminals; long interactive progress text ends in `...` instead of wrapping. Terminal width is checked on each redraw, so resizing takes effect during a build. The line becomes its `100%` result when that action completes. Overall progress counts completed milestones, while lexing and parsing use source and token positions for their action percentages. Stages without measurable internal work stay at 0% until completion. The SDK spinner animates while a terminal build is busy. Redirected output uses full plain text without terminal escape codes.
