@@ -134,7 +134,8 @@ The macOS regression exercises real menu/tab actions, radio/list/table selection
 bundled image loading, and a native confirmation sheet through the Hydrogen
 sample backend. Shared contract tests cover valid nesting, selection ranges,
 malformed tables, image paths, and atomic backend updates. The GTK renderer is
-syntax-checked locally; Windows compilation has a dedicated CI job. Live GTK and
+syntax-checked locally. The native macOS UI job and WinUI host compilation both
+passed in [compiler CI](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41013670239). Live GTK and
 WinUI interaction and packaged application qualification on those hosts remain
 follow-up gates, alongside the release and architecture gates above.
 
