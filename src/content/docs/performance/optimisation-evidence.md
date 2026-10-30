@@ -238,3 +238,36 @@ tests, Windows parity, and stages 1–3 bootstrap equivalence passed locally.
 Both project items remain In Progress because the requested speed target has
 not been reached. Published release artifacts and real Windows-host validation
 remain separate release gates.
+
+## 30 October: register-held loop values and packed stores
+
+The native x64 backend now keeps a guarded loop index in `r12`, and can keep
+one or two written integer locals in preserved registers until loop exit. For
+proven packed-array loops it can retain the stable array pointer, read and
+write through a direct indexed address, and compare the index with the bound
+without rematerialising both operands. When a loop has no runtime calls, one
+constant-division reciprocal can also stay in a register. The constant
+remainder path removes redundant moves and normalization. Object creation
+skips an empty, no-argument constructor only when there is no base
+constructor or instance field initializer. Ordinary instance-field access
+checks for null inline and retains the runtime error path.
+
+The [31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-30-register-and-allocation.json)
+uses 10 million iterations for loop and array, 100,000 log/CSV records,
+1.6 million input bytes, and 20,000 nodes. All four routes produced the same
+expected output. Hydrogen medians were 55.20 ms (`loop`), 89.64 ms (`array`),
+3.57 ms (`log`), 2.01 ms (`csv`), 10.04 ms (`bytes`), and 2.46 ms (`nodes`).
+The respective slowest C/C++/Rust medians were 44.64, 60.25, 4.86, 3.86,
+11.16, and 1.93 ms. Log, CSV, and bytes met the requested comparison on this
+host; loop, array, and nodes did not. The earlier 29 October run is a
+separate snapshot, so its differences do not isolate any one optimisation.
+
+Next work under [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+is the array/remainder code path, then the loop's remaining arithmetic;
+linked-object allocation and traversal remain above target. Broader
+[vectorisation](https://github.com/Aurora-softwares/Hylang-Compiler/issues/132)
+is still Backlog. #127 and
+[#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remain In Progress. Native regression and bootstrap results are local host
+evidence; published release assets and a live Windows install remain open
+release gates.

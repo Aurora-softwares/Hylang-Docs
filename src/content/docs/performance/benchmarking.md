@@ -142,3 +142,28 @@ particular, array fill and scan still needs roughly a twofold improvement.
 The [raw six-case run](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-29-loop-register.json)
 records inputs, checksums, tool versions, and every sample. Paired change
 measurements are described in the [optimisation evidence](/performance/optimisation-evidence/).
+
+## 30 October development check
+
+The next `0.8.0` native-codegen candidate keeps a guarded loop index, up to two
+integer locals, and a stable packed-array pointer in registers where the loop
+proof permits it. It also uses direct packed-array stores, shortens constant
+remainder lowering, and elides a provably empty constructor call. The
+[31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-30-register-and-allocation.json)
+uses three warmups and the same reference sizes, checksums, and compiler flags.
+Times below are whole-process medians in milliseconds; the target is the
+*slowest* C, C++, or Rust median in the same run.
+
+| Workload | Hydrogen native | Slowest comparison | Target met? |
+| --- | ---: | ---: | --- |
+| loop | 55.20 | 44.64 | No |
+| array | 89.64 | 60.25 | No |
+| log | 3.57 | 4.86 | Yes |
+| csv | 2.01 | 3.86 | Yes |
+| bytes | 10.04 | 11.16 | Yes |
+| nodes | 2.46 | 1.93 | No |
+
+The array fill and scan remains the largest miss at about 1.49 times the
+target. Loop is about 1.24 times and nodes about 1.28 times the target. The
+raw file retains every timed sample and the compiler/source hashes; these are
+host measurements, not a cross-machine speed guarantee.
