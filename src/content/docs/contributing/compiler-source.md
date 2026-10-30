@@ -98,6 +98,46 @@ and packaged application checks on the target architectures. Tagged release
 assets, live installation from those assets, native Apple Silicon code generation,
 and the other release gates above still require their own validation.
 
+## Extended HYUI controls
+
+Development HYUI now includes menus, tabbed pages, single-selection lists and
+tables, radio groups, local images, and asynchronous native message dialogs.
+The Studio sample's **Control gallery** tab demonstrates the new controls;
+its Studio and Help menus navigate the tabs and open the About dialog.
+The existing development milestone versions still apply to this toolkit work.
+
+| Element | Attributes and behavior |
+| --- | --- |
+| `MenuBar`, `Menu`, `MenuItem` | One `MenuBar` directly inside `Window`; each `Menu` has `text` and `MenuItem` children. Items use `text`, `onClick`, and optional `checked`. |
+| `Tabs`, `Tab` | `Tabs` contains `Tab` pages with `title` and ordinary layout children. `value` selects a zero-based page; `onChange` handles selection. |
+| `ListBox` | Pipe-separated `items`, a selected `value`, optional `height` (160 by default), and `onChange`. |
+| `Table` | Pipe-separated `columns`; newline-separated `rows` with pipe-separated cells. Each row must match the column count. `value`, `height`, and `onChange` work as for lists. |
+| `RadioGroup` | Pipe-separated `items`, selected `value`, and `onChange`. |
+| `Image` | A local `source` relative to the `.hyui` file and optional `height` (72 by default). Images preserve their aspect ratio; PNG is used by Studio. Include image folders in `ui_assets` when packaging. |
+| `Dialog` | A direct `Window` child with `title`, `text`, one to three pipe-separated `buttons` (default `OK`), `open`, selected button `value`, and `onClose`. |
+
+Collections and page definitions are declared in XML. Their selected indices can
+be read with `Application.Value(args, id)` and changed with
+`Application.SetValue(id, index)`; indices outside the declared range are rejected.
+Use `&#10;` for table row separators inside an XML attribute. The item/row data is
+static in this first implementation. Remote image URLs and paths outside the
+view's asset directory are not supported.
+
+`Application.SetOpen("confirmation", true)` opens a dialog without blocking the
+host event loop. Dismissing it sets `open` to false and sends `onClose` a snapshot
+whose dialog value is the zero-based button index. Closing through the window
+controls maps to the last button; backend-driven closure does not dispatch a new
+close handler. Dialog `text` can be changed before opening. Menus, controls, and
+dialogs use AppKit on macOS, GTK on Linux, and WinUI on Windows.
+
+The macOS regression exercises real menu/tab actions, radio/list/table selection,
+bundled image loading, and a native confirmation sheet through the Hydrogen
+sample backend. Shared contract tests cover valid nesting, selection ranges,
+malformed tables, image paths, and atomic backend updates. The GTK renderer is
+syntax-checked locally; Windows compilation has a dedicated CI job. Live GTK and
+WinUI interaction and packaged application qualification on those hosts remain
+follow-up gates, alongside the release and architecture gates above.
+
 ## Build output
 
 `hy build`, `hyc build`, and the self-hosted `hy build` update one terminal line per action. The braille spinner and bar show overall build progress, with a separate percentage for the active action. The bar uses up to 60 characters and shrinks in narrow terminals; long interactive progress text ends in `...` instead of wrapping. Terminal width is checked on each redraw, so resizing takes effect during a build. The line becomes its `100%` result when that action completes. Overall progress counts completed milestones, while lexing and parsing use source and token positions for their action percentages. Stages without measurable internal work stay at 0% until completion. The SDK spinner animates while a terminal build is busy. Redirected output uses full plain text without terminal escape codes.
