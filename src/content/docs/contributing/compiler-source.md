@@ -92,9 +92,10 @@ ctest --test-dir build -R '^hyui_(appkit_layout|sdk_integration)$' --output-on-f
 ```
 
 This completes the Studio layout repair within the current development work;
-it does not change the milestone versions above. Next UI qualification work
-includes the pre-existing macOS Unicode argument-normalization contract failure
-and packaged application checks on the target architectures. Tagged release
+it does not change the milestone versions above. The complete shared contract
+suite now accepts canonically equivalent Unicode argument representations on
+macOS while preserving its text and shell-metacharacter checks. Packaged
+application checks on the target architectures remain a qualification gate. Tagged release
 assets, live installation from those assets, native Apple Silicon code generation,
 and the other release gates above still require their own validation.
 
@@ -133,11 +134,117 @@ dialogs use AppKit on macOS, GTK on Linux, and WinUI on Windows.
 The macOS regression exercises real menu/tab actions, radio/list/table selection,
 bundled image loading, and a native confirmation sheet through the Hydrogen
 sample backend. Shared contract tests cover valid nesting, selection ranges,
-malformed tables, image paths, and atomic backend updates. The GTK renderer is
-syntax-checked locally. The native macOS UI job and WinUI host compilation both
-passed in [compiler CI](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41013670239). Live GTK and
-WinUI interaction and packaged application qualification on those hosts remain
-follow-up gates, alongside the release and architecture gates above.
+malformed tables, image paths, and atomic backend updates. The native UI CI
+suites below exercise interaction and appearance on all
+three host OSes. Linux also passes packaged-app build, relocation, compiler-free
+launch, callbacks, saving, and screenshot checks. Installer qualification and
+packaged-app checks on the other hosts/architectures remain separate gates,
+alongside the release and architecture gates above.
+
+## Updating a running UI
+
+Button and other event handlers can change existing controls without restarting
+the app. For example, a button declared with `onClick="Start"` can update a label,
+disable itself, reveal a predeclared panel, or switch tabs:
+
+```csharp
+if (Application.Handler(args) == "Start") {
+    Application.SetText("status", "Working...");
+    Application.SetEnabled("start", false);
+    Application.SetVisible("details", true);
+    Application.SetValue("pages", 1);
+}
+```
+
+The native host applies the response and reflows the layout. Use
+`Application.SetRunning` for timers/spinners and `Application.SetOpen` for
+dialogs. Studio already demonstrates live text, selection, enabled-state and
+progress changes; the native CI suites drive those actions through its compiled
+Hydrogen backend. Element creation/removal and replacement of list/table data
+are not exposed by this first API; declare conditional sections in XML and
+toggle their visibility.
+
+## Native UI CI and visual baselines
+
+The Hydrogen CI workflow launches the real UI on three pinned runner families:
+AppKit on `macos-15`, system GTK 4/libadwaita on `ubuntu-24.04` under a D-Bus
+session and Xvfb, and a self-contained WinUI build on `windows-2025`.
+The WinUI interaction harness is compiled only with `HydrogenUiTests=true`;
+shipping builds do not include its test entry point.
+
+Each native suite drives actual control actions and selection signals through
+the Hydrogen Studio backend. Coverage includes menus, tabs, lists, tables,
+radio groups, images, dialog results, form editing, progress, cancellation,
+timer completion, and saving the edited text. Native layout checks reject
+intersecting siblings and content outside its parent, and verify that the
+workspace and nested rows stack on narrow windows.
+
+The suites capture Workspace and Control gallery at 1120, 800, and 360 pixels,
+plus scrolled Workspace/Control gallery views and the native confirmation
+dialog: nine images per OS. Fixtures request a height of 600 pixels; GTK's
+client captures exclude its 10-pixel frame inset, while AppKit and WinUI capture
+the full 600-pixel content viewport. Test
+fixtures use a fixed light theme;
+AppKit disables backdrop material for repeatable images. Screenshots are
+compared with the reviewed per-OS PNGs in `tests/ui/golden/<platform>/`.
+Each capture comes from its corresponding OS runner. AppKit and WinUI capture
+the content area, excluding the system title/menu bars; GTK captures its native
+client-side header too. Inspecting a Linux artifact on a Mac does not change
+the renderer used by the Mac build.
+The comparator rejects blank images, clipped/unrendered client areas, and size
+changes, then compares a
+224-by-180 reduction with a maximum mean RGB difference of 0.035 and at most
+12% of pixels changing by more than 35/255 in any channel. These tolerances
+allow small font-rasterization differences; the independent geometry checks
+catch overlap and clipping. A separate negative test proves that blank,
+resized, and displaced content fails comparison.
+
+The Linux checks also enforce the requested window width and declared image
+height, and require scrolling to reveal the final controls. They caught GTK row
+minimum-width feedback, incorrect wrapped-text height, hidden-page whitespace,
+and oversized image allocation. Rows measure their native contents at the
+available width inside viewports; native stack/switcher tabs measure the selected
+page, and images use bounded native textures. The Windows SDK build sets `NOMINMAX` and avoids the Windows `small`
+macro collision. Its C backend uses Clang for the existing GNU C expression
+extensions, while the SDK executable itself is built with MSVC. The Windows
+runner configures a supported virtual desktop mode of at least 1280 by 800 so
+the wide client is rendered, and yields to native text events before saving.
+
+Every OS job uploads its screenshots, geometry/state report, visual difference
+images, and logs for 14 days, including failed runs. Missing baselines fail;
+CI never silently accepts new images. To review a deliberate visual change,
+download that run's actual PNGs, inspect the wide and narrow layouts and dialog,
+copy approved images into the matching golden directory, and commit them with
+the change. Keep the pinned runner, light fixture, and expected dimensions
+consistent; do not substitute a screenshot from another OS. Older runs of the
+same branch are cancelled when a newer commit arrives.
+
+The initial reviewed baselines came from these real native runner captures:
+
+| Platform | Renderer / runner | Capture run |
+| --- | --- | --- |
+| macOS | AppKit / `macos-15` | [80acba9](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41016164129) |
+| Windows | WinUI / `windows-2025` | [ca43c0a](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41017601483) |
+| Linux | GTK / `ubuntu-24.04` | [8da67e6](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41132295349) |
+
+These initial captures intentionally fail when their reviewed baseline is
+missing; subsequent runs must compare successfully against the committed PNGs.
+
+The platform runner can also be invoked locally after building its native driver:
+
+```sh
+python -m pip install Pillow==12.0.0
+python tools/hyui/ui_ci.py --platform macos \
+  --driver build/tools/hyui/hyui_appkit_tests --compiler build/hy \
+  --artifacts build/ui-artifacts
+```
+
+On Linux use `hyui_gtk_tests` inside `dbus-run-session -- xvfb-run`; Windows uses
+the published `Hyui.WinUI.exe` built with `HydrogenUiTests=true` and
+`WindowsAppSDKSelfContained=true`, plus a native SDK compiler in a Visual C++
+developer environment. Release publication, installer qualification, and native
+Apple Silicon code generation remain separate gates; UI checks do not change
+the development milestone versions above.
 
 ## Build output
 
