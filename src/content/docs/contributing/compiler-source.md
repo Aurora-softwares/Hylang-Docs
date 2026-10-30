@@ -229,6 +229,11 @@ The initial reviewed baselines came from these real native runner captures:
 
 These initial captures intentionally fail when their reviewed baseline is
 missing; subsequent runs must compare successfully against the committed PNGs.
+All three native interaction/layout suites and all 27 reviewed screenshot
+comparisons passed for `10d1550` in the
+[qualification run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41132706530),
+alongside compiler/bootstrap, macOS runtime, and Windows lifecycle checks.
+The optional published-Windows-release smoke test was not requested in that run.
 
 The platform runner can also be invoked locally after building its native driver:
 
