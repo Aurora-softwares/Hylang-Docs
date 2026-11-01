@@ -129,7 +129,7 @@ development version remains 0.2.0. The next toolkit target is a secure
 `PasswordInput` transport that avoids putting secrets in process arguments,
 followed by the other P0 controls and lifecycle work. The native UI jobs on
 Linux, Windows, and macOS pass in the
-[pinned CI run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41331141737).
+[pinned CI run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41331560336).
 Broader package qualification and the release gates above remain open.
 
 | P0 interface | HYUI v1 behavior | Native mapping and status |
