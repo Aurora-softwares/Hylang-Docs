@@ -11,7 +11,7 @@ Hydrogen-written compiler**. Implementation belongs in
 interpreter remain bootstrap or comparison tools; their optimisation is outside
 this review. Compiler build latency is tracked separately.
 
-## Measurement
+## Historical measurement (17 October 2026)
 
 The [six-case harness](https://hylang.co.uk/performance/benchmarking/) checks matching output
 against an independent Python result, then times warmed whole processes. These
@@ -19,10 +19,10 @@ local medians use an Intel i7-4790K on Linux, 17 October 2026, seven runs and
 two warmups. C and C++ use GCC 15.2 `-O2`; Rust 1.93.1 uses
 `-C opt-level=2`. Hydrogen uses the rebuilt native self-hosted stage-1
 compiler. Compilation is excluded. The [previous samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-two-optimisations.json)
-and [current samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-main-issues.json)
+and [17 October samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-main-issues.json)
 record every timing, input/source hash, and tool version.
 
-| Workload | Input | Previous native | Current native | Current C | Current native / C |
+| Workload | Input | Earlier native | 17 October native | 17 October C | 17 October native / C |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Dependent integer arithmetic | 10 million iterations | 136.1 ms | 94.7 ms | 46.6 ms | 2.03× |
 | Integer array fill and scan | 10 million elements | 194.8 ms | 157.1 ms | 63.9 ms | 2.46× |
@@ -352,9 +352,28 @@ Exact output, successful exit, and empty stderr were checked each time. The
 [31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-folded-immediates.json)
 measured array at 86.86 ms against its 58.55 ms slowest C/C++/Rust target.
 Loop and nodes also remain above target; log, CSV, and bytes meet theirs.
-The next 0.8.0 target is reducing per-iteration array fill arithmetic by
-deriving a running affine value under the existing guarded-loop proof, while
-preserving `int` wraparound. [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+The next 0.8.0 target is profiling the remaining constant-remainder work in
+array fill and scan. [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
 and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
 remain In Progress. Published release assets and a live Windows install
 remain separate release gates.
+
+## 1 November: rebuilt compiler and loop-layout check
+
+The benchmark runner now selects `build/self_hosting/hydrogen-stage1` by
+default. The [freshly rebuilt 31-run snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-rebuilt-stage1.json)
+uses that binary and verifies all six checksums. Array measured 87.23 ms
+against the slowest comparison at 58.85 ms; loop measured 54.62 versus
+44.83 ms, and nodes 2.24 versus 1.94 ms. Log, CSV, and bytes meet their
+targets. The earlier 17 October table on the benchmark page is a historical
+baseline; the latest table now leads the page.
+
+Moving the `while` condition to the loop tail removed an unconditional
+backward jump from each completed iteration. A [100-pair comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-loop-layout-paired.json)
+found no benefit: loop was 56.05 to 56.18 ms (45/100 pairs faster after),
+array 91.70 to 92.11 ms (49/100), and nodes 2.55 to 2.59 ms (42/100).
+Every run checked exact output, exit status, and empty stderr. The candidate
+was reverted, and the verified pre-candidate compiler binary was restored.
+The next target remains constant-remainder cost and array fill/scan code
+generation under #127; #128 remains In Progress. Published release assets
+and a live Windows install remain separate release gates.

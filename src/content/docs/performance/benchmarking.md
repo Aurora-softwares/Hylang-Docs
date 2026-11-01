@@ -26,6 +26,28 @@ stays in signed range, so overflow rules do not affect the output. Object
 lists remain live through traversal and are left to process cleanup in all
 routes. These cases are proxies for real work, not full applications.
 
+## Current development result (1 November 2026)
+
+The latest [31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-rebuilt-stage1.json)
+uses the rebuilt native stage-1 compiler, three warmups, and the reference
+inputs above. Times are whole-process medians in milliseconds. The target for
+each row is the *slowest* C, C++, or Rust median from that same run.
+
+| Workload | Hydrogen native | Slowest comparison | Native / target | Target met? |
+| --- | ---: | ---: | ---: | --- |
+| loop | 54.62 | 44.83 | 1.22× | No |
+| array | 87.23 | 58.85 | 1.48× | No |
+| log | 3.54 | 4.79 | 0.74× | Yes |
+| csv | 2.36 | 4.15 | 0.57× | Yes |
+| bytes | 9.90 | 11.27 | 0.88× | Yes |
+| nodes | 2.24 | 1.94 | 1.16× | No |
+
+Three of six cases meet the target. Array fill and scan is the largest gap;
+loop and nodes also remain above their targets. The older 17 October table
+below is retained as a historical baseline, not the current result. The
+0.8.0 performance work remains In Progress in the
+[development project](https://github.com/orgs/Aurora-softwares/projects/4).
+
 ## Run it
 
 From the Hylang-Compiler repository root:
@@ -40,9 +62,10 @@ python3 assets/benchmarks/runtime/run.py \
   --json build/benchmarks/runtime-realworld-results.json
 ```
 
-After `hydrogen_bootstrap_proof` has rebuilt and verified stage 3, the default
-`--native build/self_hosting/hydrogen-stage3` can be used instead. The
-runner needs Python 3, `cc`, `c++`, `rustc`, and a native self-hosted compiler.
+Use the freshly rebuilt stage-1 binary for the development result above; a
+stage-3 binary should only be used after explicitly rebuilding and verifying
+that binary. The runner needs Python 3, `cc`, `c++`, `rustc`, and a native
+self-hosted compiler.
 Use `--cc`, `--cxx`, `--rustc`, or `--native` to select other binaries. Add
 `--include-sdk-c` for the SDK's generated C route, or
 `--include-interpreter` for `hy run` (use much smaller inputs there). These
@@ -65,7 +88,7 @@ stderr, and exit code on warmups and timed samples, shuffles route order, then
 reports median wall time and ratio to C. JSON output records every sample,
 compiler versions and hashes, source hashes, input hashes, and build times.
 
-## Local result
+## Historical baseline (17 October 2026)
 
 On 17 October 2026, an Intel i7-4790K running Linux produced the following
 medians with seven timed runs and two warmups. C/C++ used GCC 15.2 and Rust
@@ -104,7 +127,7 @@ in the seven-run table, while a separate [21-run check](https://github.com/Auror
 measured 3.41 ms native and 1.22 ms C. The allocator's earlier 100,000-object
 check measured 25.3 ms native. Its 20,000-object peak RSS diagnostic fell from
 80,012 to 2,560 KB, and `mmap` calls from 20,013 to 650 (including startup).
-Raw [current six-case](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-main-issues.json) and
+Raw [17 October six-case](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-main-issues.json) and
 [100,000-object](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-nodes-100k.json) samples are retained.
 See [optimisations.md](https://hylang.co.uk/performance/optimisation-evidence/) for the remaining ranked work.
 
@@ -237,5 +260,5 @@ measured Hydrogen at 54.64 ms for loop, 86.86 for array, 3.56 for log, 2.18
 for CSV, 9.86 for bytes, and 2.21 for nodes. The respective slowest C/C++/Rust
 medians were 44.62, 58.55, 4.74, 3.75, 11.25, and 1.93 ms. Log, CSV, and
 bytes meet the target; loop, array, and nodes remain above it. The next
-array target is deriving a running value for repeated affine expressions in
-guarded loops. The 0.8.0 performance work stays In Progress.
+array target is profiling constant remainder arithmetic in the fill loop.
+The 0.8.0 performance work stays In Progress.
