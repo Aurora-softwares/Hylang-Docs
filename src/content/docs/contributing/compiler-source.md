@@ -125,16 +125,19 @@ The existing development milestone versions still apply to this toolkit work.
 HYUI P0 input and interaction work is tracked in
 [#178](https://github.com/Aurora-softwares/Hylang-Compiler/issues/178) under the
 existing 0.5.0 native developer workflow target. The project's current
-development version remains 0.2.0. The next toolkit target is a secure
-`PasswordInput` transport that avoids putting secrets in process arguments,
-followed by the other P0 controls and lifecycle work. The native UI jobs on
-Linux, Windows, and macOS pass in the
-[pinned CI run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41331560336).
+development version remains 0.2.0. Secure `PasswordInput` is implemented and
+has passed native UI CI on all three platforms in
+[run 41363539105](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41363539105).
+The next toolkit target is native
+open, save, and folder pickers, followed by the other P0 controls and lifecycle
+work. The previously completed controls passed on Linux, Windows, and macOS in
+the [pinned CI run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41331560336).
 Broader package qualification and the release gates above remain open.
 
 | P0 interface | HYUI v1 behavior | Native mapping and status |
 | --- | --- | --- |
 | `SearchInput` | `text`, `placeholder`, `onChange`, and `onSubmit` have the same state and event meaning as `Input`. Read it with `Application.Value(args, id)` and update it with `Application.SetText(id, text)`. | 🟢 `GtkSearchEntry` on Linux, `NSSearchField` on macOS, and WinUI `AutoSuggestBox` with a search icon on Windows. Native CI passed. |
+| `PasswordInput` | `placeholder`, `onChange`, and `onSubmit`; shared `visible`, `enabled`, and `accessibleName`. Read the secret only in the field's own event with `Application.SecretValue(args, id)`. No `text` or `value` attribute, mutable property, or normal `Application.Value` snapshot is provided. | 🟢 Native `GtkPasswordEntry`, `NSSecureTextField`, and WinUI `PasswordBox` passed the three-platform native interaction and appearance jobs in run 41363539105. |
 | `ScrollView` | Vertical container with ordinary HYUI children; `height` defaults to 200 and `gap` to 12. `visible`, `enabled`, `accessibleName`, and `tooltip` use the shared visual properties. The height must be positive. | 🟢 `GtkScrolledWindow` on Linux, `NSScrollView` on macOS, and WinUI `ScrollViewer` on Windows. Native CI passed. |
 | `tooltip` | Optional static text on widget-backed controls and layout containers. Menus, dialogs, and nonvisual elements reject it. It is not a mutable backend property. | 🟢 Native GTK tooltip, AppKit `toolTip`, and WinUI `ToolTipService`. Native CI passed. |
 
@@ -147,6 +150,17 @@ static `ListBox` data. The scroll area contains a native button whose action
 updates the gallery through the Hydrogen backend. The remaining P0 foundations, P1 controls, and P2
 integrations in the UI handover are still open; the project issue records the
 current implementation and verification status.
+
+Studio also reveals a native password field after choosing a template. Its
+`PasswordEdited` and `CheckPassword` handlers read the secret through
+`Application.SecretValue`; the gallery displays only the length and a match
+result. The host passes a path to a per-event private temporary file instead
+of passing the secret in process arguments or the broad UI state snapshot.
+The host removes the file when the handler exits or fails, limits it to 16 KiB,
+and sends it only for the password field's own event. As with any application
+secret, the Hydrogen handler must avoid printing or persisting it. The
+temporary file can be read by processes with the same operating-system user
+privileges while the event is active; this is the remaining transport boundary.
 
 Local Linux checks pass the shared contract suite, Studio Hydrogen backend
 build, SDK integration, native GTK interaction/layout suite, and relocated
