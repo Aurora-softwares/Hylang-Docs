@@ -292,3 +292,26 @@ current `0.8.0` performance target, [#127](https://github.com/Aurora-softwares/H
 and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
 remain In Progress. Array arithmetic and linked-object overhead remain next;
 published release assets and a live Windows install remain open gates.
+
+## 1 November: small-object slot clearing
+
+Linux small-object span pages come from zero-filled mappings. A newly bumped
+slot has never held an object, so the allocator now skips clearing it. A
+recycled slot is cleared through its header and requested payload, rounded to
+eight bytes, rather than through unused capacity in its size class. The
+collector traces only the recorded payload length. A native regression checks
+zero-valued fields after collection and slot reuse.
+
+The [alternating raw pairs](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-small-slot-zeroing-paired.json)
+show 20,000-node medians of 2.99 to 2.81 ms (102/150 pairs faster) and
+100,000-node medians of 15.43 to 14.91 ms (49/75 pairs faster). Every run
+checked the exact checksum, successful exit, and empty stderr. A separate
+[31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-small-slot-zeroing.json)
+measured nodes at 2.19 ms against 1.85 ms for its slowest C/C++/Rust route.
+Log, CSV, and bytes meet that run's target; loop, array, and nodes remain above
+it. The array pass is still the largest miss, so code generation for its
+arithmetic and array operations is the next 0.8.0 performance target under
+[#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127).
+[#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128) remains
+In Progress. Published release assets and a live Windows install remain open
+release gates.

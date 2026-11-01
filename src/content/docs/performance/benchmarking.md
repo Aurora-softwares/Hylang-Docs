@@ -173,3 +173,34 @@ uses the same 31-run method after the signed-immediate byte-writer repair. It
 again meets the target for log, CSV, and bytes, with loop, array, and nodes
 still above it. See the [optimisation evidence](/performance/optimisation-evidence/)
 for the repair and remaining work.
+
+## 1 November small-object allocation check
+
+The Linux native runtime now leaves newly bumped small-object slots at their
+zero-filled mapping defaults and clears reused slots only through the requested
+payload. The collector scans that payload length. An alternating comparison
+of executables built from the same workload source measured 20,000 nodes at
+2.99 ms before and 2.81 ms after (150 pairs, 102 faster after), and 100,000
+nodes at 15.43 ms before and 14.91 ms after (75 pairs, 49 faster after). Every
+run checked exact output, exit status, and empty stderr. The [paired raw
+samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-small-slot-zeroing-paired.json)
+retain executable hashes and the candidate compiler hash.
+
+The [31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-small-slot-zeroing.json)
+uses the rebuilt stage-1 compiler, three warmups, reference sizes, and the
+same exact-output checks. Whole-process medians in milliseconds are:
+
+| Workload | Hydrogen native | Slowest C/C++/Rust | Target met? |
+| --- | ---: | ---: | --- |
+| loop | 55.34 | 44.79 | No |
+| array | 86.87 | 58.36 | No |
+| log | 3.62 | 4.85 | Yes |
+| csv | 1.97 | 3.85 | Yes |
+| bytes | 9.96 | 11.24 | Yes |
+| nodes | 2.19 | 1.85 | No |
+
+The array pass is still the largest miss, at about 1.49 times the target.
+Loop is about 1.24 times and nodes about 1.18 times. The snapshot comparison
+with earlier days does not isolate the allocator change; use the alternating
+node pairs above for that attribution. The 0.8.0 optimisation work remains
+In Progress in the [development project](https://github.com/orgs/Aurora-softwares/projects/4).

@@ -53,10 +53,13 @@ The 0.8.0 optimisation work has completed
 for guarded native loops. Broader local register and loop code generation in
 [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127) remains the
 next performance target. Guarded string scans, register-held loop values, and
-direct packed-array accesses have improved the measured cases. The latest
+direct packed-array accesses have improved the measured cases. Linux small-object
+allocation now skips clearing never-used mapped slots and clears recycled slots
+through their requested payload; paired node timings improved. The latest
 [six-case check](https://hylang.co.uk/performance/benchmarking/) meets the
 slowest C/C++/Rust comparison for log, CSV, and bytes; array, loop, and nodes
-remain above it. [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+remain above it. Array arithmetic is the next 0.8.0 performance target.
+[#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
 and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
 remain In Progress under the 0.8.0 performance target. The development project
 still tracks 0.2.0 language work and the 0.1.0 release qualification gate;
