@@ -127,15 +127,16 @@ HYUI P0 input and interaction work is tracked in
 existing 0.5.0 native developer workflow target. The project's current
 development version remains 0.2.0. The next toolkit target is a secure
 `PasswordInput` transport that avoids putting secrets in process arguments,
-followed by the other P0 controls and lifecycle work. Windows and macOS native
-CI verification, package qualification, and the release gates above remain open
-until their respective runs pass.
+followed by the other P0 controls and lifecycle work. The native UI jobs on
+Linux, Windows, and macOS pass in the
+[pinned CI run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41331141737).
+Broader package qualification and the release gates above remain open.
 
 | P0 interface | HYUI v1 behavior | Native mapping and status |
 | --- | --- | --- |
-| `SearchInput` | `text`, `placeholder`, `onChange`, and `onSubmit` have the same state and event meaning as `Input`. Read it with `Application.Value(args, id)` and update it with `Application.SetText(id, text)`. | 🟡 `GtkSearchEntry` on Linux, `NSSearchField` on macOS, and WinUI `AutoSuggestBox` with a search icon on Windows. Cross-platform native CI is pending. |
-| `ScrollView` | Vertical container with ordinary HYUI children; `height` defaults to 200 and `gap` to 12. `visible`, `enabled`, `accessibleName`, and `tooltip` use the shared visual properties. The height must be positive. | 🟡 `GtkScrolledWindow` on Linux, `NSScrollView` on macOS, and WinUI `ScrollViewer` on Windows. Cross-platform native CI is pending. |
-| `tooltip` | Optional static text on any visual element. It is not a mutable backend property. | 🟡 Native GTK tooltip, AppKit `toolTip`, and WinUI `ToolTipService`. Cross-platform native CI is pending. |
+| `SearchInput` | `text`, `placeholder`, `onChange`, and `onSubmit` have the same state and event meaning as `Input`. Read it with `Application.Value(args, id)` and update it with `Application.SetText(id, text)`. | 🟢 `GtkSearchEntry` on Linux, `NSSearchField` on macOS, and WinUI `AutoSuggestBox` with a search icon on Windows. Native CI passed. |
+| `ScrollView` | Vertical container with ordinary HYUI children; `height` defaults to 200 and `gap` to 12. `visible`, `enabled`, `accessibleName`, and `tooltip` use the shared visual properties. The height must be positive. | 🟢 `GtkScrolledWindow` on Linux, `NSScrollView` on macOS, and WinUI `ScrollViewer` on Windows. Native CI passed. |
+| `tooltip` | Optional static text on widget-backed controls and layout containers. Menus, dialogs, and nonvisual elements reject it. It is not a mutable backend property. | 🟢 Native GTK tooltip, AppKit `toolTip`, and WinUI `ToolTipService`. Native CI passed. |
 
 Studio reveals its search field and a scrollable template-details area after
 choosing a template. The search term is
@@ -151,7 +152,8 @@ Local Linux checks pass the shared contract suite, Studio Hydrogen backend
 build, SDK integration, native GTK interaction/layout suite, and relocated
 package suite. The local screenshot comparison differs from the reviewed
 Ubuntu 24.04 baseline on this newer Linux host; no baseline or threshold was
-changed. The pinned three-OS CI run remains the visual and platform gate.
+changed. The pinned three-OS native UI jobs passed their visual and interaction
+checks on the unchanged baselines.
 
 | Element | Attributes and behavior |
 | --- | --- |
