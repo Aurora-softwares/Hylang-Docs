@@ -55,7 +55,9 @@ for guarded native loops. Broader local register and loop code generation in
 next performance target. Guarded string scans, register-held loop values, and
 direct packed-array accesses have improved the measured cases. Linux small-object
 allocation now skips clearing never-used mapped slots and clears recycled slots
-through their requested payload; paired node timings improved. The latest
+through their requested payload; paired node timings improved. A guarded
+zero-based loop index now uses the nonnegative constant division and remainder
+path, with signed handling retained elsewhere. The latest
 [six-case check](https://hylang.co.uk/performance/benchmarking/) meets the
 slowest C/C++/Rust comparison for log, CSV, and bytes; array, loop, and nodes
 remain above it. Array arithmetic is the next 0.8.0 performance target.

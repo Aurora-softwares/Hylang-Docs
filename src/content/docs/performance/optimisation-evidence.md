@@ -315,3 +315,24 @@ arithmetic and array operations is the next 0.8.0 performance target under
 [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128) remains
 In Progress. Published release assets and a live Windows install remain open
 release gates.
+
+## 1 November: proven nonnegative index arithmetic
+
+When an existing guarded-loop proof establishes a zero-based, strictly
+increasing `int` index, division or remainder of that index by a positive
+constant uses only the nonnegative reciprocal path. Other signed operands
+retain their negative-value correction. The native constant-division
+regression now covers both operators on a guarded index, while its existing
+edge cases still cover negative inputs including `int.MinValue`.
+
+The [100-pair loop samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-nonnegative-index-paired.json)
+measured 55.29 to 54.80 ms median (72 pairs faster); node timings were
+effectively unchanged. All runs checked exact output, successful exit, and
+empty stderr. The [31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-nonnegative-index.json)
+measured 54.66 ms for loop against its 44.66 ms slowest-comparison target.
+Array remains the largest miss at 87.45 versus 58.18 ms; nodes measured 2.20
+versus 1.88 ms. Log, CSV, and bytes meet their respective targets. The 0.8.0
+work under [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remains In Progress. Array arithmetic is next, with published release assets
+and a live Windows install still open release gates.

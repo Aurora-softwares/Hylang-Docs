@@ -204,3 +204,21 @@ Loop is about 1.24 times and nodes about 1.18 times. The snapshot comparison
 with earlier days does not isolate the allocator change; use the alternating
 node pairs above for that attribution. The 0.8.0 optimisation work remains
 In Progress in the [development project](https://github.com/orgs/Aurora-softwares/projects/4).
+
+## 1 November guarded-index arithmetic check
+
+For a zero-based index that the compiler proves stays nonnegative under a
+strict loop bound, positive-constant division and remainder now omit the
+unused signed correction branch. Other signed operands retain that path.
+The [100-pair loop comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-nonnegative-index-paired.json)
+measured 55.29 to 54.80 ms, with 72 pairs faster after the change; the
+20,000-node case was effectively unchanged. Exact output, exit status, and
+empty stderr were checked for every run.
+
+In the subsequent [31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-nonnegative-index.json),
+Hydrogen measured 54.66 ms for loop, 87.45 for array, 4.23 for log, 2.07 for
+CSV, 9.90 for bytes, and 2.20 for nodes. The respective slowest C/C++/Rust
+medians were 44.66, 58.18, 4.85, 3.85, 11.29, and 1.88 ms. Log, CSV, and
+bytes meet the target; loop, array, and nodes remain above it. Array arithmetic
+is the next 0.8.0 performance target. Published release assets and a live
+Windows install remain separate release gates.
