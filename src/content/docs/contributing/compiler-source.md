@@ -134,13 +134,16 @@ until their respective runs pass.
 | P0 interface | HYUI v1 behavior | Native mapping and status |
 | --- | --- | --- |
 | `SearchInput` | `text`, `placeholder`, `onChange`, and `onSubmit` have the same state and event meaning as `Input`. Read it with `Application.Value(args, id)` and update it with `Application.SetText(id, text)`. | 🟡 `GtkSearchEntry` on Linux, `NSSearchField` on macOS, and WinUI `AutoSuggestBox` with a search icon on Windows. Cross-platform native CI is pending. |
+| `ScrollView` | Vertical container with ordinary HYUI children; `height` defaults to 200 and `gap` to 12. `visible`, `enabled`, `accessibleName`, and `tooltip` use the shared visual properties. The height must be positive. | 🟡 `GtkScrolledWindow` on Linux, `NSScrollView` on macOS, and WinUI `ScrollViewer` on Windows. Cross-platform native CI is pending. |
 | `tooltip` | Optional static text on any visual element. It is not a mutable backend property. | 🟡 Native GTK tooltip, AppKit `toolTip`, and WinUI `ToolTipService`. Cross-platform native CI is pending. |
 
-Studio reveals its search field after choosing a template. The search term is
+Studio reveals its search field and a scrollable template-details area after
+choosing a template. The search term is
 sent to `SearchTemplates` on edits and `SubmitSearch` on submission; its
 Hydrogen backend shows the term in the gallery. The initial gallery appearance
 and reviewed screenshot baselines are unchanged. Search does not yet filter the
-static `ListBox` data. The remaining P0 foundations, P1 controls, and P2
+static `ListBox` data. The scroll area contains a native button whose action
+updates the gallery through the Hydrogen backend. The remaining P0 foundations, P1 controls, and P2
 integrations in the UI handover are still open; the project issue records the
 current implementation and verification status.
 
