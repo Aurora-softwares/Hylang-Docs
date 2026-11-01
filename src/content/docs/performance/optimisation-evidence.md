@@ -271,3 +271,24 @@ is still Backlog. #127 and
 remain In Progress. Native regression and bootstrap results are local host
 evidence; published release assets and a live Windows install remain open
 release gates.
+
+## 1 November: signed immediate encoding
+
+An evaluated signed 32-bit constant-division lowering exposed an existing
+overflow in the x64 assembler's 32-bit byte writer: subtracting 255 from a
+negative `int` near its minimum could wrap before division. The writer now
+widens that subtraction to `long`. Exact byte checks cover
+`-2147483647`, `int.MinValue`, and `int.MaxValue`. The division lowering was
+reverted after its runtime timings regressed; the published positive-path
+64-bit reciprocal lowering remains in use.
+
+The [post-fix 31-run snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-immediate-encoding.json)
+again matches every expected checksum. Hydrogen measured 55.05 ms for loop,
+88.47 ms for array, 3.52 ms for log, 1.95 ms for CSV, 9.90 ms for bytes, and
+2.42 ms for nodes. Log, CSV, and bytes still meet the slowest C/C++/Rust
+comparison in that run; loop, array, and nodes do not. These are another host
+snapshot, not a paired attribution to the byte-writer change. Under the
+current `0.8.0` performance target, [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remain In Progress. Array arithmetic and linked-object overhead remain next;
+published release assets and a live Windows install remain open gates.

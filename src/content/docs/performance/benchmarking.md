@@ -167,3 +167,9 @@ The array fill and scan remains the largest miss at about 1.49 times the
 target. Loop is about 1.24 times and nodes about 1.28 times the target. The
 raw file retains every timed sample and the compiler/source hashes; these are
 host measurements, not a cross-machine speed guarantee.
+
+The [1 November follow-up](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-immediate-encoding.json)
+uses the same 31-run method after the signed-immediate byte-writer repair. It
+again meets the target for log, CSV, and bytes, with loop, array, and nodes
+still above it. See the [optimisation evidence](/performance/optimisation-evidence/)
+for the repair and remaining work.
