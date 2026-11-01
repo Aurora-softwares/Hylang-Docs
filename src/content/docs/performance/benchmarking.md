@@ -28,19 +28,19 @@ routes. These cases are proxies for real work, not full applications.
 
 ## Current development result (1 November 2026)
 
-The latest [31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-rebuilt-stage1.json)
+The latest [31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-modular-fill.json)
 uses the rebuilt native stage-1 compiler, three warmups, and the reference
 inputs above. Times are whole-process medians in milliseconds. The target for
 each row is the *slowest* C, C++, or Rust median from that same run.
 
 | Workload | Hydrogen native | Slowest comparison | Native / target | Target met? |
 | --- | ---: | ---: | ---: | --- |
-| loop | 54.62 | 44.83 | 1.22× | No |
-| array | 87.23 | 58.85 | 1.48× | No |
-| log | 3.54 | 4.79 | 0.74× | Yes |
-| csv | 2.36 | 4.15 | 0.57× | Yes |
-| bytes | 9.90 | 11.27 | 0.88× | Yes |
-| nodes | 2.24 | 1.94 | 1.16× | No |
+| loop | 55.07 | 44.89 | 1.23× | No |
+| array | 83.10 | 59.79 | 1.39× | No |
+| log | 3.69 | 4.87 | 0.76× | Yes |
+| csv | 2.01 | 3.90 | 0.52× | Yes |
+| bytes | 9.89 | 11.22 | 0.88× | Yes |
+| nodes | 2.29 | 1.91 | 1.20× | No |
 
 Three of six cases meet the target. Array fill and scan is the largest gap;
 loop and nodes also remain above their targets. The older 17 October table
@@ -262,3 +262,24 @@ medians were 44.62, 58.55, 4.74, 3.75, 11.25, and 1.93 ms. Log, CSV, and
 bytes meet the target; loop, array, and nodes remain above it. The next
 array target is profiling constant remainder arithmetic in the fill loop.
 The 0.8.0 performance work stays In Progress.
+
+## 1 November guarded modular array fill
+
+The native compiler now recognises a guarded, zero-based `int[]` fill whose
+value is `(i * factor + bias) % divisor`, with positive constants and an
+array whose length is the loop bound. When the runtime bound proves that the
+original signed expression cannot overflow, it keeps a running remainder
+and uses addition and one conditional subtraction per element. Larger bounds
+use the original signed lowering. Regression tests cover both paths and a
+fill that crosses a remainder boundary.
+
+The [100-pair comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-modular-fill-paired.json)
+measured array fill and scan at 85.57 to 79.06 ms, with 97 pairs faster after
+the change. Every run checked exact output, exit status, and empty stderr.
+The [latest six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-modular-fill.json)
+above confirms three of six cases meet the target; array remains the largest
+miss at 1.39 times its slowest C/C++/Rust comparison. The 0.8.0 work under
+[#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127) and
+[#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remains In Progress. Further array fill code generation is the next target;
+published assets and a live Windows install remain release gates.

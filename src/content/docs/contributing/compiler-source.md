@@ -64,8 +64,11 @@ sign extension in the array fill case. The latest
 slowest C/C++/Rust comparison for log, CSV, and bytes; array, loop, and nodes
 remain above it. The latest 31-run snapshot uses a freshly rebuilt stage-1
 compiler and is shown first on the benchmark page. A tested loop-tail branch
-layout did not improve speed and was reverted. Profiling constant-remainder
-cost in array fill and scan is the next 0.8.0 performance target.
+layout did not improve speed and was reverted. A guarded modular array fill
+now keeps a running remainder when the loop bound excludes signed overflow;
+its paired array result improved from 85.57 to 79.06 ms. The latest full
+snapshot still misses the array target by 1.39 times, so further fill-loop
+code generation is the next 0.8.0 performance target.
 [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
 and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
 remain In Progress under the 0.8.0 performance target. The development project

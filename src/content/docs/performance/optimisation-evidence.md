@@ -377,3 +377,29 @@ was reverted, and the verified pre-candidate compiler binary was restored.
 The next target remains constant-remainder cost and array fill/scan code
 generation under #127; #128 remains In Progress. Published release assets
 and a live Windows install remain separate release gates.
+
+## 1 November: guarded modular array fill
+
+A [100-triplet phase diagnostic](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-array-phase-diagnostic.json)
+measured array allocation alone at 16.85 ms, allocation plus the original
+fill at 77.84 ms, and the full fill and scan at 89.02 ms. These variants
+change the computation and only locate the costly phase; they are not
+equivalent benchmark results. The fill loop dominated the remaining work.
+
+For a zero-based guarded `int[]` fill of `(i * factor + bias) % divisor`,
+the compiler now checks that the runtime bound keeps the original signed
+expression below `int.MaxValue`. Within that bound it stores a running
+remainder, updates it by addition, and subtracts the divisor when needed.
+The generic signed path handles larger bounds. Linux native and Windows
+parity regressions check a boundary on each side of the guard and a fill
+that crosses a remainder boundary.
+
+The [100 randomized array pairs](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-modular-fill-paired.json)
+measured 85.57 to 79.06 ms, with 97/100 after runs faster. The
+[31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-modular-fill.json)
+measured array at 83.10 ms against 59.79 ms for its slowest comparison;
+loop at 55.07 versus 44.89 ms; and nodes at 2.29 versus 1.91 ms. Log,
+CSV, and bytes meet their targets. Array is still the largest miss at 1.39
+times its target. Further fill-loop code generation is next for #127;
+#128 remains In Progress. Published release assets and a live Windows
+install remain separate release gates.
