@@ -57,10 +57,13 @@ direct packed-array accesses have improved the measured cases. Linux small-objec
 allocation now skips clearing never-used mapped slots and clears recycled slots
 through their requested payload; paired node timings improved. A guarded
 zero-based loop index now uses the nonnegative constant division and remainder
-path, with signed handling retained elsewhere. The latest
+path, with signed handling retained elsewhere. Adjacent immediate `int`
+arithmetic now keeps intermediate results at 32-bit width, reducing one
+sign extension in the array fill case. The latest
 [six-case check](https://hylang.co.uk/performance/benchmarking/) meets the
 slowest C/C++/Rust comparison for log, CSV, and bytes; array, loop, and nodes
-remain above it. Array arithmetic is the next 0.8.0 performance target.
+remain above it. A running affine value for guarded array fill loops is the
+next 0.8.0 performance target.
 [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
 and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
 remain In Progress under the 0.8.0 performance target. The development project

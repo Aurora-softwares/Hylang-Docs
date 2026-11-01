@@ -336,3 +336,25 @@ work under [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127
 and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
 remains In Progress. Array arithmetic is next, with published release assets
 and a live Windows install still open release gates.
+
+## 1 November: adjacent immediate integer arithmetic
+
+The native x64 backend can execute adjacent `int` additions, subtractions,
+and multiplications with numeric literals at 32-bit width and sign-extend the
+final result once. The operations retain the existing 32-bit wrapping result;
+the regression compares folded and ordinary forms at `int.MinValue`,
+`int.MaxValue`, and small positive and negative inputs. In the array fill
+loop, this removes an intermediate sign extension from `i * 17 + 3`.
+
+The [100 alternating array pairs](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-folded-immediates-paired.json)
+measured 88.59 to 87.90 ms median, with 63 pairs faster after the change.
+Exact output, successful exit, and empty stderr were checked each time. The
+[31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-folded-immediates.json)
+measured array at 86.86 ms against its 58.55 ms slowest C/C++/Rust target.
+Loop and nodes also remain above target; log, CSV, and bytes meet theirs.
+The next 0.8.0 target is reducing per-iteration array fill arithmetic by
+deriving a running affine value under the existing guarded-loop proof, while
+preserving `int` wraparound. [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remain In Progress. Published release assets and a live Windows install
+remain separate release gates.

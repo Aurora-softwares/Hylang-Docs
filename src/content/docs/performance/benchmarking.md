@@ -222,3 +222,20 @@ medians were 44.66, 58.18, 4.85, 3.85, 11.29, and 1.88 ms. Log, CSV, and
 bytes meet the target; loop, array, and nodes remain above it. Array arithmetic
 is the next 0.8.0 performance target. Published release assets and a live
 Windows install remain separate release gates.
+
+## 1 November integer arithmetic fold
+
+The native x64 compiler now combines two adjacent immediate `int` additions,
+subtractions, or multiplications at 32-bit width before one final sign
+extension. This retains the existing wrapping result, including at signed
+limits. The [100-pair array comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-folded-immediates-paired.json)
+measured 88.59 to 87.90 ms, with 63 pairs faster after the change. Every run
+checked exact output, successful exit, and empty stderr.
+
+The [subsequent six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-folded-immediates.json)
+measured Hydrogen at 54.64 ms for loop, 86.86 for array, 3.56 for log, 2.18
+for CSV, 9.86 for bytes, and 2.21 for nodes. The respective slowest C/C++/Rust
+medians were 44.62, 58.55, 4.74, 3.75, 11.25, and 1.93 ms. Log, CSV, and
+bytes meet the target; loop, array, and nodes remain above it. The next
+array target is deriving a running value for repeated affine expressions in
+guarded loops. The 0.8.0 performance work stays In Progress.
