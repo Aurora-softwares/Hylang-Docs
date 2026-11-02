@@ -128,9 +128,15 @@ existing 0.5.0 native developer workflow target. The project's current
 development version remains 0.2.0. Secure `PasswordInput` is implemented and
 has passed native UI CI on all three platforms in
 [run 41363539105](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41363539105).
-The next toolkit target is native
-open, save, and folder pickers, followed by the other P0 controls and lifecycle
-work. The previously completed controls passed on Linux, Windows, and macOS in
+Native open, save, and folder pickers are implemented and passed the local
+contract, GTK interaction, and relocated SDK package tests, plus the Linux,
+macOS, and Windows native UI jobs in
+[run 41366091262](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41366091262).
+Menu command keyboard accelerators and context menus are in implementation
+and verification. Native text clipboard commands are in local implementation
+and verification. The next toolkit targets are the other P0 controls and
+lifecycle work. The previously completed
+controls passed on Linux, Windows, and macOS in
 the [pinned CI run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41331560336).
 Broader package qualification and the release gates above remain open.
 
@@ -138,6 +144,11 @@ Broader package qualification and the release gates above remain open.
 | --- | --- | --- |
 | `SearchInput` | `text`, `placeholder`, `onChange`, and `onSubmit` have the same state and event meaning as `Input`. Read it with `Application.Value(args, id)` and update it with `Application.SetText(id, text)`. | 🟢 `GtkSearchEntry` on Linux, `NSSearchField` on macOS, and WinUI `AutoSuggestBox` with a search icon on Windows. Native CI passed. |
 | `PasswordInput` | `placeholder`, `onChange`, and `onSubmit`; shared `visible`, `enabled`, and `accessibleName`. Read the secret only in the field's own event with `Application.SecretValue(args, id)`. No `text` or `value` attribute, mutable property, or normal `Application.Value` snapshot is provided. | 🟢 Native `GtkPasswordEntry`, `NSSecureTextField`, and WinUI `PasswordBox` passed the three-platform native interaction and appearance jobs in run 41363539105. |
+| `FilePicker` | `mode="open|save|folder"`, required `text` and `onPick`, optional `onCancel`; shared `visible`, `enabled`, `accessibleName`, and `tooltip`. The chosen local path is available as `Application.Value(args, id)` in `onPick` and as the mutable `path` property through `Application.SetPath`. The document cannot predeclare a path. Cancellation leaves the previous path unchanged. | 🟡 Native `GtkFileChooserNative`, AppKit `NSOpenPanel`/`NSSavePanel`, and Windows App SDK file/folder pickers. Three native UI jobs passed in run 41408262483. GTK verifies accepted paths; all three verify creation and cancellation. Direct accepted-path interaction on macOS and Windows remains open. |
+| `MenuItem shortcut` | Optional `shortcut="Primary+K"` or `shortcut="Primary+Shift+K"` on a `MenuItem` with `onClick`; keys are A–Z or 0–9. Shortcuts must be unique within a document. `Primary` maps to Command on macOS and Control on Windows/Linux, and invokes the same Hydrogen handler as the menu command. | 🟢 Native AppKit menu key equivalents, WinUI `KeyboardAccelerator`, and GTK global `GtkShortcutController` passed three-platform native CI in run 41408262483. |
+| `ContextMenu` | Declare as a direct child of `Window` with `target="controlId"` and one or more `MenuItem` children. The target must be a visual control and may have only one context menu. Menu commands use ordinary `text`, `checked`, `enabled`, `visible`, and `onClick` state and events. Context items do not declare global `shortcut` bindings. | 🟢 Native `GtkPopover` with right-click and menu-key gestures, AppKit `NSView.menu`, and WinUI `ContextFlyout` passed three-platform native CI in run 41408262483. |
+| `Clipboard` | Declare a nonvisual direct child of `Window` with `id` and `onRead`. `Application.ClipboardWrite(id, text)` writes UTF-8 text; `Application.ClipboardRead(id)` requests the current text and sends `onRead`. Read it with `Application.Value(args, id)` in that event; clipboard contents are omitted from other event snapshots. Nontext content reads as an empty string. Text is limited to 16 KiB. | 🟢 Native GDK clipboard, AppKit `NSPasteboard`, and WinUI clipboard adapters passed three-platform native CI in run 41408262483. |
+| `Toolbar` / `ToolButton` | Declare one `Toolbar` as a direct `Window` child with one or more `ToolButton` children. Each button requires `text` and `onClick`; ordinary `visible`, `enabled`, `accessibleName`, and `tooltip` properties apply. The toolbar's `visible` state controls the command surface. | 🟡 Native libadwaita header commands, AppKit `NSToolbar`, and WinUI `CommandBar` pass local contract and GTK interaction tests. Three-platform CI is pending. |
 | `ScrollView` | Vertical container with ordinary HYUI children; `height` defaults to 200 and `gap` to 12. `visible`, `enabled`, `accessibleName`, and `tooltip` use the shared visual properties. The height must be positive. | 🟢 `GtkScrolledWindow` on Linux, `NSScrollView` on macOS, and WinUI `ScrollViewer` on Windows. Native CI passed. |
 | `tooltip` | Optional static text on widget-backed controls and layout containers. Menus, dialogs, and nonvisual elements reject it. It is not a mutable backend property. | 🟢 Native GTK tooltip, AppKit `toolTip`, and WinUI `ToolTipService`. Native CI passed. |
 
