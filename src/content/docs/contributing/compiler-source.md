@@ -132,10 +132,14 @@ Native open, save, and folder pickers are implemented and passed the local
 contract, GTK interaction, and relocated SDK package tests, plus the Linux,
 macOS, and Windows native UI jobs in
 [run 41366091262](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41366091262).
-Menu command keyboard accelerators and context menus are in implementation
-and verification. Native text clipboard commands are in local implementation
-and verification. The next toolkit targets are the other P0 controls and
-lifecycle work. The previously completed
+Menu command keyboard accelerators, context menus, text clipboard commands,
+toolbar commands, and anchored text popovers have passed native UI CI on all
+three platforms. Native view teardown hardening and GTK popover focus/ownership
+corrections passed three-platform native UI jobs in
+[run 41413381471](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41413381471).
+The broader P0 ownership and lifecycle gate remains in progress. The next toolkit
+targets are the remaining P0 windows, controls, data models, and lifecycle
+work. The previously completed
 controls passed on Linux, Windows, and macOS in
 the [pinned CI run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41331560336).
 Broader package qualification and the release gates above remain open.
@@ -149,7 +153,7 @@ Broader package qualification and the release gates above remain open.
 | `ContextMenu` | Declare as a direct child of `Window` with `target="controlId"` and one or more `MenuItem` children. The target must be a visual control and may have only one context menu. Menu commands use ordinary `text`, `checked`, `enabled`, `visible`, and `onClick` state and events. Context items do not declare global `shortcut` bindings. | 🟢 Native `GtkPopover` with right-click and menu-key gestures, AppKit `NSView.menu`, and WinUI `ContextFlyout` passed three-platform native CI in run 41408262483. |
 | `Clipboard` | Declare a nonvisual direct child of `Window` with `id` and `onRead`. `Application.ClipboardWrite(id, text)` writes UTF-8 text; `Application.ClipboardRead(id)` requests the current text and sends `onRead`. Read it with `Application.Value(args, id)` in that event; clipboard contents are omitted from other event snapshots. Nontext content reads as an empty string. Text is limited to 16 KiB. | 🟢 Native GDK clipboard, AppKit `NSPasteboard`, and WinUI clipboard adapters passed three-platform native CI in run 41408262483. |
 | `Toolbar` / `ToolButton` | Declare one `Toolbar` as a direct `Window` child with one or more `ToolButton` children. Each button requires `text` and `onClick` and supports `visible`, `enabled`, `accessibleName`, and `tooltip`. The toolbar supports `visible` and `enabled` for the entire command surface. | 🟢 Native libadwaita header commands, AppKit `NSToolbar`, and WinUI `CommandBar` passed local contract/GTK and three-platform native interaction jobs in run 41409632272. |
-| `Popover` | Declare a direct `Window` child with required `id`, `target` and `text`, optional `open` (default false) and `onClose`. `target` names a visual control. `Application.SetOpen` shows or hides the anchored text, and `Application.SetText` updates it. Native dismissal sets `open` false and dispatches `onClose`; backend closure does not dispatch it. | 🟡 Native `GtkPopover`, AppKit `NSPopover`, and WinUI `Flyout` are implemented. Contract, GTK interaction, and package tests pass locally; three-platform native CI is pending. Popover content is text-only at this stage. |
+| `Popover` | Declare a direct `Window` child with required `id`, `target` and `text`, optional `open` (default false) and `onClose`. `target` names a `Button`; the button's `onClick` opens the popover through the Hydrogen backend. `Application.SetOpen` shows or hides the anchored text, and `Application.SetText` updates it. Native dismissal sets `open` false and dispatches `onClose`; backend closure does not dispatch it. | 🟢 Native `GtkPopover` on `GtkMenuButton`, AppKit `NSPopover`, and WinUI `Flyout` passed contract, GTK/package, and all three native UI jobs in run 41413381471. GTK focus and ownership hardening also passes a local fatal-critical native test. Popover content is text-only at this stage; rich content remains a P0 gate. |
 | `ScrollView` | Vertical container with ordinary HYUI children; `height` defaults to 200 and `gap` to 12. `visible`, `enabled`, `accessibleName`, and `tooltip` use the shared visual properties. The height must be positive. | 🟢 `GtkScrolledWindow` on Linux, `NSScrollView` on macOS, and WinUI `ScrollViewer` on Windows. Native CI passed. |
 | `tooltip` | Optional static text on widget-backed controls and layout containers. Menus, dialogs, and nonvisual elements reject it. It is not a mutable backend property. | 🟢 Native GTK tooltip, AppKit `toolTip`, and WinUI `ToolTipService`. Native CI passed. |
 
@@ -161,7 +165,8 @@ and reviewed screenshot baselines are unchanged. Search does not yet filter the
 static `ListBox` data. The scroll area contains a native button whose action
 updates the gallery through the Hydrogen backend. Native toolbar commands appear
 after a template is selected. The next UI target is multi-window lifecycle,
-popovers and custom dialogs, tree-backed collections, and data-model updates in
+custom-content dialogs, tree-backed collections, drag and drop, and observable
+data-model updates in
 [#179](https://github.com/Aurora-softwares/Hylang-Compiler/issues/179).
 The remaining P0 foundations, P1 controls, and P2 integrations in the UI
 handover are still open; the project issues record implementation and
