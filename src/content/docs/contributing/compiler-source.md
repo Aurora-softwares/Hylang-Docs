@@ -158,9 +158,13 @@ sent to `SearchTemplates` on edits and `SubmitSearch` on submission; its
 Hydrogen backend shows the term in the gallery. The initial gallery appearance
 and reviewed screenshot baselines are unchanged. Search does not yet filter the
 static `ListBox` data. The scroll area contains a native button whose action
-updates the gallery through the Hydrogen backend. The remaining P0 foundations, P1 controls, and P2
-integrations in the UI handover are still open; the project issue records the
-current implementation and verification status.
+updates the gallery through the Hydrogen backend. Native toolbar commands appear
+after a template is selected. The next UI target is multi-window lifecycle,
+popovers and custom dialogs, tree-backed collections, and data-model updates in
+[#179](https://github.com/Aurora-softwares/Hylang-Compiler/issues/179).
+The remaining P0 foundations, P1 controls, and P2 integrations in the UI
+handover are still open; the project issues record implementation and
+verification status.
 
 Studio also reveals a native password field after choosing a template. Its
 `PasswordEdited` and `CheckPassword` handlers read the secret through
