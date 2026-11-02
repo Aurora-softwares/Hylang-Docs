@@ -152,9 +152,10 @@ exercised a live process during disposal. That run also passed the AppKit and
 WinUI native runtime export and application packaging jobs after correcting
 macOS executable permissions and Windows reparse-point detection. A local
 self-hosted Stage 1 build and macOS cross-package fixture passed. The full
-workflow completed successfully in run 41468089397. A separate Windows CI
-negative case for a linked UI asset is undergoing verification. Multiple
-windows and broader lifecycle ownership remain P0 gates.
+workflow completed successfully in run 41468089397. The Windows SDK export job
+in [run 41470704541](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41470704541)
+also passed a real junction rejection check after packaging the normal Studio
+assets. Multiple windows and broader lifecycle ownership remain P0 gates.
 
 | P0 interface | HYUI v1 behavior | Native mapping and status |
 | --- | --- | --- |
