@@ -144,6 +144,18 @@ controls passed on Linux, Windows, and macOS in
 the [pinned CI run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41331560336).
 Broader package qualification and the release gates above remain open.
 
+The WinUI host now cancels an active Hydrogen backend process when its window
+closes, alongside stopping timers and dismissing native dialogs. The Windows
+native interaction job in
+[run 41468089397](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41468089397)
+exercised a live process during disposal. That run also passed the AppKit and
+WinUI native runtime export and application packaging jobs after correcting
+macOS executable permissions and Windows reparse-point detection. A local
+self-hosted Stage 1 build and macOS cross-package fixture passed; the full
+workflow's compiler and bootstrap jobs were still running when these results
+were recorded. Multiple windows and broader lifecycle ownership remain P0
+gates.
+
 | P0 interface | HYUI v1 behavior | Native mapping and status |
 | --- | --- | --- |
 | `SearchInput` | `text`, `placeholder`, `onChange`, and `onSubmit` have the same state and event meaning as `Input`. Read it with `Application.Value(args, id)` and update it with `Application.SetText(id, text)`. | 🟢 `GtkSearchEntry` on Linux, `NSSearchField` on macOS, and WinUI `AutoSuggestBox` with a search icon on Windows. Native CI passed. |
