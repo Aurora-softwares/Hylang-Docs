@@ -2,9 +2,9 @@ name: Hydrogen site and registry
 
 on:
   push:
-    branches: [Development, main]
+    branches: [Development, Release, main]
   pull_request:
-    branches: [Development, main]
+    branches: [Development, Release, main]
 
 permissions:
   contents: read
@@ -42,3 +42,14 @@ jobs:
         run: bash tools/test-install.sh
       - name: Build static site
         run: npm run build
+      - name: Verify generated pages and starter downloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          for page in index.html docs/index.html guides/index.html samples/index.html guides/first-project/index.html; do
+            test -s "dist/$page" || { echo "::error::Missing generated route: /$page"; exit 1; }
+          done
+          grep -q "Hello, Hydrogen" dist/index.html || { echo "::error::Welcome page content is missing"; exit 1; }
+          for sample in hello.hy count-to-five.hy greet-you.hy; do
+            cmp "public/samples/$sample" "dist/samples/$sample" || { echo "::error::Sample missing or changed: $sample"; exit 1; }
+          done

@@ -6,9 +6,7 @@
 
 </div>
 
-This is the Astro Starlight documentation site for Hydrogen/Hylang. It is
-independent from the legacy Docusaurus tree and is the site to deploy for the
-release-first Hydrogen documentation.
+This is Hydrogen's Astro website. A Haze-inspired pastel welcome page lives at `/`, while Astro Starlight provides searchable documentation at `/docs/` and retains the existing reference URLs. There are also guides at `/guides/` and downloadable starter code at `/samples/`.
 
 ## Local development
 
@@ -38,7 +36,10 @@ Create a Cloudflare Pages project connected to this repository and use:
 | Root directory | Repository root (leave blank) |
 | Build command | `npm run build` |
 | Build output directory | `dist` |
-| Node.js version | 20 or newer |
+| Node.js version | 22 or newer |
+| Production branch | `Release` |
+
+In Cloudflare Pages, enable **automatic production branch deployments** for the `Release` branch under **Settings → Builds & deployments → Branch control**. The GitHub Actions `site-ci.yml` workflow only verifies the site; it does **not** publish to Cloudflare. Cloudflare's own Git integration handles deployment on a push to `Release`. Do not use `Development` as production unless you intentionally want preview changes publicly visible.
 
 After adding the custom domain in Cloudflare Pages, set the project environment
 variable `SITE_URL` to its complete public origin, for example:
@@ -52,7 +53,7 @@ include a trailing slash.
 
 ## Content
 
-Documentation pages live in `src/content/docs/`; navigation and site identity are
+The home page lives in `src/pages/index.astro`; starter source files live in `public/samples/`. Documentation pages live in `src/content/docs/`; navigation and site identity are
 configured in `astro.config.mjs`. The current site documents Hydrogen
 `alpha-0.0.2`, including its self-hosted compiler, Linux-native language surface,
 UEFI bootloader and early-kernel profiles. It also describes newer Australis
