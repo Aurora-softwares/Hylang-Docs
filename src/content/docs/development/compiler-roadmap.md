@@ -37,7 +37,7 @@ Current development version: the compiler's in-progress 0.1.0 codebase, with Lin
 
 - 🟢 Compiler stages contain HYUI validation and build the application logic without a separately installed `hyui-native`.
 - 🟢 Linux GTK4 application generation can package the compiled Hydrogen backend, declarative UI and assets into **one ELF executable**; it requires C++, GTK4 development headers, `tar` and `objcopy` at build time.
-- 🟡 The new single-file integration test must pass in GitHub Actions before the implementation is considered verified.
+- 🟢 The Linux Stage 1 single-ELF GTK4 integration test passed on [Hylang-Compiler PR #182, CI run 41623739036](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41623739036). Stage 2/3 standalone GTK4 builds remain a separate verification gate.
 - 🔴 In-process UI callbacks are not implemented: the embedded Hydrogen backend currently runs from an anonymous Linux `memfd` in a child process. No backend ELF is written alongside the app.
 - 🔴 Direct macOS AppKit and Windows WinUI 3 application generation still need corresponding platform work.
 - 🔴 Remaining release gates include native UI regressions across all three compiler stages, visual parity, and a native linkable Hydrogen ABI to eliminate the child process.
