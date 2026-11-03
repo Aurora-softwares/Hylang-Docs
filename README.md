@@ -27,7 +27,36 @@ The deployable output is `dist/`. The static assets in `public/` include
 after changing `registry/approved.json`; check them with
 `python3 tools/build-registry.py --check`.
 
-## Cloudflare Pages
+## GitHub Pages (automatic production publishing)
+
+The production site is published from the `Release` branch at
+**https://aurora-softwares.github.io/Hylang-Docs/**.
+
+The workflow at `.github/workflows/github-pages.yml` automatically builds and
+publishes after every push to `Release` (or manually via `workflow_dispatch`).
+It runs the official Astro Pages action and deploys using GitHub's Pages action.
+`Development` and pull requests run validation only.
+
+**One-time repository setup:** Open [Settings → Pages](https://github.com/Aurora-softwares/Hylang-Docs/settings/pages)
+and set **Build and deployment → Source → GitHub Actions**. The workflow token
+has `pages: write` and `id-token: write` permissions, but the Pages publishing
+source must be enabled in the repository settings.
+
+GitHub Pages publishes under the `/Hylang-Docs/` subpath. The Pages workflow sets
+`SITE_URL=https://aurora-softwares.github.io` and `SITE_BASE=/Hylang-Docs`.
+The `build:pages` script handles links in Markdown, MDX, and the custom Astro
+homepage that would otherwise point to the wrong domain root.
+
+Local check:
+
+```bash
+SITE_URL=https://aurora-softwares.github.io SITE_BASE=/Hylang-Docs npm run build:pages
+```
+
+The normal `npm run build` still builds for the configured root-path site, such
+as Cloudflare, without rewriting any links.
+
+## Cloudflare Pages (optional alternative)
 
 Create a Cloudflare Pages project connected to this repository and use:
 

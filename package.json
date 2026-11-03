@@ -7,7 +7,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "build:pages": "astro build && node tools/prepare-github-pages.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.42.5",
