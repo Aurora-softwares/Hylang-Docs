@@ -39,7 +39,9 @@ Current development version: the compiler's in-progress 0.1.0 codebase, with Lin
 - 🟢 Linux GTK4 application generation can package the compiled Hydrogen backend, declarative UI and assets into **one ELF executable**; it requires C++, GTK4 development headers, `tar` and `objcopy` at build time.
 - 🟢 The Linux Stage 1 single-ELF GTK4 integration test passed on [Hylang-Compiler PR #182, CI run 41623739036](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41623739036). Stage 2/3 standalone GTK4 builds remain a separate verification gate.
 - 🔴 In-process UI callbacks are not implemented: the embedded Hydrogen backend currently runs from an anonymous Linux `memfd` in a child process. No backend ELF is written alongside the app.
-- 🔴 Direct macOS AppKit and Windows WinUI 3 application generation still need corresponding platform work.
+- 🟡 Windows WinUI 3 native Stage 1 builds now have a draft single-EXE path using the self-contained .NET `PublishSingleFile` deployment contract; compiled Hydrogen backend and UI files are embedded and unpacked at runtime. Windows App SDK CI must verify the latest implementation.
+- 🟡 macOS AppKit bundles use the AppKit renderer itself as `CFBundleExecutable`, instead of a separate launcher, with exported Qt Core runtime support; this remains a standard multi-file `.app` bundle. macOS native CI must verify it.
+- 🔴 True in-process native Hydrogen calls remain necessary to eliminate the platform-specific child backend processes.
 - 🔴 Remaining release gates include native UI regressions across all three compiler stages, visual parity, and a native linkable Hydrogen ABI to eliminate the child process.
 
 A **single executable file** is distinct from **single-process execution**. GTK4 remains a system shared-library dependency on Linux.
