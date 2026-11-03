@@ -5,6 +5,8 @@ import starlight from '@astrojs/starlight';
 // https://astro.build/config
 export default defineConfig({
     site: process.env.SITE_URL ?? 'https://hylang.co.uk',
+    // GitHub Pages serves this project at /Hylang-Docs/; other hosts stay at /.
+    base: process.env.SITE_BASE ?? '/',
     integrations: [starlight({
         title: 'Hydrogen',
 		logo: {

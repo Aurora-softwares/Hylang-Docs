@@ -53,3 +53,19 @@ jobs:
           for sample in hello.hy count-to-five.hy greet-you.hy; do
             cmp "public/samples/$sample" "dist/samples/$sample" || { echo "::error::Sample missing or changed: $sample"; exit 1; }
           done
+
+      - name: Build for GitHub Pages and verify base-path links
+        env:
+          SITE_URL: https://aurora-softwares.github.io
+          SITE_BASE: /Hylang-Docs
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run build:pages
+          test -s dist/index.html
+          test -s dist/docs/index.html
+          test -s dist/guides/index.html
+          test -s dist/samples/index.html
+          grep -q 'href="/Hylang-Docs/docs/"' dist/index.html
+          grep -q 'href="/Hylang-Docs/samples/hello.hy"' dist/index.html
+          grep -q 'href="/Hylang-Docs/samples/hello.hy"' dist/samples/index.html
