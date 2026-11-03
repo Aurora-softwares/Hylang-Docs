@@ -33,22 +33,41 @@ Direct Linux x64 code generation is implemented. Additional work includes object
 
 ### Native desktop UI — development branch
 
-Current development version: the compiler's in-progress **0.1.0** codebase.
-The new [single-file Linux GTK4 proposal (draft PR #187)](https://github.com/Aurora-softwares/Hylang-Compiler/pull/187)
-has **not yet merged into Development or been released**. The older
-[experimental PR #182](https://github.com/Aurora-softwares/Hylang-Compiler/pull/182)
-was closed without merging, so its Windows and macOS direct-packaging paths
-are not part of the current Development branch.
+The current development compiler is the in-progress **0.1.0** line.
+[Compiler PR #187](https://github.com/Aurora-softwares/Hylang-Compiler/pull/187)
+**merged into Development** on 3 November 2026. It produces a single Linux
+GTK4 ELF with embedded HYUI and application logic, with no native UI
+helper executable, though its frontend is still written in C++ and runs
+the Hydrogen backend in a separate anonymous child process.
 
-- 🟡 **Proposed:** Replace the default Linux UI package with one native GTK4 ELF containing Hydrogen application code, HYUI views and assets; no `hyui-native`, `hyui-launcher`, Qt host or runtime sidecar. The old host-based build remains an opt-in path via `--ui-sdk`.
-- 🟡 **Proposed:** Require self-hosted UI preflight for both full applications and `--ui-backend`; keep the comprehensive native schema check optional when an SDK is supplied.
-- 🟢 **Previously demonstrated:** A Linux Stage 1 GTK4 single-ELF integration test passed in the earlier [prototype CI](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41632279604); the narrower PR #187 must be retested independently.
-- 🟢 **Previously demonstrated, not merged:** The old prototype built a single Windows WinUI 3 EXE and a macOS AppKit `.app` without an extra launcher, as shown by [prototype CI](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41627353676). The Windows EXE was not exercised as an interactive standalone app.
-- 🔴 Linux GTK4 still needs system GTK4 libraries; UI generation currently requires C++, GTK4 development headers and repository-local frontend source.
-- 🔴 Native Hydrogen callbacks are still handled in a child process (Linux: anonymous `memfd`). One output file does not mean one process; a linkable native Hydrogen ABI is a separate milestone.
-- 🔴 Release gates remain Stage 1–3 UI builds, full test-suite regression, complete Hydrogen HYUI schema validation, platform-native interaction and visual parity, and the in-process ABI.
+[Compiler draft PR #188](https://github.com/Aurora-softwares/Hylang-Compiler/pull/188)
+starts replacing this with native Linux ABI imports and an ELF dynamic linker
+both written in Hydrogen. It adds a Hydrogen-written GTK4 Window class
+and a headless test that builds a window from outside the compiler repository.
+This **experimental foundation is not yet merged or released**.
 
-Use the [Hydrogen — Development project](https://github.com/orgs/Aurora-softwares/projects/4) for live task status. Git tags describe historical releases, not the current development version.
+- 🟢 Self-hosted Stage 1–3 compiler bootstrap has been verified on Linux,
+  Windows and macOS by the developer, with byte-identical Stage 2/3 outputs.
+- 🟢 Linux UI documents compile to one distributable ELF on Development;
+  runtime GTK4 libraries are still needed.
+- 🟡 Draft PR #188 adds direct GTK4 C ABI calls, image imports and a
+  Hydrogen-only sample window. CI and native runtime behavior are pending.
+- 🔴 The default XML-based UI renderer still compiles a C++ GTK frontend;
+  removing its sources requires implementation and parity of the full HYUI
+  document/schema, native layout, controls and events in Hydrogen.
+- 🔴 Linux in-process event callbacks, ownership/lifetimes, resource
+  embedding, and Stage 1–3 proof of a fully Hydrogen UI remain release gates.
+- 🔴 Windows/macOS native API interoperability and renderer migration,
+  comprehensive cross-platform visual parity, and the final retirement
+  of the optional C++ Stage 0 bootstrap remain separate milestones.
+
+Stage 0 is the historical C++ seed, **not** the self-hosted production
+compiler. Removing it without a verified replacement would break clean
+bootstrapping and its trust/reproducibility chain. Retain it in
+`bootstrap/` until the replacement seed is established.
+
+Use the [Hydrogen — Development project](https://github.com/orgs/Aurora-softwares/projects/4)
+for current task status.
 
 The development compiler already emits the Australis bootloader, raw kernel,
 and checked AUEX programs. The OS can load small AUN1 ring-3 machine-code
@@ -58,35 +77,25 @@ requires explicit target contracts, memory ownership, layout/ABI
 support, and a suitable runtime profile. See the [Australis GUI roadmap](https://aurora-softwares.github.io/Australis-Docs/development/gui-roadmap/);
 Linux executables do not establish support for these targets.
 
-## Native Linux GTK4 UI builds (draft proposal)
+## Native Linux GTK4 UI builds
 
-The targeted [PR #187](https://github.com/Aurora-softwares/Hylang-Compiler/pull/187)
-introduces default single-file Linux GTK4 UI builds, without carrying over
-the old prototype's changes to default non-UI compiler targets. The GTK4
-frontend is compiled from `tools/hyui/linux_gtk_app.cpp` and embeds
-the compiled Hydrogen backend and resource archive in one ELF file.
-No `.runtime` directory is distributed.
+On Development, the merged single-file GTK4 path uses a C++ frontend
+and Hydrogen backend in one distributed file. This is a transitional
+packager, not the final native Hydrogen UI runtime.
 
-For the proposed source-checkout workflow:
+The proposed replacement in [draft PR #188](https://github.com/Aurora-softwares/Hylang-Compiler/pull/188)
+compiles a GTK4 window written exclusively in `.hy` with the Hydrogen
+compiler's new direct Linux dynamic ELF loader integration. The sample is:
 
 ```bash
-sudo apt install build-essential binutils pkg-config libgtk-4-dev
-./build/self_hosting/linux/hydrogen-stage1 build samples/ui_studio/Studio.hyproj -o build/Studio
-./build/Studio
+./build/self_hosting/linux/hydrogen-stage1 build samples/native_gtk/NativeGtk.hyproj -o build/NativeGtk
+./build/NativeGtk
 ```
 
-Keep the source checkout as the current working directory for UI generation.
-The frontend uses the system GTK4 runtime. Hydrogen event callbacks currently
-run from an embedded backend launched in an anonymous in-memory child process:
-**single-file distribution is implemented in the proposal, but single-process
-execution is not**. Existing native UI packaging on Development remains in
-place until this proposal passes CI and is merged; the old `--ui-sdk` route
-remains available after migration.
-
-The proposed new Linux regression exercises clean compiler bootstrap without
-Qt or `hyui-native`, frontend generation, relocation, events and rebuilds.
-Stage 2/3 equivalence, independent installation of the GTK frontend template,
-and full native UI schema parity remain future gates.
+This new API is a narrow, type-checked GTK ABI slice; it still needs
+event callbacks and complete HYUI compatibility before the existing
+native frontend can be deleted. It is not part of the Release branch
+and must not be described as a finished 100% Hydrogen GUI framework.
 
 ## Tooling and packages
 
