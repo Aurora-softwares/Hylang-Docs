@@ -31,6 +31,19 @@ Expand compiler/runtime builtins into reusable Hydrogen-written libraries: colle
 
 Direct Linux x64 code generation is implemented. Additional work includes object files, linker/external ABI integration, debug information, cross-compilation, and additional platform runtime/startup implementations. Keep the C backend useful as a portability route while parity develops.
 
+### Native desktop UI — development branch
+
+Current development version: the compiler's in-progress 0.1.0 codebase, with Linux single-file GTK4 packaging on the `feature/embedded-native-ui-stage-compilers` branch ([draft PR #182](https://github.com/Aurora-softwares/Hylang-Compiler/pull/182)). This is **not** a released feature.
+
+- 🟢 Compiler stages contain HYUI validation and build the application logic without a separately installed `hyui-native`.
+- 🟢 Linux GTK4 application generation can package the compiled Hydrogen backend, declarative UI and assets into **one ELF executable**; it requires C++, GTK4 development headers, `tar` and `objcopy` at build time.
+- 🟡 The new single-file integration test must pass in GitHub Actions before the implementation is considered verified.
+- 🔴 In-process UI callbacks are not implemented: the embedded Hydrogen backend currently runs from an anonymous Linux `memfd` in a child process. No backend ELF is written alongside the app.
+- 🔴 Direct macOS AppKit and Windows WinUI 3 application generation still need corresponding platform work.
+- 🔴 Remaining release gates include native UI regressions across all three compiler stages, visual parity, and a native linkable Hydrogen ABI to eliminate the child process.
+
+A **single executable file** is distinct from **single-process execution**. GTK4 remains a system shared-library dependency on Linux.
+
 The development compiler already emits the Australis bootloader, raw kernel,
 and checked AUEX programs. The OS can load small AUN1 ring-3 machine-code
 programs. Hydrogen's narrow AUN1 version 2 `native` project path emits one
