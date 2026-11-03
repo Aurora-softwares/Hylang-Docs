@@ -29,11 +29,21 @@ export default defineConfig({
                 tag: 'meta',
                 attrs: {
                     name: 'theme-color',
-                    content: '#5b5bd6',
+                    content: '#fbf7ff',
                 },
             },
         ],
         sidebar: [
+            { label: 'Welcome', link: '/' },
+            { label: 'Documentation hub', slug: 'docs' },
+            {
+                label: 'Learn by doing',
+                items: [
+                    { label: 'How-to guides', slug: 'guides' },
+                    { label: 'Your first Hydrogen project', slug: 'guides/first-project' },
+                    { label: 'Download sample projects', slug: 'samples' },
+                ],
+            },
             {
                 label: 'Getting Started',
                 items: [
@@ -65,6 +75,7 @@ export default defineConfig({
                     { label: 'Projects and references', slug: 'tools/projects' },
                     { label: 'Packages and the registry', slug: 'tools/packages' },
                     { label: 'Australis applications', slug: 'tools/australis-applications' },
+                    { label: 'Desktop UI (Development)', slug: 'tools/desktop-ui' },
                     { label: 'Builtin APIs', slug: 'runtime/builtins' },
                     { label: 'Runtime behavior', slug: 'runtime/runtime-model' },
                 ],
