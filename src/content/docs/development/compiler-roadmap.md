@@ -54,6 +54,40 @@ requires explicit target contracts, memory ownership, layout/ABI
 support, and a suitable runtime profile. See the [Australis GUI roadmap](https://aurora-softwares.github.io/Australis-Docs/development/gui-roadmap/);
 Linux executables do not establish support for these targets.
 
+## Native Linux GTK4 UI builds (experimental branch)
+
+The experimental [embedded UI compiler PR #182](https://github.com/Aurora-softwares/Hylang-Compiler/pull/182)
+extends the three self-hosted compiler stages with native UI validation. On Linux,
+the feature branch now generates an application-specific GTK4 executable by
+compiling its GTK4 frontend source against the system GTK4 development SDK.
+This route does not require the old `hyui-native`/Qt host or a separate
+`hyui-launcher` executable. The previous Qt renderer remains available with
+an explicitly provided `--ui-sdk` during migration.
+
+The initial generator requires `c++`, `pkg-config` and the GTK4 development
+headers. The current implementation is intended for source checkouts and
+locates `tools/hyui/linux_gtk_app.cpp` relative to the repository root.
+
+A typical source-checkout build is:
+
+```bash
+sudo apt install build-essential pkg-config libgtk-4-dev
+./build/self_hosting/linux/hydrogen-stage1 build samples/ui_studio/Studio.hyproj -o build/Studio
+./build/Studio
+```
+
+The Linux application currently consists of a GTK4 frontend executable and
+a private `.runtime/app/__hyui_backend` containing compiled Hydrogen event
+logic and resources. Event transport still launches the backend process. The
+**single-process executable** is a future integration stage, not delivered by
+this GTK4 milestone. Windows WinUI3 and macOS AppKit direct generation are
+separate future tasks.
+
+The branch includes headless Ubuntu GTK4 build and event tests. Its status
+must not be presented as release-qualified until those checks and native
+interaction tests pass. The latest task status remains in the
+[Hydrogen development project](https://github.com/orgs/Aurora-softwares/projects/4).
+
 ## Tooling and packages
 
 Improve LSP navigation/completion/indexing, debugger integration, and diagnostic fidelity. Native source archive packing, project-local exact dependency loading, a SHA-256 lockfile, static-registry downloads, and exact restore/upgrade are implemented in Development. Linux install lifecycle and Windows release layout are also implemented; PowerShell lifecycle fixture tests run on GitHub-hosted Windows runners. Registry signing, version-range solving, published installer-ready release assets, and live Windows installation from those assets remain open.
