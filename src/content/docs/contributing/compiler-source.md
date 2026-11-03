@@ -51,8 +51,29 @@ The native collector now groups adjacent dead-span releases on Linux; the
 The 0.8.0 optimisation work has completed
 [proven packed-array bounds elimination](https://github.com/Aurora-softwares/Hylang-Compiler/issues/167)
 for guarded native loops. Broader local register and loop code generation in
-[#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127) is the
-next performance target; real Windows-host validation remains a release gate.
+[#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127) remains the
+next performance target. Guarded string scans, register-held loop values, and
+direct packed-array accesses have improved the measured cases. Linux small-object
+allocation now skips clearing never-used mapped slots and clears recycled slots
+through their requested payload; paired node timings improved. A guarded
+zero-based loop index now uses the nonnegative constant division and remainder
+path, with signed handling retained elsewhere. Adjacent immediate `int`
+arithmetic now keeps intermediate results at 32-bit width, reducing one
+sign extension in the array fill case. The latest
+[six-case check](https://hylang.co.uk/performance/benchmarking/) meets the
+slowest C/C++/Rust comparison for log, CSV, and bytes; array, loop, and nodes
+remain above it. The latest 31-run snapshot uses a freshly rebuilt stage-1
+compiler and is shown first on the benchmark page. A tested loop-tail branch
+layout did not improve speed and was reverted. A guarded modular array fill
+now keeps a running remainder when the loop bound excludes signed overflow;
+its paired array result improved from 85.57 to 79.06 ms. The latest full
+snapshot still misses the array target by 1.39 times, so further fill-loop
+code generation is the next 0.8.0 performance target.
+[#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remain In Progress under the 0.8.0 performance target. The development project
+still tracks 0.2.0 language work and the 0.1.0 release qualification gate;
+published release assets and a live Windows install remain open.
 Native source package work for the 0.5.0 target is in progress under
 [#111](https://github.com/Aurora-softwares/Hylang-Compiler/issues/111).
 The native CLI now packs and adds local source archives, removes direct
@@ -64,6 +85,270 @@ explicit version. Windows release packaging and the `hy.cmd` launcher have a
 Wine-checked candidate. The PowerShell lifecycle and website installer pass
 fixture tests on GitHub-hosted Windows runners. Published installer-ready assets
 and a live Windows install from those assets remain open release gates.
+
+## Native macOS UI layout
+
+The Development HYUI AppKit renderer measures wrapped text at the available
+column width, sizes panels from their contents, and places native controls in a
+vertically scrolling document. Rows and grids reflow when the window is resized;
+controls retain their parents and backend event bindings. Label roles distinguish
+titles, headings, and captions. This fixes the overlapping controls and empty
+space seen in `samples/ui_studio/Studio.hyui` on macOS.
+
+The macOS layout regression checks the sample at 1120, 800, and 360 pixels,
+including sibling overlap, parent bounds, wrapped text, nested rows, scrolling,
+repeated resizing, backend text updates, and hidden controls. Run it alongside
+the sample's SDK backend integration after configuring Qt Core 6.8 or newer:
+
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DHYDROGEN_BUILD_UI=ON
+cmake --build build --target hy hyui hyui_appkit_tests --parallel
+ctest --test-dir build -R '^hyui_(appkit_layout|sdk_integration)$' --output-on-failure
+```
+
+This completes the Studio layout repair within the current development work;
+it does not change the milestone versions above. The complete shared contract
+suite now accepts canonically equivalent Unicode argument representations on
+macOS while preserving its text and shell-metacharacter checks. Packaged
+application checks on the target architectures remain a qualification gate. Tagged release
+assets, live installation from those assets, native Apple Silicon code generation,
+and the other release gates above still require their own validation.
+
+## Extended HYUI controls
+
+Development HYUI now includes menus, tabbed pages, single-selection lists and
+tables, radio groups, local images, and asynchronous native message dialogs.
+The Studio sample's **Control gallery** tab demonstrates the new controls;
+its Studio and Help menus navigate the tabs and open the About dialog.
+The existing development milestone versions still apply to this toolkit work.
+
+HYUI P0 input and interaction work is tracked in
+[#178](https://github.com/Aurora-softwares/Hylang-Compiler/issues/178) under the
+existing 0.5.0 native developer workflow target. The project's current
+development version remains 0.2.0. Secure `PasswordInput` is implemented and
+has passed native UI CI on all three platforms in
+[run 41363539105](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41363539105).
+Native open, save, and folder pickers are implemented and passed the local
+contract, GTK interaction, and relocated SDK package tests, plus the Linux,
+macOS, and Windows native UI jobs in
+[run 41366091262](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41366091262).
+Menu command keyboard accelerators, context menus, text clipboard commands,
+toolbar commands, and anchored text popovers have passed native UI CI on all
+three platforms. Native view teardown hardening and GTK popover focus/ownership
+corrections passed three-platform native UI jobs in
+[run 41413381471](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41413381471).
+The broader P0 ownership and lifecycle gate remains in progress. The next toolkit
+targets are the remaining P0 windows, controls, data models, and lifecycle
+work. The previously completed
+controls passed on Linux, Windows, and macOS in
+the [pinned CI run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41331560336).
+Broader package qualification and the release gates above remain open.
+
+The WinUI host now cancels an active Hydrogen backend process when its window
+closes, alongside stopping timers and dismissing native dialogs. The Windows
+native interaction job in
+[run 41468089397](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41468089397)
+exercised a live process during disposal. That run also passed the AppKit and
+WinUI native runtime export and application packaging jobs after correcting
+macOS executable permissions and Windows reparse-point detection. A local
+self-hosted Stage 1 build and macOS cross-package fixture passed. The full
+workflow completed successfully in run 41468089397. The Windows SDK export job
+in [run 41470704541](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41470704541)
+also passed a real junction rejection check after packaging the normal Studio
+assets. The AppKit native interaction, reviewed screenshot, and SDK integration
+jobs in [run 41477764976](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41477764976)
+passed after preserving window content height when the native toolbar appears.
+Multiple windows and broader lifecycle ownership remain P0 gates.
+
+| P0 interface | HYUI v1 behavior | Native mapping and status |
+| --- | --- | --- |
+| `SearchInput` | `text`, `placeholder`, `onChange`, and `onSubmit` have the same state and event meaning as `Input`. Read it with `Application.Value(args, id)` and update it with `Application.SetText(id, text)`. | 🟢 `GtkSearchEntry` on Linux, `NSSearchField` on macOS, and WinUI `AutoSuggestBox` with a search icon on Windows. Native CI passed. |
+| `PasswordInput` | `placeholder`, `onChange`, and `onSubmit`; shared `visible`, `enabled`, and `accessibleName`. Read the secret only in the field's own event with `Application.SecretValue(args, id)`. No `text` or `value` attribute, mutable property, or normal `Application.Value` snapshot is provided. | 🟢 Native `GtkPasswordEntry`, `NSSecureTextField`, and WinUI `PasswordBox` passed the three-platform native interaction and appearance jobs in run 41363539105. |
+| `FilePicker` | `mode="open|save|folder"`, required `text` and `onPick`, optional `onCancel`; shared `visible`, `enabled`, `accessibleName`, and `tooltip`. The chosen local path is available as `Application.Value(args, id)` in `onPick` and as the mutable `path` property through `Application.SetPath`. The document cannot predeclare a path. Cancellation leaves the previous path unchanged. | 🟡 Native `GtkFileChooserNative`, AppKit `NSOpenPanel`/`NSSavePanel`, and Windows App SDK file/folder pickers. Three native UI jobs passed in run 41408262483. GTK verifies a selected path; all three verify creation and cancellation. AppKit additionally verifies that an accepted native save panel URL reaches Hydrogen in run 41477764976. User-chosen path interaction on macOS and Windows remains open. |
+| `MenuItem shortcut` | Optional `shortcut="Primary+K"` or `shortcut="Primary+Shift+K"` on a `MenuItem` with `onClick`; keys are A–Z or 0–9. Shortcuts must be unique within a document. `Primary` maps to Command on macOS and Control on Windows/Linux, and invokes the same Hydrogen handler as the menu command. | 🟢 Native AppKit menu key equivalents, WinUI `KeyboardAccelerator`, and GTK global `GtkShortcutController` passed three-platform native CI in run 41408262483. |
+| `ContextMenu` | Declare as a direct child of `Window` with `target="controlId"` and one or more `MenuItem` children. The target must be a visual control and may have only one context menu. Menu commands use ordinary `text`, `checked`, `enabled`, `visible`, and `onClick` state and events. Context items do not declare global `shortcut` bindings. | 🟢 Native `GtkPopover` with right-click and menu-key gestures, AppKit `NSView.menu`, and WinUI `ContextFlyout` passed three-platform native CI in run 41408262483. |
+| `Clipboard` | Declare a nonvisual direct child of `Window` with `id` and `onRead`. `Application.ClipboardWrite(id, text)` writes UTF-8 text; `Application.ClipboardRead(id)` requests the current text and sends `onRead`. Read it with `Application.Value(args, id)` in that event; clipboard contents are omitted from other event snapshots. Nontext content reads as an empty string. Text is limited to 16 KiB. | 🟢 Native GDK clipboard, AppKit `NSPasteboard`, and WinUI clipboard adapters passed three-platform native CI in run 41408262483. |
+| `Toolbar` / `ToolButton` | Declare one `Toolbar` as a direct `Window` child with one or more `ToolButton` children. Each button requires `text` and `onClick` and supports `visible`, `enabled`, `accessibleName`, and `tooltip`. The toolbar supports `visible` and `enabled` for the entire command surface. | 🟢 Native libadwaita header commands, AppKit `NSToolbar`, and WinUI `CommandBar` passed local contract/GTK and three-platform native interaction jobs in run 41409632272. |
+| `Popover` | Declare a direct `Window` child with required `id`, `target` and `text`, optional `open` (default false) and `onClose`. `target` names a `Button`; the button's `onClick` opens the popover through the Hydrogen backend. `Application.SetOpen` shows or hides the anchored text, and `Application.SetText` updates it. Native dismissal sets `open` false and dispatches `onClose`; backend closure does not dispatch it. | 🟢 Native `GtkPopover` on `GtkMenuButton`, AppKit `NSPopover`, and WinUI `Flyout` passed contract, GTK/package, and all three native UI jobs in run 41413381471. GTK focus and ownership hardening also passes a local fatal-critical native test. Popover content is text-only at this stage; rich content remains a P0 gate. |
+| `ScrollView` | Vertical container with ordinary HYUI children; `height` defaults to 200 and `gap` to 12. `visible`, `enabled`, `accessibleName`, and `tooltip` use the shared visual properties. The height must be positive. | 🟢 `GtkScrolledWindow` on Linux, `NSScrollView` on macOS, and WinUI `ScrollViewer` on Windows. Native CI passed. |
+| `tooltip` | Optional static text on widget-backed controls and layout containers. Menus, dialogs, and nonvisual elements reject it. It is not a mutable backend property. | 🟢 Native GTK tooltip, AppKit `toolTip`, and WinUI `ToolTipService`. Native CI passed. |
+
+Studio reveals its search field and a scrollable template-details area after
+choosing a template. The search term is
+sent to `SearchTemplates` on edits and `SubmitSearch` on submission; its
+Hydrogen backend shows the term in the gallery. The initial gallery appearance
+and reviewed screenshot baselines are unchanged. Search does not yet filter the
+static `ListBox` data. The scroll area contains a native button whose action
+updates the gallery through the Hydrogen backend. Native toolbar commands appear
+after a template is selected. The next UI target is multi-window lifecycle,
+custom-content dialogs, tree-backed collections, drag and drop, and observable
+data-model updates in
+[#179](https://github.com/Aurora-softwares/Hylang-Compiler/issues/179).
+The remaining P0 foundations, P1 controls, and P2 integrations in the UI
+handover are still open; the project issues record implementation and
+verification status.
+
+Studio also reveals a native password field after choosing a template. Its
+`PasswordEdited` and `CheckPassword` handlers read the secret through
+`Application.SecretValue`; the gallery displays only the length and a match
+result. The host passes a path to a per-event private temporary file instead
+of passing the secret in process arguments or the broad UI state snapshot.
+The host removes the file when the handler exits or fails, limits it to 16 KiB,
+and sends it only for the password field's own event. As with any application
+secret, the Hydrogen handler must avoid printing or persisting it. The
+temporary file can be read by processes with the same operating-system user
+privileges while the event is active; this is the remaining transport boundary.
+
+Local Linux checks pass the shared contract suite, Studio Hydrogen backend
+build, SDK integration, native GTK interaction/layout suite, and relocated
+package suite. The local screenshot comparison differs from the reviewed
+Ubuntu 24.04 baseline on this newer Linux host; no baseline or threshold was
+changed. The pinned three-OS native UI jobs passed their visual and interaction
+checks on the unchanged baselines.
+
+| Element | Attributes and behavior |
+| --- | --- |
+| `MenuBar`, `Menu`, `MenuItem` | One `MenuBar` directly inside `Window`; each `Menu` has `text` and `MenuItem` children. Items use `text`, `onClick`, and optional `checked`. |
+| `Tabs`, `Tab` | `Tabs` contains `Tab` pages with `title` and ordinary layout children. `value` selects a zero-based page; `onChange` handles selection. |
+| `ListBox` | Pipe-separated `items`, a selected `value`, optional `height` (160 by default), and `onChange`. |
+| `Table` | Pipe-separated `columns`; newline-separated `rows` with pipe-separated cells. Each row must match the column count. `value`, `height`, and `onChange` work as for lists. |
+| `RadioGroup` | Pipe-separated `items`, selected `value`, and `onChange`. |
+| `Image` | A local `source` relative to the `.hyui` file and optional `height` (72 by default). Images preserve their aspect ratio; PNG is used by Studio. Include image folders in `ui_assets` when packaging. |
+| `Dialog` | A direct `Window` child with `title`, `text`, one to three pipe-separated `buttons` (default `OK`), `open`, selected button `value`, and `onClose`. |
+
+Collections and page definitions are declared in XML. Their selected indices can
+be read with `Application.Value(args, id)` and changed with
+`Application.SetValue(id, index)`; indices outside the declared range are rejected.
+Use `&#10;` for table row separators inside an XML attribute. The item/row data is
+static in this first implementation. Remote image URLs and paths outside the
+view's asset directory are not supported.
+
+`Application.SetOpen("confirmation", true)` opens a dialog without blocking the
+host event loop. Dismissing it sets `open` to false and sends `onClose` a snapshot
+whose dialog value is the zero-based button index. Closing through the window
+controls maps to the last button; backend-driven closure does not dispatch a new
+close handler. Dialog `text` can be changed before opening. Menus, controls, and
+dialogs use AppKit on macOS, GTK on Linux, and WinUI on Windows.
+
+The macOS regression exercises real menu/tab actions, radio/list/table selection,
+bundled image loading, and a native confirmation sheet through the Hydrogen
+sample backend. Shared contract tests cover valid nesting, selection ranges,
+malformed tables, image paths, and atomic backend updates. The native UI CI
+suites below exercise interaction and appearance on all
+three host OSes. Linux also passes packaged-app build, relocation, compiler-free
+launch, callbacks, saving, and screenshot checks. Installer qualification and
+packaged-app checks on the other hosts/architectures remain separate gates,
+alongside the release and architecture gates above.
+
+## Updating a running UI
+
+Button and other event handlers can change existing controls without restarting
+the app. For example, a button declared with `onClick="Start"` can update a label,
+disable itself, reveal a predeclared panel, or switch tabs:
+
+```csharp
+if (Application.Handler(args) == "Start") {
+    Application.SetText("status", "Working...");
+    Application.SetEnabled("start", false);
+    Application.SetVisible("details", true);
+    Application.SetValue("pages", 1);
+}
+```
+
+The native host applies the response and reflows the layout. Use
+`Application.SetRunning` for timers/spinners and `Application.SetOpen` for
+dialogs. Studio already demonstrates live text, selection, enabled-state and
+progress changes; the native CI suites drive those actions through its compiled
+Hydrogen backend. Element creation/removal and replacement of list/table data
+are not exposed by this first API; declare conditional sections in XML and
+toggle their visibility.
+
+## Native UI CI and visual baselines
+
+The Hydrogen CI workflow launches the real UI on three pinned runner families:
+AppKit on `macos-15`, system GTK 4/libadwaita on `ubuntu-24.04` under a D-Bus
+session and Xvfb, and a self-contained WinUI build on `windows-2025`.
+The WinUI interaction harness is compiled only with `HydrogenUiTests=true`;
+shipping builds do not include its test entry point.
+
+Each native suite drives actual control actions and selection signals through
+the Hydrogen Studio backend. Coverage includes menus, tabs, lists, tables,
+radio groups, images, dialog results, form editing, progress, cancellation,
+timer completion, and saving the edited text. Native layout checks reject
+intersecting siblings and content outside its parent, and verify that the
+workspace and nested rows stack on narrow windows.
+
+The suites capture Workspace and Control gallery at 1120, 800, and 360 pixels,
+plus scrolled Workspace/Control gallery views and the native confirmation
+dialog: nine images per OS. Fixtures request a height of 600 pixels; GTK's
+client captures exclude its 10-pixel frame inset, while AppKit and WinUI capture
+the full 600-pixel content viewport. Test
+fixtures use a fixed light theme;
+AppKit disables backdrop material for repeatable images. Screenshots are
+compared with the reviewed per-OS PNGs in `tests/ui/golden/<platform>/`.
+Each capture comes from its corresponding OS runner. AppKit and WinUI capture
+the content area, excluding the system title/menu bars; GTK captures its native
+client-side header too. Inspecting a Linux artifact on a Mac does not change
+the renderer used by the Mac build.
+The comparator rejects blank images, clipped/unrendered client areas, and size
+changes, then compares a
+224-by-180 reduction with a maximum mean RGB difference of 0.035 and at most
+12% of pixels changing by more than 35/255 in any channel. These tolerances
+allow small font-rasterization differences; the independent geometry checks
+catch overlap and clipping. A separate negative test proves that blank,
+resized, and displaced content fails comparison.
+
+The Linux checks also enforce the requested window width and declared image
+height, and require scrolling to reveal the final controls. They caught GTK row
+minimum-width feedback, incorrect wrapped-text height, hidden-page whitespace,
+and oversized image allocation. Rows measure their native contents at the
+available width inside viewports; native stack/switcher tabs measure the selected
+page, and images use bounded native textures. The Windows SDK build sets `NOMINMAX` and avoids the Windows `small`
+macro collision. Its C backend uses Clang for the existing GNU C expression
+extensions, while the SDK executable itself is built with MSVC. The Windows
+runner configures a supported virtual desktop mode of at least 1280 by 800 so
+the wide client is rendered, and yields to native text events before saving.
+
+Every OS job uploads its screenshots, geometry/state report, visual difference
+images, and logs for 14 days, including failed runs. Missing baselines fail;
+CI never silently accepts new images. To review a deliberate visual change,
+download that run's actual PNGs, inspect the wide and narrow layouts and dialog,
+copy approved images into the matching golden directory, and commit them with
+the change. Keep the pinned runner, light fixture, and expected dimensions
+consistent; do not substitute a screenshot from another OS. Older runs of the
+same branch are cancelled when a newer commit arrives.
+
+The initial reviewed baselines came from these real native runner captures:
+
+| Platform | Renderer / runner | Capture run |
+| --- | --- | --- |
+| macOS | AppKit / `macos-15` | [80acba9](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41016164129) |
+| Windows | WinUI / `windows-2025` | [ca43c0a](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41017601483) |
+| Linux | GTK / `ubuntu-24.04` | [8da67e6](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41132295349) |
+
+These initial captures intentionally fail when their reviewed baseline is
+missing; subsequent runs must compare successfully against the committed PNGs.
+All three native interaction/layout suites and all 27 reviewed screenshot
+comparisons passed for `10d1550` in the
+[qualification run](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41132706530),
+alongside compiler/bootstrap, macOS runtime, and Windows lifecycle checks.
+The optional published-Windows-release smoke test was not requested in that run.
+
+The platform runner can also be invoked locally after building its native driver:
+
+```sh
+python -m pip install Pillow==12.0.0
+python tools/hyui/ui_ci.py --platform macos \
+  --driver build/tools/hyui/hyui_appkit_tests --compiler build/hy \
+  --artifacts build/ui-artifacts
+```
+
+On Linux use `hyui_gtk_tests` inside `dbus-run-session -- xvfb-run`; Windows uses
+the published `Hyui.WinUI.exe` built with `HydrogenUiTests=true` and
+`WindowsAppSDKSelfContained=true`, plus a native SDK compiler in a Visual C++
+developer environment. Release publication, installer qualification, and native
+Apple Silicon code generation remain separate gates; UI checks do not change
+the development milestone versions above.
 
 ## Build output
 

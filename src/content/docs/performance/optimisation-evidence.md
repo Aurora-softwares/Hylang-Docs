@@ -6,23 +6,23 @@ title: "Self-hosted Hydrogen optimisation evidence"
 
 This plan targets **runtime speed of Linux x86-64 executables emitted by the
 Hydrogen-written compiler**. Implementation belongs in
-`samples/self_hosting/Hydrogen.Compiler.CodeGen.X64/` and
+`src/Hydrogen.Compiler.CodeGen.X64/` and
 `tools/native-runtime/runtime.S`. The C++ SDK compiler, C backend, and `hy run`
 interpreter remain bootstrap or comparison tools; their optimisation is outside
 this review. Compiler build latency is tracked separately.
 
-## Measurement
+## Historical measurement (17 October 2026)
 
 The [six-case harness](https://hylang.co.uk/performance/benchmarking/) checks matching output
 against an independent Python result, then times warmed whole processes. These
 local medians use an Intel i7-4790K on Linux, 17 October 2026, seven runs and
 two warmups. C and C++ use GCC 15.2 `-O2`; Rust 1.93.1 uses
 `-C opt-level=2`. Hydrogen uses the rebuilt native self-hosted stage-1
-compiler. Compilation is excluded. The [previous samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-17-two-optimisations.json)
-and [current samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-17-main-issues.json)
+compiler. Compilation is excluded. The [previous samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-two-optimisations.json)
+and [17 October samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-main-issues.json)
 record every timing, input/source hash, and tool version.
 
-| Workload | Input | Previous native | Current native | Current C | Current native / C |
+| Workload | Input | Earlier native | 17 October native | 17 October C | 17 October native / C |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Dependent integer arithmetic | 10 million iterations | 136.1 ms | 94.7 ms | 46.6 ms | 2.03× |
 | Integer array fill and scan | 10 million elements | 194.8 ms | 157.1 ms | 63.9 ms | 2.46× |
@@ -32,10 +32,10 @@ record every timing, input/source hash, and tool version.
 | Linked-object build and scan | 20,000 objects | 3.48 ms | 4.51 ms | 1.52 ms | 2.96× |
 
 The 20,000-node case has substantial startup noise: a separate
-[21-run check](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-17-nodes-21-run.json)
+[21-run check](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-nodes-21-run.json)
 measured 3.41 ms native and 1.22 ms C. The object allocator was also checked
 at 100,000 nodes in the earlier pass: 25.3 ms native versus 3.99 ms C, with
-the same checksum. The [larger-case samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-17-nodes-100k.json)
+the same checksum. The [larger-case samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-17-nodes-100k.json)
 are retained. Input sizes differ, so these ratios locate bottlenecks in these
 cases; they are not an overall language speed rating.
 
@@ -62,7 +62,7 @@ from 139.45 to 129.94 ms (6.8%) and the integer-loop median from 84.72 to
 83.37 ms (1.6%) on this host. Local string indexes and one unsigned `rt_char`
 length check reduced the 1 MB log-scan median from 7.43 to 7.05 ms (5.0%).
 A direct inline string load was slower in a paired 30-run check and was
-reverted. The [raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-23-index-paths.json)
+reverted. The [raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-23-index-paths.json)
 retain 30 timed runs and three warmups for each comparison, with source and
 input hashes. Hardware performance counters were unavailable here
 (`perf_event_paranoid=4`), so these are whole-process measurements.
@@ -75,7 +75,7 @@ lookups for values below 4096, which cannot be managed pointers. On this host,
 paired whole-process runs fell from 21.60 to 18.50 ms median (14.4%). With
 one extra full collection of those live nodes, a separate paired check fell
 from 27.56 to 26.23 ms after the mark-path change (4.8%). The
-[raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-small-span-gc.json)
+[raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-small-span-gc.json)
 include binary hashes and output checks. These changes reduce allocation and
 collection cost, but the native node case is still well above the C++ result.
 The following diagnostics examine root scans and dead-span sweeping for
@@ -87,7 +87,7 @@ for collection plus its call overhead. Live managed bytes fell from
 13,217,792 to 8,192. `strace` observed 3,230 `munmap` calls in the explicit
 collection; that traced call count identifies page release as a likely sweep
 cost, but traced syscall times are not comparable to untraced wall times.
-The [fixture and raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-dead-gc.json)
+The [fixture and raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-dead-gc.json)
 are retained.
 
 Linux now merges adjacent dead span pages into one `munmap` range while
@@ -96,7 +96,7 @@ made 207 release calls instead of 3,230. Thirty paired runs put the explicit
 collection path at 32.91 ms before and 24.58 ms after (25.3% faster); the
 matching no-collection path was 15.24 versus 14.83 ms. Subtracting those
 paths estimates collection work at 17.67 versus 9.75 ms (44.8% less).
-The [raw before/after samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-sweep-batch.json)
+The [raw before/after samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-sweep-batch.json)
 retain both modes and binary hashes.
 
 To bound root-scan cost separately, a nearly empty-heap fixture compared one
@@ -104,7 +104,7 @@ explicit collection at stack depths zero and 50,000, each against an otherwise
 identical no-collection run. Forty paired runs put the deep collection's
 incremental cost at about 1.19 ms beyond the shallow case on this host.
 This controlled subtraction is an estimate rather than an instrumented phase
-timer; the [fixture and raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-root-scan.json)
+timer; the [fixture and raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-root-scan.json)
 show the method. Dead-span release was the larger measured cost, so this pass
 does not introduce incremental or generational collection.
 
@@ -119,7 +119,7 @@ shrank by 66. Disassembly of the targeted function shows seven fewer
 instructions. In 30 paired runs, the targeted loop fell from 9.60 to 8.74 ms
 median (9.0%), the standard loop from 86.27 to 82.67 ms (4.2%), and the array
 case from 134.25 to 129.00 ms (3.9%). The
-[source and raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-local-ops.json)
+[source and raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-local-ops.json)
 are retained. Further spill and load profiling is needed before #127 closes.
 
 On 25 October, the loop, integer-array, and byte-file workloads were probed
@@ -140,7 +140,7 @@ for negative inputs including `int.MinValue`. Numeric ordering conditions in
 whole-process runs, with output and exit status checked on every run, measured
 the standard loop at 82.22 to 68.82 ms (16.3% faster), array fill/scan at
 128.75 to 120.27 ms (6.6%), and the binary checksum at 16.86 to 14.44 ms
-(14.3%). The [raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-loop-array-byte-codegen.json)
+(14.3%). The [raw samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-loop-array-byte-codegen.json)
 include source, compiler, executable, and byte-input hashes. Native runtime
 and Windows parity tests cover signed/unsigned branch conditions and constant
 division edge cases. Redundant packed-array bounds checks are tracked in
@@ -158,11 +158,11 @@ unsigned bounds checks. Linux and Windows regression fixtures cover the
 proven read/write paths, negative starts, changed indexes/bounds, a shortened
 array alias, and null arrays.
 
-The [50-pair comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-proven-array-bounds.json)
+The [50-pair comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-proven-array-bounds.json)
 measured the standard 10-million-element array at 120.28 to 119.04 ms median
 (1.0% faster) with 35 of 50 matched pairs faster. The 1.6 MB byte checksum
 was 14.60 versus 14.50 ms, but a separate
-[150-pair byte confirmation](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-proven-array-bounds-byte-confirm.json)
+[150-pair byte confirmation](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-proven-array-bounds-byte-confirm.json)
 measured 13.63 versus 13.79 ms, with only 68 of 150 pairs faster. Each run
 checked output and exit status; the files retain input, source, compiler, and
 binary hashes. The byte workload's dependent remainder arithmetic remains a
@@ -172,7 +172,7 @@ The final #167 pass folds proven safe packed-array reads into one x64 load and
 checks a stable array for null once before an `i < array.Length` loop. The
 loop still reads the current length on every iteration, while all unproven
 accesses retain their checks. In a [300-pair array and 200-pair byte
-comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-proven-packed-reads.json),
+comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-proven-packed-reads.json),
 the 10-million-element array median fell from 155.62 to 152.85 ms (1.8%;
 197/300 pairs faster), and the 1.6 MB byte checksum from 13.52 to 13.28 ms
 (1.8%; 117/200 pairs faster). Every run checked exact output, empty stderr,
@@ -191,7 +191,7 @@ concat algorithm. The builder copies 30,000 input bytes, 32,736 bytes during
 runs on this host measured 88.54 ms median for `+` versus 1.33 ms for the
 builder. The native runtime's live managed heap reading after the loop was
 204,800 versus 139,264 bytes; it is not a cumulative allocation counter.
-The [raw runs and source hashes](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/benchmarks/runtime/results-2026-10-25-builder.json)
+The [raw runs and source hashes](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-25-builder.json)
 are retained. The builder currently ships as a reusable native sample while
 packaged standard-library distribution remains separate work.
 
@@ -206,3 +206,200 @@ self-build profiling and caching in [#133](https://github.com/Aurora-softwares/H
 and safe parallel compilation in [#134](https://github.com/Aurora-softwares/Hylang-Compiler/issues/134).
 For performance changes, retain exact output and exit status, raw timings and
 input hashes, relevant native regressions, and bootstrap equivalence.
+
+## 29 October: guarded string scans and loop indexes
+
+The largest gap in the six-case check remains the 10-million-element array
+fill/scan: 119.51 ms versus 62.22 ms for the slowest comparison route, C++.
+The emitted loop already uses proven packed-array reads; removing further
+index traffic had little effect there. The next optimisation target is the
+remaining array arithmetic and generated write path, followed by the dependent
+remainder arithmetic in `loop` and `bytes`, and object overhead in `nodes`.
+
+For #128, a strict `i < text.Length` loop with an unchanged string and final
+canonical increment now reads the proven byte directly into its cached
+one-byte string. Nested statements preserve the proof only when they cannot
+change the index, bound, or string. A null precheck remains at loop entry;
+negative indexes retain a failure path. In paired whole-process runs against
+the clean compiler, `log` fell from 5.885 to 4.604 ms (21.8%; 57/60 pairs
+faster) and `csv` from 3.426 to 2.480 ms (27.6%; 20/20 pairs faster).
+The [paired samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-29-proven-string.json)
+retain exact output checks and compiler hashes.
+
+For #127, a proven zero-based loop increment uses one instruction, and a
+guarded loop can keep its index in a preserved register. The incremental
+single-instruction change measured `array` at 122.428 to 120.398 ms across
+40 paired runs (1.7%; 29/40 pairs faster); `csv` fell from 2.476 to 2.370 ms
+(4.3%; 34/40). Other cases showed small or inconclusive changes. The
+[increment samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-29-fast-increment.json)
+are retained. The later register-index six-case run is a fresh snapshot, not
+a paired attribution to that individual change. Native runtime failure-path
+tests, Windows parity, and stages 1–3 bootstrap equivalence passed locally.
+Both project items remain In Progress because the requested speed target has
+not been reached. Published release artifacts and real Windows-host validation
+remain separate release gates.
+
+## 30 October: register-held loop values and packed stores
+
+The native x64 backend now keeps a guarded loop index in `r12`, and can keep
+one or two written integer locals in preserved registers until loop exit. For
+proven packed-array loops it can retain the stable array pointer, read and
+write through a direct indexed address, and compare the index with the bound
+without rematerialising both operands. When a loop has no runtime calls, one
+constant-division reciprocal can also stay in a register. The constant
+remainder path removes redundant moves and normalization. Object creation
+skips an empty, no-argument constructor only when there is no base
+constructor or instance field initializer. Ordinary instance-field access
+checks for null inline and retains the runtime error path.
+
+The [31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-10-30-register-and-allocation.json)
+uses 10 million iterations for loop and array, 100,000 log/CSV records,
+1.6 million input bytes, and 20,000 nodes. All four routes produced the same
+expected output. Hydrogen medians were 55.20 ms (`loop`), 89.64 ms (`array`),
+3.57 ms (`log`), 2.01 ms (`csv`), 10.04 ms (`bytes`), and 2.46 ms (`nodes`).
+The respective slowest C/C++/Rust medians were 44.64, 60.25, 4.86, 3.86,
+11.16, and 1.93 ms. Log, CSV, and bytes met the requested comparison on this
+host; loop, array, and nodes did not. The earlier 29 October run is a
+separate snapshot, so its differences do not isolate any one optimisation.
+
+Next work under [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+is the array/remainder code path, then the loop's remaining arithmetic;
+linked-object allocation and traversal remain above target. Broader
+[vectorisation](https://github.com/Aurora-softwares/Hylang-Compiler/issues/132)
+is still Backlog. #127 and
+[#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remain In Progress. Native regression and bootstrap results are local host
+evidence; published release assets and a live Windows install remain open
+release gates.
+
+## 1 November: signed immediate encoding
+
+An evaluated signed 32-bit constant-division lowering exposed an existing
+overflow in the x64 assembler's 32-bit byte writer: subtracting 255 from a
+negative `int` near its minimum could wrap before division. The writer now
+widens that subtraction to `long`. Exact byte checks cover
+`-2147483647`, `int.MinValue`, and `int.MaxValue`. The division lowering was
+reverted after its runtime timings regressed; the published positive-path
+64-bit reciprocal lowering remains in use.
+
+The [post-fix 31-run snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-immediate-encoding.json)
+again matches every expected checksum. Hydrogen measured 55.05 ms for loop,
+88.47 ms for array, 3.52 ms for log, 1.95 ms for CSV, 9.90 ms for bytes, and
+2.42 ms for nodes. Log, CSV, and bytes still meet the slowest C/C++/Rust
+comparison in that run; loop, array, and nodes do not. These are another host
+snapshot, not a paired attribution to the byte-writer change. Under the
+current `0.8.0` performance target, [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remain In Progress. Array arithmetic and linked-object overhead remain next;
+published release assets and a live Windows install remain open gates.
+
+## 1 November: small-object slot clearing
+
+Linux small-object span pages come from zero-filled mappings. A newly bumped
+slot has never held an object, so the allocator now skips clearing it. A
+recycled slot is cleared through its header and requested payload, rounded to
+eight bytes, rather than through unused capacity in its size class. The
+collector traces only the recorded payload length. A native regression checks
+zero-valued fields after collection and slot reuse.
+
+The [alternating raw pairs](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-small-slot-zeroing-paired.json)
+show 20,000-node medians of 2.99 to 2.81 ms (102/150 pairs faster) and
+100,000-node medians of 15.43 to 14.91 ms (49/75 pairs faster). Every run
+checked the exact checksum, successful exit, and empty stderr. A separate
+[31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-small-slot-zeroing.json)
+measured nodes at 2.19 ms against 1.85 ms for its slowest C/C++/Rust route.
+Log, CSV, and bytes meet that run's target; loop, array, and nodes remain above
+it. The array pass is still the largest miss, so code generation for its
+arithmetic and array operations is the next 0.8.0 performance target under
+[#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127).
+[#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128) remains
+In Progress. Published release assets and a live Windows install remain open
+release gates.
+
+## 1 November: proven nonnegative index arithmetic
+
+When an existing guarded-loop proof establishes a zero-based, strictly
+increasing `int` index, division or remainder of that index by a positive
+constant uses only the nonnegative reciprocal path. Other signed operands
+retain their negative-value correction. The native constant-division
+regression now covers both operators on a guarded index, while its existing
+edge cases still cover negative inputs including `int.MinValue`.
+
+The [100-pair loop samples](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-nonnegative-index-paired.json)
+measured 55.29 to 54.80 ms median (72 pairs faster); node timings were
+effectively unchanged. All runs checked exact output, successful exit, and
+empty stderr. The [31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-nonnegative-index.json)
+measured 54.66 ms for loop against its 44.66 ms slowest-comparison target.
+Array remains the largest miss at 87.45 versus 58.18 ms; nodes measured 2.20
+versus 1.88 ms. Log, CSV, and bytes meet their respective targets. The 0.8.0
+work under [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remains In Progress. Array arithmetic is next, with published release assets
+and a live Windows install still open release gates.
+
+## 1 November: adjacent immediate integer arithmetic
+
+The native x64 backend can execute adjacent `int` additions, subtractions,
+and multiplications with numeric literals at 32-bit width and sign-extend the
+final result once. The operations retain the existing 32-bit wrapping result;
+the regression compares folded and ordinary forms at `int.MinValue`,
+`int.MaxValue`, and small positive and negative inputs. In the array fill
+loop, this removes an intermediate sign extension from `i * 17 + 3`.
+
+The [100 alternating array pairs](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-folded-immediates-paired.json)
+measured 88.59 to 87.90 ms median, with 63 pairs faster after the change.
+Exact output, successful exit, and empty stderr were checked each time. The
+[31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-folded-immediates.json)
+measured array at 86.86 ms against its 58.55 ms slowest C/C++/Rust target.
+Loop and nodes also remain above target; log, CSV, and bytes meet theirs.
+The next 0.8.0 target is profiling the remaining constant-remainder work in
+array fill and scan. [#127](https://github.com/Aurora-softwares/Hylang-Compiler/issues/127)
+and [#128](https://github.com/Aurora-softwares/Hylang-Compiler/issues/128)
+remain In Progress. Published release assets and a live Windows install
+remain separate release gates.
+
+## 1 November: rebuilt compiler and loop-layout check
+
+The benchmark runner now selects `build/self_hosting/hydrogen-stage1` by
+default. The [freshly rebuilt 31-run snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-rebuilt-stage1.json)
+uses that binary and verifies all six checksums. Array measured 87.23 ms
+against the slowest comparison at 58.85 ms; loop measured 54.62 versus
+44.83 ms, and nodes 2.24 versus 1.94 ms. Log, CSV, and bytes meet their
+targets. The earlier 17 October table on the benchmark page is a historical
+baseline; the latest table now leads the page.
+
+Moving the `while` condition to the loop tail removed an unconditional
+backward jump from each completed iteration. A [100-pair comparison](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-loop-layout-paired.json)
+found no benefit: loop was 56.05 to 56.18 ms (45/100 pairs faster after),
+array 91.70 to 92.11 ms (49/100), and nodes 2.55 to 2.59 ms (42/100).
+Every run checked exact output, exit status, and empty stderr. The candidate
+was reverted, and the verified pre-candidate compiler binary was restored.
+The next target remains constant-remainder cost and array fill/scan code
+generation under #127; #128 remains In Progress. Published release assets
+and a live Windows install remain separate release gates.
+
+## 1 November: guarded modular array fill
+
+A [100-triplet phase diagnostic](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-array-phase-diagnostic.json)
+measured array allocation alone at 16.85 ms, allocation plus the original
+fill at 77.84 ms, and the full fill and scan at 89.02 ms. These variants
+change the computation and only locate the costly phase; they are not
+equivalent benchmark results. The fill loop dominated the remaining work.
+
+For a zero-based guarded `int[]` fill of `(i * factor + bias) % divisor`,
+the compiler now checks that the runtime bound keeps the original signed
+expression below `int.MaxValue`. Within that bound it stores a running
+remainder, updates it by addition, and subtracts the divisor when needed.
+The generic signed path handles larger bounds. Linux native and Windows
+parity regressions check a boundary on each side of the guard and a fill
+that crosses a remainder boundary.
+
+The [100 randomized array pairs](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-modular-fill-paired.json)
+measured 85.57 to 79.06 ms, with 97/100 after runs faster. The
+[31-run six-case snapshot](https://github.com/Aurora-softwares/Hylang-Compiler/blob/Development/assets/benchmarks/runtime/results-2026-11-01-modular-fill.json)
+measured array at 83.10 ms against 59.79 ms for its slowest comparison;
+loop at 55.07 versus 44.89 ms; and nodes at 2.29 versus 1.91 ms. Log,
+CSV, and bytes meet their targets. Array is still the largest miss at 1.39
+times its target. Further fill-loop code generation is next for #127;
+#128 remains In Progress. Published release assets and a live Windows
+install remain separate release gates.
