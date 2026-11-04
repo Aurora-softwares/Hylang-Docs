@@ -155,7 +155,9 @@ responses. Standard XML escaping applies, for example `&amp;` and `&#10;`.
 | `Input` | `text`, `placeholder`, `onChange`, `onSubmit` |
 | `TextArea` | `text`, `placeholder`, preferred `height`, `onChange`; wraps text |
 | `Button` | `text`, `primary`, `onClick` |
+| `ToggleButton` | `text`, `checked`, `onChange`; native stateful press-button, reflected in Hydrogen event snapshots |
 | `CheckBox`, `Switch` | `text`, `checked`, `onChange` |
+| `ValidationMessage` | `text`, `severity="error\|warning\|info\|success"`; native text feedback with severity styling |
 | `Select` | Pipe-separated `items`, zero-based selected index `value`, `onChange` |
 | `NumberInput`, `Slider` | Integer `value`, `minimum`, `maximum`, `onChange` |
 | `ProgressBar` | `value`, `minimum`, `maximum` (defaults 0–100), `indeterminate` |
@@ -169,6 +171,18 @@ and minimum item width must be positive. Boolean attributes use `true`/`false`.
 Unknown elements/attributes, duplicate IDs, unsupported versions, malformed XML,
 DTD/entities, excessive nesting, and oversized documents fail before a window is
 shown. There is no embedded JavaScript, QML, HTML, or shell-script element.
+
+
+### New development controls: stateful buttons and validation feedback
+
+The `Development` compiler's [HYUI control addition PR #196](https://github.com/Aurora-softwares/Hylang-Compiler/pull/196) introduces native `ToggleButton` and `ValidationMessage` elements for GTK4, WinUI 3 and AppKit. Both are experimental and **not yet included in a published Hydrogen release**. Platform CI must pass before these are considered complete.
+
+```xml
+<ToggleButton id="advanced" text="Enable advanced tools" checked="false" onChange="ToggleAdvanced" />
+<ValidationMessage id="advancedMessage" severity="info" text="Advanced tools disabled" />
+```
+
+A Hydrogen handler can read `Application.Value(args, "advanced")` as `"true"` or `"false"`, and update either control using `Application.SetChecked` or `Application.SetText`. Severity is fixed in the XML document for v1; the message's visibility and text can change at runtime.
 
 ## Hydrogen handlers and updates
 
