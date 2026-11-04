@@ -46,11 +46,11 @@ feature and does not qualify the compiler for an `0.1.0` release.
   controls, callback dispatch, window lifecycle and output ownership.
 - 🟢 Windows WinUI 3 and macOS AppKit native hosts and target-specific SDK
   packaging pass dedicated CI tests, including real native GUI interactions.
-- 🟡 The Hydrogen-only XML preflight validates basic structure today. Expanded
-  control, attribute, identifier and handler validation plus schema inventory
-  checks are proposed in
-  [compiler PR #195](https://github.com/Aurora-softwares/Hylang-Compiler/pull/195);
-  its platform CI must pass before treating that work as complete.
+- 🟢 Hydrogen Stage 1–3 preflight validates HYUI structure, controls,
+  attributes, identifiers, handler syntax and important value constraints;
+  schema inventory checks are covered in [merged compiler PR #195](https://github.com/Aurora-softwares/Hylang-Compiler/pull/195).
+  Deeper renderer-specific validation and native SDK checks remain part of
+  the platform integration suite.
 - 🟢 Two additional native HYUI controls are merged to Development:
   `ToggleButton` (P1) and `ValidationMessage` (P2) have GTK4, WinUI 3,
   AppKit and single-file Linux GTK4 implementations with native interaction
