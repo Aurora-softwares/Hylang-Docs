@@ -151,6 +151,7 @@ responses. Standard XML escaping applies, for example `&amp;` and `&#10;`.
 | `RowPanel` | Horizontal layout that stacks below its local `breakpoint` (default 700); `gap`. Set breakpoint 0 to keep a compact row horizontal. |
 | `GridPanel` | Up to `columns` (default 3), reducing automatically according to `minItemWidth` (default 240); `gap` |
 | `Panel` | Card with optional `title`, `padding`, `gap`; contents stack vertically |
+| `SplitView` | Two visual child panes, native draggable divider; `height`, pixel-valued `value` (default 260), `onChange` |
 | `Label` | `text`, `role="title\|heading\|body\|caption"`, `tone="normal\|muted\|accent"`; wraps to available width |
 | `Input` | `text`, `placeholder`, `onChange`, `onSubmit` |
 | `TextArea` | `text`, `placeholder`, preferred `height`, `onChange`; wraps text |
@@ -158,6 +159,7 @@ responses. Standard XML escaping applies, for example `&amp;` and `&#10;`.
 | `ToggleButton` | `text`, `checked`, `onChange`; native stateful press-button, reflected in Hydrogen event snapshots |
 | `CheckBox`, `Switch` | `text`, `checked`, `onChange` |
 | `ValidationMessage` | `text`, `severity="error\|warning\|info\|success"`; native text feedback with severity styling |
+| `StatusBar` | Native status text, `text`, editable with Hydrogen `SetText` |
 | `Select` | Pipe-separated `items`, zero-based selected index `value`, `onChange` |
 | `NumberInput`, `Slider` | Integer `value`, `minimum`, `maximum`, `onChange` |
 | `ProgressBar` | `value`, `minimum`, `maximum` (defaults 0–100), `indeterminate` |
@@ -183,6 +185,20 @@ The `Development` compiler's [HYUI control addition PR #196](https://github.com/
 ```
 
 A Hydrogen handler can read `Application.Value(args, "advanced")` as `"true"` or `"false"`, and update either control using `Application.SetChecked` or `Application.SetText`. Severity is fixed in the XML document for v1; the message's visibility and text can change at runtime.
+
+### Resizable IDE panes and status feedback (Development)
+
+The [SplitView and StatusBar implementation PR #197](https://github.com/Aurora-softwares/Hylang-Compiler/pull/197) adds two experimental HYUI elements. `SplitView` accepts **exactly two visual children** and uses a real GTK4 `GtkPaned`, AppKit `NSSplitView`, or WinUI `Grid` with draggable `Thumb`. The divider position is a **pixel count**, available as `Application.Value(args, "workspaceSplit")` in its `onChange` handler. Hydrogen can also set the position with `Application.SetValue`. `StatusBar` text can be changed with `Application.SetText`.
+
+```xml
+<SplitView id="workspaceSplit" value="280" height="320" onChange="PaneResized">
+  <Panel title="Explorer"><Label text="Project files" /></Panel>
+  <Panel title="Editor"><Label text="Choose a file" /></Panel>
+</SplitView>
+<StatusBar id="workspaceStatus" text="Ready" />
+```
+
+The proposed controls remain **unreleased** and need complete CI before claiming production cross-platform parity. Initial SplitView supports the horizontal (left/right) arrangement; vertical splits, nested IDE docking, persistent splitter positions, and closeable editor tabs remain future work.
 
 ## Hydrogen handlers and updates
 
