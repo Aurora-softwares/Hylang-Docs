@@ -57,9 +57,13 @@ feature and does not qualify the compiler for an `0.1.0` release.
   tests in [merged PR #196](https://github.com/Aurora-softwares/Hylang-Compiler/pull/196).
   [CI run 41843955763](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41843955763)
   passed the native UI suites, platform SDK exports and bootstrap regression tests.
-- 🔴 Next target controls include `SplitView`, `TreeView`, `DocumentTabs`
-  and `CodeEditor` (IDE essentials). Their native layout, focus, accessibility
-  and event contracts still require implementation.
+- 🟡 `SplitView` (P1) and `StatusBar` (P1) are implemented in
+  [PR #197](https://github.com/Aurora-softwares/Hylang-Compiler/pull/197)
+  with native splitters, Hydrogen state updates and cross-platform regression tests.
+  Full CI and a Development merge remain required before they are complete.
+- 🔴 Next target controls include `TreeView`, `DocumentTabs` and
+  `CodeEditor` (IDE essentials). Their native selection, close/reorder,
+  accessibility and editor contracts still require implementation.
 - 🔴 Windows and macOS native SDK packaging remains separate from the Linux
   single-file GTK4 output model. A fully single-process native Hydrogen UI
   callback path is not yet demonstrated on all three operating systems.
