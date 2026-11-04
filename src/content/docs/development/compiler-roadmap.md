@@ -51,6 +51,14 @@ feature and does not qualify the compiler for an `0.1.0` release.
   checks are proposed in
   [compiler PR #195](https://github.com/Aurora-softwares/Hylang-Compiler/pull/195);
   its platform CI must pass before treating that work as complete.
+- 🟡 Two additional native HYUI controls are implemented on a feature branch:
+  `ToggleButton` (P1) and `ValidationMessage` (P2) have GTK4, WinUI 3,
+  AppKit and single-file Linux GTK4 implementations with platform-specific
+  interaction tests in [PR #196](https://github.com/Aurora-softwares/Hylang-Compiler/pull/196).
+  The next gate is a green complete CI run and merge to Development.
+- 🔴 Next target controls include `SplitView`, `TreeView`, `DocumentTabs`
+  and `CodeEditor` (IDE essentials). Their native layout, focus, accessibility
+  and event contracts still require implementation.
 - 🔴 Windows and macOS native SDK packaging remains separate from the Linux
   single-file GTK4 output model. A fully single-process native Hydrogen UI
   callback path is not yet demonstrated on all three operating systems.
