@@ -46,20 +46,24 @@ feature and does not qualify the compiler for an `0.1.0` release.
   controls, callback dispatch, window lifecycle and output ownership.
 - 🟢 Windows WinUI 3 and macOS AppKit native hosts and target-specific SDK
   packaging pass dedicated CI tests, including real native GUI interactions.
-- 🟡 The Hydrogen-only XML preflight validates basic structure today. Expanded
-  control, attribute, identifier and handler validation plus schema inventory
-  checks are proposed in
-  [compiler PR #195](https://github.com/Aurora-softwares/Hylang-Compiler/pull/195);
-  its platform CI must pass before treating that work as complete.
+- 🟢 Hydrogen Stage 1–3 preflight validates HYUI structure, controls,
+  attributes, identifiers, handler syntax and important value constraints;
+  schema inventory checks are covered in [merged compiler PR #195](https://github.com/Aurora-softwares/Hylang-Compiler/pull/195).
+  Deeper renderer-specific validation and native SDK checks remain part of
+  the platform integration suite.
 - 🟢 Two additional native HYUI controls are merged to Development:
   `ToggleButton` (P1) and `ValidationMessage` (P2) have GTK4, WinUI 3,
   AppKit and single-file Linux GTK4 implementations with native interaction
   tests in [merged PR #196](https://github.com/Aurora-softwares/Hylang-Compiler/pull/196).
   [CI run 41843955763](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41843955763)
   passed the native UI suites, platform SDK exports and bootstrap regression tests.
-- 🔴 Next target controls include `SplitView`, `TreeView`, `DocumentTabs`
-  and `CodeEditor` (IDE essentials). Their native layout, focus, accessibility
-  and event contracts still require implementation.
+- 🟡 `SplitView` (P1) and `StatusBar` (P1) are implemented in
+  [PR #197](https://github.com/Aurora-softwares/Hylang-Compiler/pull/197)
+  with native splitters, Hydrogen state updates and cross-platform regression tests.
+  Full CI and a Development merge remain required before they are complete.
+- 🔴 Next target controls include `TreeView`, `DocumentTabs` and
+  `CodeEditor` (IDE essentials). Their native selection, close/reorder,
+  accessibility and editor contracts still require implementation.
 - 🔴 Windows and macOS native SDK packaging remains separate from the Linux
   single-file GTK4 output model. A fully single-process native Hydrogen UI
   callback path is not yet demonstrated on all three operating systems.
