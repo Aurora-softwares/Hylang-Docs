@@ -175,7 +175,7 @@ shown. There is no embedded JavaScript, QML, HTML, or shell-script element.
 
 ### New development controls: stateful buttons and validation feedback
 
-The `Development` compiler's [HYUI control addition PR #196](https://github.com/Aurora-softwares/Hylang-Compiler/pull/196) introduces native `ToggleButton` and `ValidationMessage` elements for GTK4, WinUI 3 and AppKit. Both are experimental and **not yet included in a published Hydrogen release**. Platform CI must pass before these are considered complete.
+The `Development` compiler's [HYUI control addition PR #196](https://github.com/Aurora-softwares/Hylang-Compiler/pull/196) introduces native `ToggleButton` and `ValidationMessage` elements for GTK4, WinUI 3 and AppKit. Both are implemented in `Development` and passed native GTK4, WinUI 3, AppKit and bootstrap checks in [CI run 41843955763](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41843955763). They remain **unreleased experimental features** until a compiler release includes them.
 
 ```xml
 <ToggleButton id="advanced" text="Enable advanced tools" checked="false" onChange="ToggleAdvanced" />
