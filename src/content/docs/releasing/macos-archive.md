@@ -59,7 +59,7 @@ cmake -DSOURCE_DIR="$PWD" -DINPUT_BINARY="$PWD/build/arm64/hy" \
   -DRELEASES_DIR="$PWD/releases" -P cmake/PackageHydrogenRelease.cmake
 ```
 
-This candidate is not published. The [Apple Silicon CI job](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/42607220925/job/129126147863)
+This candidate is not published. The [Apple Silicon CI job](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/42608237362/job/129129800150)
 verified the console application and archive. The website installer selects a
 matching arm64 asset when one is published. The Hydrogen-written direct
 compiler still requires an arm64 backend. [Native AppKit CI](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/42608237362/job/129129800150)
