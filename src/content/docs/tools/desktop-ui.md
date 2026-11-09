@@ -112,8 +112,10 @@ build/arm64/hyui --package samples/ui_studio/Studio.hyproj \
   --runtime build/arm64/native-sdk/macos-arm64.app
 ```
 
-Native arm64 UI packaging and interaction checks are pending on Apple Silicon
-CI; the published compiler archive does not include the `hyui` build tool.
+The [Apple Silicon CI job](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/42608237362/job/129129800150)
+verified native AppKit interactions, arm64 UI host and Hydrogen backend
+architectures, and packaged Studio launch. The published compiler archive does
+not include the `hyui` build tool.
 
 ## Small application
 

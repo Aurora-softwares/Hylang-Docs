@@ -29,8 +29,9 @@ on a GitHub-hosted macOS runner. The macOS archive, website installer fixture,
 package workflow, update, and uninstall checks also passed on macOS. The next
 release gate is a tagged archive and live install from published assets. Native
 Apple Silicon console output is verified through the C++ bootstrap
-compiler's `macos-arm64` target; self-hosted arm64 output and native HYUI package
-verification remain open. Track this in [#146](https://github.com/Aurora-softwares/Hylang-Compiler/issues/146).
+compiler's `macos-arm64` target. Native AppKit packaging and interaction also
+passed on Apple Silicon; self-hosted direct arm64 output remains open. Track this
+in [#146](https://github.com/Aurora-softwares/Hylang-Compiler/issues/146).
 Fixed-width bitwise operators, integral
 compound assignment, increment/decrement, conditional expressions, null
 coalescing, null-conditional access, `foreach` over arrays and strings, interpolated strings,
