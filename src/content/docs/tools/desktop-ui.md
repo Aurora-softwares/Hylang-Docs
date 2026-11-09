@@ -77,8 +77,9 @@ Builds stage the package before replacing the output. Invalid XML, missing asset
 compiler errors, or a missing target runtime preserve the previous application.
 Rebuilds only replace runtime directories marked as Hydrogen packages.
 
-The development backends currently emit **x86-64** applications. A cross-build
-needs both the native compiler's target backend and an exported native runtime
+The Hydrogen-written direct backends currently emit **x86-64** applications.
+The C++ SDK's C backend can emit native `macos-arm64` application logic with
+Apple's clang. A cross-build needs both the compiler's target backend and an exported native runtime
 for that platform. Run on the corresponding target system:
 
 ```bash
@@ -87,14 +88,32 @@ hyui --export-runtime /path/to/runtimes/linux-x64
 hyui --export-runtime C:/runtimes/windows-x64
 # On an Intel Mac, with macdeployqt available:
 hyui --export-runtime /path/to/runtimes/macos-x64.app
+# On an Apple Silicon Mac, with macdeployqt available:
+hyui --export-runtime /path/to/runtimes/macos-arm64.app --target macos-arm64
 ```
 
 Set `HYUI_RUNTIME_ROOT` to that runtimes directory on the build machine. The native
 compiler can then select the matching exported runtime. A missing or mismatched
 runtime fails clearly; a Qt Fluent/macOS lookalike is never substituted. The C++
-SDK's backend remains a host-native C route; use the self-hosted compiler for
+SDK's backend remains a C route; on macOS, Apple's clang can target arm64 from
+either Intel or Apple Silicon. Use the self-hosted compiler for other
 cross-target code generation. Windows runtime export restores/builds the genuine
 Microsoft WinUI host using its pinned Windows App SDK dependency.
+
+For an Apple Silicon build from the Development source checkout, use the
+bootstrap compiler and native AppKit runtime:
+
+```bash
+cmake -S . -B build/arm64 -DHYDROGEN_BUILD_UI=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build build/arm64 --target hy hyui hydrogen-ui-sdk --parallel
+build/arm64/hyui --package samples/ui_studio/Studio.hyproj \
+  --output build/arm64/Studio --target macos-arm64 \
+  --compiler build/arm64/hy \
+  --runtime build/arm64/native-sdk/macos-arm64.app
+```
+
+Native arm64 UI packaging and interaction checks are pending on Apple Silicon
+CI; the published compiler archive does not include the `hyui` build tool.
 
 ## Small application
 

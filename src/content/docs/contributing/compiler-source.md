@@ -11,7 +11,7 @@ The Hydrogen-written compiler produces Linux x86-64 ELF, Windows x64 PE32+, and 
 | Tool | Use it for | Output or execution |
 | --- | --- | --- |
 | `hydrogen-stage1` (Hydrogen) | Direct native compilation, source/project checking, IR inspection, UEFI boot/kernel images, and project scaffolding | Linux x64 ELF, Windows x64 PE32+ console executable, macOS x64 Mach-O, constrained `uefi-x64` PE32+, raw `AUKR` kernel, checked AUEX `.exec`, or narrow AUN1; no external compiler or linker for these outputs |
-| `hy` (C++ SDK) | Build/run/test/check/fmt/new/package/LSP workflows; UEFI console proof | Interpreter, host C backend, constrained `uefi-x64` PE32+, or `macos-arm64` through Apple's clang on macOS (CI pending) |
+| `hy` (C++ SDK) | Build/run/test/check/fmt/new/package/LSP workflows; UEFI console proof | Interpreter, host C backend, constrained `uefi-x64` PE32+, or verified `macos-arm64` console output through Apple's clang on macOS |
 | `hyrun` | Direct interpreted execution | Shares the SDK semantic pipeline |
 | `hyc build` | Compatibility build command | Host C backend, executables or static libraries; also accepts `macos-arm64` on macOS |
 
@@ -28,9 +28,9 @@ console, Unicode and binary file I/O, garbage collection, and process execution
 on a GitHub-hosted macOS runner. The macOS archive, website installer fixture,
 package workflow, update, and uninstall checks also passed on macOS. The next
 release gate is a tagged archive and live install from published assets. Native
-Apple Silicon application output is now in progress through the C++ bootstrap
-compiler's `macos-arm64` target; self-hosted arm64 output and native HYUI packaging
-remain open. Track this in [#146](https://github.com/Aurora-softwares/Hylang-Compiler/issues/146).
+Apple Silicon console output is verified through the C++ bootstrap
+compiler's `macos-arm64` target; self-hosted arm64 output and native HYUI package
+verification remain open. Track this in [#146](https://github.com/Aurora-softwares/Hylang-Compiler/issues/146).
 Fixed-width bitwise operators, integral
 compound assignment, increment/decrement, conditional expressions, null
 coalescing, null-conditional access, `foreach` over arrays and strings, interpolated strings,

@@ -59,7 +59,8 @@ cmake -DSOURCE_DIR="$PWD" -DINPUT_BINARY="$PWD/build/arm64/hy" \
   -DRELEASES_DIR="$PWD/releases" -P cmake/PackageHydrogenRelease.cmake
 ```
 
-This candidate is not published. Apple Silicon CI must verify the application
-and archive before release; the website installer selects a matching arm64 asset
-when one is published. The Hydrogen-written direct compiler and native HYUI backend
-still require arm64 implementations.
+This candidate is not published. The [Apple Silicon CI job](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/42607220925/job/129126147863)
+verified the console application and archive. The website installer selects a
+matching arm64 asset when one is published. The Hydrogen-written direct
+compiler still requires an arm64 backend; native HYUI packaging is awaiting
+Apple Silicon CI verification.
