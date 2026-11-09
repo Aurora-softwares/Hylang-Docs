@@ -11,9 +11,9 @@ The Hydrogen-written compiler produces Linux x86-64 ELF, Windows x64 PE32+, and 
 | Tool | Use it for | Output or execution |
 | --- | --- | --- |
 | `hydrogen-stage1` (Hydrogen) | Direct native compilation, source/project checking, IR inspection, UEFI boot/kernel images, and project scaffolding | Linux x64 ELF, Windows x64 PE32+ console executable, macOS x64 Mach-O, constrained `uefi-x64` PE32+, raw `AUKR` kernel, checked AUEX `.exec`, or narrow AUN1; no external compiler or linker for these outputs |
-| `hy` (C++ SDK) | Build/run/test/check/fmt/new/package/LSP workflows; UEFI console proof | Interpreter, host C backend, or constrained `uefi-x64` PE32+ output |
+| `hy` (C++ SDK) | Build/run/test/check/fmt/new/package/LSP workflows; UEFI console proof | Interpreter, host C backend, constrained `uefi-x64` PE32+, or `macos-arm64` through Apple's clang on macOS (CI pending) |
 | `hyrun` | Direct interpreted execution | Shares the SDK semantic pipeline |
-| `hyc build` | Compatibility build command | Host C backend, executables or static libraries |
+| `hyc build` | Compatibility build command | Host C backend, executables or static libraries; also accepts `macos-arm64` on macOS |
 
 See the [language and tool reference](https://hylang.co.uk/) and [native compiler guide](https://hylang.co.uk/contributing/native-compiler/) for the supported features of each route.
 For runtime performance measurements and planned work, see the [optimisation notes](https://hylang.co.uk/performance/optimisation-evidence/).
@@ -27,9 +27,11 @@ runtime that passed self-hosting, byte-identical compiler output, argv,
 console, Unicode and binary file I/O, garbage collection, and process execution
 on a GitHub-hosted macOS runner. The macOS archive, website installer fixture,
 package workflow, update, and uninstall checks also passed on macOS. The next
-release gate is a tagged archive and live install from published assets; native
-Apple Silicon output remains future work. Track this
-in [#145](https://github.com/Aurora-softwares/Hylang-Compiler/issues/145). Fixed-width bitwise operators, integral
+release gate is a tagged archive and live install from published assets. Native
+Apple Silicon application output is now in progress through the C++ bootstrap
+compiler's `macos-arm64` target; self-hosted arm64 output and native HYUI packaging
+remain open. Track this in [#146](https://github.com/Aurora-softwares/Hylang-Compiler/issues/146).
+Fixed-width bitwise operators, integral
 compound assignment, increment/decrement, conditional expressions, null
 coalescing, null-conditional access, `foreach` over arrays and strings, interpolated strings,
 switch statements and expressions, and range-based slicing are implemented across the

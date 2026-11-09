@@ -1,5 +1,5 @@
 ---
-title: macOS x64 release archive
+title: macOS release archives
 description: Build, verify, install, update, and remove the Hydrogen compiler on macOS.
 ---
 
@@ -47,4 +47,19 @@ hy uninstall
 ```
 
 For a Homebrew-owned compiler, the launcher delegates updates and removal to
-Homebrew. The current target is x86-64; native arm64 output is not implemented.
+Homebrew. The self-hosted release archive remains x86-64. An Apple Silicon
+candidate can be built from the C++ bootstrap compiler on an arm64 Mac:
+
+```bash
+cmake -S . -B build/arm64 -DCMAKE_BUILD_TYPE=Release
+cmake --build build/arm64 --target hy --parallel
+build/arm64/hy build tests/macos/Hello.hy --target macos-arm64 -o build/arm64/hello
+cmake -DSOURCE_DIR="$PWD" -DINPUT_BINARY="$PWD/build/arm64/hy" \
+  -DVERSION="alpha-0.0.3" -DPLATFORM=macos-arm64 \
+  -DRELEASES_DIR="$PWD/releases" -P cmake/PackageHydrogenRelease.cmake
+```
+
+This candidate is not published. Apple Silicon CI must verify the application
+and archive before release; the website installer selects a matching arm64 asset
+when one is published. The Hydrogen-written direct compiler and native HYUI backend
+still require arm64 implementations.

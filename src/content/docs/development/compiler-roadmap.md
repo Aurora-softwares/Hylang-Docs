@@ -31,6 +31,16 @@ Expand compiler/runtime builtins into reusable Hydrogen-written libraries: colle
 
 Direct Linux x64 code generation is implemented. Additional work includes object files, linker/external ABI integration, debug information, cross-compilation, and additional platform runtime/startup implementations. Keep the C backend useful as a portability route while parity develops.
 
+### Apple Silicon application builds — 0.9.0 track
+
+The [Hydrogen Development project](https://github.com/orgs/Aurora-softwares/projects/4) assigns [Apple Silicon issue #146](https://github.com/Aurora-softwares/Hylang-Compiler/issues/146) to the 0.9.0 cross-platform qualification track. This target is in progress and has no published arm64 release.
+
+- 🟡 The C++ bootstrap compiler accepts `hy build <file.hy|exe-project.hyproj> --target macos-arm64 -o <output>` on macOS with Xcode Command Line Tools. It uses Hydrogen's C backend and Apple's arm64 clang; the Apple Silicon CI execution and packaging gate is pending.
+- 🟡 The release packager has a `macos-arm64` candidate format and rejects non-arm64 compiler binaries. The maintenance script distinguishes native arm64 installs from existing Intel installs under Rosetta.
+- 🔴 The Hydrogen-written direct backend still emits x86-64 machine code. Its next target is an AArch64 emitter, arm64 runtime and Mach-O writer, then self-hosting stage 2/3 checks on Apple Silicon.
+- 🔴 HYUI AppKit export and the Hydrogen UI backend remain x64-specific. Native arm64 UI packaging and interaction tests are a separate gate before claiming Apple Silicon UI application support.
+- 🔴 A checksum-verified published arm64 compiler archive, live website install, update, and uninstall remain release gates. The installer now selects the arm64 asset on Apple Silicon.
+
 ### Native desktop UI — Development branch, 4 November 2026
 
 **Current development version:** `0.1.0` (not released). This is an experimental

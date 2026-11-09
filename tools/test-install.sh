@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-case $(uname -s) in Linux) platform=linux-x86_64 ;; Darwin) platform=macos-x86_64 ;; *) exit 1 ;; esac
+case $(uname -s):$(uname -m) in
+    Linux:x86_64) platform=linux-x86_64 ;;
+    Darwin:x86_64) platform=macos-x86_64 ;;
+    Darwin:arm64) platform=macos-arm64 ;;
+    *) exit 1 ;;
+esac
 name="hydrogen-alpha-0.1.0-${platform}"
 work=$(mktemp -d)
 trap 'rm -rf -- "$work"' EXIT
@@ -15,14 +20,14 @@ chmod +x "$stage/bin/hy" "$stage/libexec/hy-core" "$stage/libexec/hy-maintenance
 printf 'Hydrogen release: alpha-0.1.0\nPlatform: %s\n' "$platform" > "$stage/BUILD-INFO.txt"
 printf 'Test release\n' > "$stage/README.md"
 printf 'hydrogen-install-manifest-v1\nbin/hy\nlibexec/hy-core\nlibexec/hy-maintenance\nBUILD-INFO.txt\nREADME.md\nSHA256SUMS\nINSTALL-MANIFEST\n' > "$stage/INSTALL-MANIFEST"
-if [[ $platform == macos-x86_64 ]]; then
+if [[ $platform == macos-x86_64 || $platform == macos-arm64 ]]; then
     ( cd "$stage" && shasum -a 256 bin/hy libexec/hy-core libexec/hy-maintenance BUILD-INFO.txt README.md > SHA256SUMS )
 else
     ( cd "$stage" && sha256sum bin/hy libexec/hy-core libexec/hy-maintenance BUILD-INFO.txt README.md > SHA256SUMS )
 fi
 archive_name="$name.tar.gz"
 ( cd "$work/fixture" && tar -czf "$work/$archive_name" "$name" )
-if [[ $platform == macos-x86_64 ]]; then digest=$(shasum -a 256 "$work/$archive_name" | cut -d' ' -f1)
+if [[ $platform == macos-x86_64 || $platform == macos-arm64 ]]; then digest=$(shasum -a 256 "$work/$archive_name" | cut -d' ' -f1)
 else digest=$(sha256sum "$work/$archive_name" | cut -d' ' -f1); fi
 printf '%s  %s\n' "$digest" "$archive_name" > "$work/$archive_name.sha256"
 cat > "$work/releases.json" <<EOF

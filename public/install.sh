@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install a published, manifest-bearing Hydrogen release for Linux or macOS x64.
+# Install a published, manifest-bearing Hydrogen release for Linux or macOS.
 set -euo pipefail
 umask 077
 
@@ -10,18 +10,16 @@ done
 case $(uname -s):$(uname -m) in
     Linux:x86_64) platform=linux-x86_64; hash_command=sha256sum ;;
     Darwin:x86_64) platform=macos-x86_64; hash_command=shasum ;;
-    Darwin:arm64)
-        /usr/bin/arch -x86_64 /usr/bin/true >/dev/null 2>&1 || fail 'Rosetta 2 is required for the macOS x64 compiler'
-        platform=macos-x86_64; hash_command=shasum ;;
-    *) fail 'this installer requires Linux or macOS x86-64' ;;
+    Darwin:arm64) platform=macos-arm64; hash_command=shasum ;;
+    *) fail 'this installer requires Linux x86-64 or macOS x86-64/arm64' ;;
 esac
 command -v "$hash_command" >/dev/null 2>&1 || fail "required command missing: $hash_command"
 hash_file() {
-    if [[ $platform == macos-x86_64 ]]; then shasum -a 256 "$1" | cut -d' ' -f1
+    if [[ $platform == macos-x86_64 || $platform == macos-arm64 ]]; then shasum -a 256 "$1" | cut -d' ' -f1
     else sha256sum "$1" | cut -d' ' -f1; fi
 }
 verify_internal() {
-    if [[ $platform == macos-x86_64 ]]; then
+    if [[ $platform == macos-x86_64 || $platform == macos-arm64 ]]; then
         (cd "$1" && shasum -a 256 -c SHA256SUMS >/dev/null)
     else (cd "$1" && sha256sum -c --status SHA256SUMS); fi
 }
