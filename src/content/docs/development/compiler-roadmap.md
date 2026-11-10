@@ -61,6 +61,11 @@ feature and does not qualify the compiler for an `0.1.0` release.
   schema inventory checks are covered in [merged compiler PR #195](https://github.com/Aurora-softwares/Hylang-Compiler/pull/195).
   Deeper renderer-specific validation and native SDK checks remain part of
   the platform integration suite.
+- 🟢 [Merged compiler PR #194](https://github.com/Aurora-softwares/Hylang-Compiler/pull/194)
+  adds a named contract for each of the 43 current HYUI elements, verifies
+  their native GTK4, WinUI 3 and AppKit control types, and checks multi-choice
+  dialogs. [Cross-platform CI](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/42782912556)
+  passed all applicable jobs before the Development merge.
 - 🟢 Two additional native HYUI controls are merged to Development:
   `ToggleButton` (P1) and `ValidationMessage` (P2) have GTK4, WinUI 3,
   AppKit and single-file Linux GTK4 implementations with native interaction
