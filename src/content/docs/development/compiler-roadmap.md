@@ -41,10 +41,10 @@ The [Hydrogen Development project](https://github.com/orgs/Aurora-softwares/proj
 - 🟢 HYUI AppKit export and package creation select `macos-arm64` on Apple Silicon and use the portable C backend for Hydrogen event logic. The [Apple Silicon native UI job](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/42608237362/job/129129800150) verified native controls, an arm64 Studio bundle, and packaged application launch.
 - 🔴 A checksum-verified published arm64 compiler archive, live website install, update, and uninstall remain release gates. The installer now selects the arm64 asset on Apple Silicon.
 
-### Native desktop UI — Development branch, 4 November 2026
+### Native desktop UI — Development branch, 13 November 2026
 
-**Current development version:** `0.1.0` (not released). This is an experimental
-feature and does not qualify the compiler for an `0.1.0` release.
+**Current development version:** `0.2.0` language track; native UI work is
+assigned to the `0.5.0` project target. These are development targets, not releases.
 
 - 🟢 HYUI v1 native controls, events, layouts and visual regressions are covered by
   platform-specific GTK4, WinUI 3 and AppKit implementations and tests. The merged
@@ -62,7 +62,7 @@ feature and does not qualify the compiler for an `0.1.0` release.
   Deeper renderer-specific validation and native SDK checks remain part of
   the platform integration suite.
 - 🟢 [Merged compiler PR #194](https://github.com/Aurora-softwares/Hylang-Compiler/pull/194)
-  adds a named contract for each of the 43 current HYUI elements, verifies
+  added a named contract for each of the 43 elements available at that merge, verifies
   their native GTK4, WinUI 3 and AppKit control types, and checks multi-choice
   dialogs. [Cross-platform CI](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/42782912556)
   passed all applicable jobs before the Development merge.
@@ -72,19 +72,35 @@ feature and does not qualify the compiler for an `0.1.0` release.
   tests in [merged PR #196](https://github.com/Aurora-softwares/Hylang-Compiler/pull/196).
   [CI run 41843955763](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41843955763)
   passed the native UI suites, platform SDK exports and bootstrap regression tests.
-- 🟡 `SplitView` (P1) and `StatusBar` (P1) are implemented in
-  [PR #197](https://github.com/Aurora-softwares/Hylang-Compiler/pull/197)
-  with native splitters, Hydrogen state updates and cross-platform regression tests.
-  Full CI and a Development merge remain required before they are complete.
-- 🔴 Next target controls include `TreeView`, `DocumentTabs` and
-  `CodeEditor` (IDE essentials). Their native selection, close/reorder,
-  accessibility and editor contracts still require implementation.
+- 🟢 `SplitView` (P1) and `StatusBar` (P1) were merged in
+  [PR #197](https://github.com/Aurora-softwares/Hylang-Compiler/pull/197).
+  Native splitters, Hydrogen state updates, and GTK4, AppKit, and WinUI interaction
+  jobs passed in [CI run 41876342201](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41876342201).
+- 🟢 Dynamic `ListBox.items` replacement validates the final items and selection
+  together, clamps an implicit stale selection after a shrink, and rejects invalid
+  responses atomically. Shared contracts, native GTK4, AppKit and WinUI interaction
+  and appearance jobs, and Stage 1–3 single-file GTK4 generation passed in
+  [compiler PR #199](https://github.com/Aurora-softwares/Hylang-Compiler/pull/199)
+  and [CI run 43358715272](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/43358715272).
+- 🟢 `TreeView` has a validated preorder hierarchy, zero-based selection events,
+  and atomic `Application.SetItems`/`SetValue` updates in the shared contract and
+  native GTK4, AppKit, WinUI and single-file GTK4 renderers. The same three-platform
+  native UI, visual, bootstrap, and Stage 1–3 jobs passed in run 43358715272.
+- 🟢 Native view teardown, timer/dialog/callback cleanup, and WinUI active backend
+  cancellation passed three-platform native UI jobs in runs 41413381471 and
+  41468089397. The new tree and list controls also passed the native interaction,
+  window-close, and lifecycle checks in run 43358715272.
+- 🔴 Next target controls include `TreeTable`, `DocumentTabs` and `CodeEditor`
+  (IDE essentials). Observable and multiple-selection lists, typed model events,
+  dynamic child updates, close/reorder behavior and editor contracts remain open.
+- 🔴 Multiple independent windows, rich dialog content, drag-and-drop, and broader
+  focus, keyboard, accessibility and lifecycle ownership remain open.
 - 🔴 Windows and macOS native SDK packaging remains separate from the Linux
   single-file GTK4 output model. A fully single-process native Hydrogen UI
   callback path is not yet demonstrated on all three operating systems.
-- 🔴 Remaining release gates: verified multi-stage native UI builds on all three
-  platforms, cross-platform compiler/frontend schema parity, accessibility and
-  release-distribution checks, and real-world lifecycle tests beyond the Studio sample.
+- 🔴 Remaining release gates: cross-platform compiler/frontend schema parity,
+  accessibility and release-distribution checks, and real-world multi-window
+  lifecycle tests beyond the Studio sample.
 
 A **single executable file** is distinct from **single-process execution**.
 Linux applications still use the destination's GTK4 shared libraries.
