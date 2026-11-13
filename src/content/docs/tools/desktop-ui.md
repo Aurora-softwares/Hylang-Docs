@@ -219,7 +219,49 @@ The [SplitView and StatusBar implementation PR #197](https://github.com/Aurora-s
 <StatusBar id="workspaceStatus" text="Ready" />
 ```
 
-The proposed controls remain **unreleased** and need complete CI before claiming production cross-platform parity. Initial SplitView supports the horizontal (left/right) arrangement; vertical splits, nested IDE docking, persistent splitter positions, and closeable editor tabs remain future work.
+These controls are merged and passed GTK4, AppKit, and WinUI interaction jobs in [CI run 41876342201](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/41876342201), but remain **unreleased**. Initial SplitView supports the horizontal (left/right) arrangement; vertical splits, nested IDE docking, persistent splitter positions, and closeable editor tabs remain future work.
+
+### Updating native list data (Development)
+
+`ListBox.items` starts with the pipe-separated labels in the `.hyui` document.
+Hydrogen can replace them from a handler with `Application.SetItems("templates", "Notes|Tasks|Photos")`.
+It can set `ListBox.value` in the same response using `Application.SetValue`; the
+native host validates the final items and selection together, regardless of the
+order of the two updates. If a shorter list would remove the current selection,
+the host selects its last item. Empty lists and selections outside the new list
+are rejected without changing the UI. The selection callback continues to
+receive the selected zero-based index through `Application.Value(args, id)`.
+
+This runtime update passed the shared contract suite, a native GTK4 host
+interaction run, and a generated single-file GTK4 application run locally. The
+single-file test exercises both accepted and rejected Hydrogen updates and checks
+the actual GTK rows. AppKit and WinUI renderers and interaction tests are
+implemented but their platform jobs have not yet run for this change.
+
+### Hierarchical project data (Development)
+
+`TreeView` accepts `items` as pipe-separated preorder `depth:label` rows. Depth
+starts at `0` for a root and may increase by one level for each child. A row's
+`value` is its zero-based position in this preorder list, and `onChange` reads
+that index with `Application.Value(args, id)`. For example:
+
+```xml
+<TreeView id="files" items="0:Project|1:src|2:Program.hy|1:assets"
+          value="0" height="160" onChange="ChooseFile" />
+```
+
+Hydrogen can replace the hierarchy with `Application.SetItems("files", "0:Workspace|1:src|2:Main.hy")`
+and select a row with `Application.SetValue("files", 2)` in either order in one
+handler response. The host validates the final hierarchy and selection before
+applying either update. It rejects orphaned depth levels, empty labels, and
+explicit selections beyond the new tree; shrinking a tree clamps an existing
+selection to its last row. The current format supports up to 512 rows, depth 32,
+and 16,384 characters. It does not encode a pipe character inside a label.
+
+The shared contract suite, a native GTK4 host interaction run, and a generated
+Stage 1 single-file GTK4 application passed locally. AppKit and WinUI host
+implementations and interaction tests are present, with platform CI still
+pending. `TreeTable`, observable lists, and dynamic child controls remain open.
 
 ## Hydrogen handlers and updates
 
@@ -228,7 +270,7 @@ callback. `Application.Value(args, id)` returns the control's text, selected
 index, numeric value, checked state, or nonvisual state value. It returns an empty
 string for an unknown ID. For numeric values use `System.Convert.ToInt32`.
 
-Use `SetText`, `SetValue`, `SetChecked`, `SetEnabled`, `SetVisible`, and
+Use `SetText`, `SetItems` (for `ListBox` and `TreeView`), `SetValue`, `SetChecked`, `SetEnabled`, `SetVisible`, and
 `SetRunning`; `Set(id, property, stringValue)` also supports `indeterminate` and
 string-valued `State.value`. A response is validated and applied as one batch;
 invalid responses preserve the previous UI state. Only registered control
