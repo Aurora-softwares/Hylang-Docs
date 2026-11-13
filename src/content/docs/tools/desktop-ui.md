@@ -232,11 +232,9 @@ the host selects its last item. Empty lists and selections outside the new list
 are rejected without changing the UI. The selection callback continues to
 receive the selected zero-based index through `Application.Value(args, id)`.
 
-This runtime update passed the shared contract suite, a native GTK4 host
-interaction run, and a generated single-file GTK4 application run locally. The
-single-file test exercises both accepted and rejected Hydrogen updates and checks
-the actual GTK rows. AppKit and WinUI renderers and interaction tests are
-implemented but their platform jobs have not yet run for this change.
+This runtime update passed the shared contract suite, native GTK4, AppKit and
+WinUI interaction and reviewed screenshot jobs, and Stage 1–3 single-file GTK4
+generation in [CI run 43358715272](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/43358715272).
 
 ### Hierarchical project data (Development)
 
@@ -258,10 +256,11 @@ explicit selections beyond the new tree; shrinking a tree clamps an existing
 selection to its last row. The current format supports up to 512 rows, depth 32,
 and 16,384 characters. It does not encode a pipe character inside a label.
 
-The shared contract suite, a native GTK4 host interaction run, and a generated
-Stage 1 single-file GTK4 application passed locally. AppKit and WinUI host
-implementations and interaction tests are present, with platform CI still
-pending. `TreeTable`, observable lists, and dynamic child controls remain open.
+The shared contract suite, native GTK4, AppKit and WinUI interaction and reviewed
+screenshot jobs, and Stage 1–3 single-file GTK4 generation passed in
+[CI run 43358715272](https://github.com/Aurora-softwares/Hylang-Compiler/actions/runs/43358715272).
+`TreeTable`, observable and multiple-selection lists, and dynamic child controls
+remain open.
 
 ## Hydrogen handlers and updates
 
