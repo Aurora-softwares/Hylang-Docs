@@ -17,7 +17,7 @@ concurrency:
 jobs:
   build:
     name: Build GitHub Pages site
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     steps:
       - name: Checkout Release
         uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
   deploy:
     name: Deploy GitHub Pages
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
