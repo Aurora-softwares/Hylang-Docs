@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Test Windows installer with a verified release fixture
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File {0}
         run: .\tools\test-install-windows.ps1 -SourceDir $PWD.Path
 
   verify:
