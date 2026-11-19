@@ -19,12 +19,13 @@ jobs:
         run: bash tools/test-install.sh
 
   windows-installer:
-    runs-on: windows-latest
+    # Fork pull requests stay on a GitHub-hosted Windows runner.
+    runs-on: ${{ fromJSON(github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork && '["windows-latest"]' || '["self-hosted","Windows","X64"]') }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Test Windows installer with a verified release fixture
-        shell: powershell
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File {0}
         run: .\tools\test-install-windows.ps1 -SourceDir $PWD.Path
 
   verify:
